@@ -1658,6 +1658,7 @@
     let messagesRef = null;
     let activePeerTypingRef = null;
     let peerTypingListeners = {};
+    let watchedChatListeners = {};
     let allUsers = {};
     let allStatuses = {};
     let typingMap = {};
@@ -2296,7 +2297,8 @@
         if (!typingMap[chatId]) typingMap[chatId] = {};
         typingMap[chatId][peerUid] = snap.val() || null; refreshPresenceAndTypingUI();
       };
-      pRef.on("value", cb); peerTypingListeners[key] = { ref: pRef, cb };
+      pRef.on("value", cb, () => {});
+      peerTypingListeners[key] = { ref: pRef, cb };
     }
 
     function isPeerTypingNow(peerUid) {
@@ -2431,18 +2433,43 @@
 
     function readOriginalDataUrl(file) {
       return new Promise((resolve, reject) => {
-        if (!file.type.startsWith("image/")) {
-          const reader = new FileReader(); reader.onerror = reject; reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); return;
+        if (!file) { reject(new Error("No file selected")); return; }
+        if (!file.type || !file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+          return;
         }
-        const url = URL.createObjectURL(file); const img = new Image();
+        const url = URL.createObjectURL(file);
+        const img = new Image();
         img.onload = () => {
-          URL.revokeObjectURL(url); const maxDim = 960; let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) { if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; } else { w = Math.round((w * maxDim) / h); h = maxDim; } }
-          const canvas = document.createElement("canvas"); canvas.width = w; canvas.height = h;
-          canvas.getContext("2d").drawImage(img, 0, 0, w, h); resolve(canvas.toDataURL("image/jpeg", 0.82));
+          URL.revokeObjectURL(url);
+          const maxDim = 960;
+          let w = img.naturalWidth || img.width || 640;
+          let h = img.naturalHeight || img.height || 480;
+          if (w > maxDim || h > maxDim) {
+            if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", 0.8));
+          } catch (_) {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          }
         };
         img.onerror = () => {
-          URL.revokeObjectURL(url); const reader = new FileReader(); reader.onerror = reject; reader.onload = () => resolve(reader.result); reader.readAsDataURL(file);
+          URL.revokeObjectURL(url);
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error("Image load failed"));
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
         };
         img.src = url;
       });
@@ -2450,25 +2477,42 @@
 
     function getVideoDurationSeconds(file) {
       return new Promise((resolve) => {
-        const url = URL.createObjectURL(file); const vid = document.createElement("video"); vid.preload = "metadata";
-        vid.onloadedmetadata = () => { const dur = vid.duration || 0; URL.revokeObjectURL(url); resolve(dur); };
-        vid.onerror = () => { URL.revokeObjectURL(url); resolve(0); }; vid.src = url;
+        try {
+          const url = URL.createObjectURL(file);
+          const vid = document.createElement("video");
+          vid.preload = "metadata";
+          const done = (d) => { try { URL.revokeObjectURL(url); } catch (_) {} resolve(d || 0); };
+          vid.onloadedmetadata = () => done(vid.duration);
+          vid.onerror = () => done(0);
+          vid.src = url;
+          setTimeout(() => done(0), 2500);
+        } catch (_) { resolve(0); }
       });
     }
 
     function extractVideoFirstFrame(file) {
       return new Promise((resolve) => {
-        const url = URL.createObjectURL(file); const vid = document.createElement("video");
-        vid.preload = "auto"; vid.muted = true; vid.playsInline = true;
-        const capture = () => {
-          try {
-            const canvas = document.createElement("canvas"); canvas.width = Math.min(360, vid.videoWidth || 320); canvas.height = Math.min(240, vid.videoHeight || 200);
-            canvas.getContext("2d").drawImage(vid, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.72); URL.revokeObjectURL(url); resolve(dataUrl);
-          } catch (_) { URL.revokeObjectURL(url); resolve(""); }
-        };
-        vid.onloadeddata = () => { vid.currentTime = Math.min(0.2, (vid.duration || 1) / 4); };
-        vid.onseeked = capture; vid.onerror = () => { URL.revokeObjectURL(url); resolve(""); }; vid.src = url;
+        try {
+          const url = URL.createObjectURL(file);
+          const vid = document.createElement("video");
+          vid.preload = "auto"; vid.muted = true; vid.playsInline = true;
+          const finish = (val) => { try { URL.revokeObjectURL(url); } catch (_) {} resolve(val || ""); };
+          vid.onloadeddata = () => {
+            try { vid.currentTime = Math.min(0.2, (vid.duration || 1) / 4); } catch (_) { finish(""); }
+          };
+          vid.onseeked = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.min(360, vid.videoWidth || 320);
+              canvas.height = Math.min(240, vid.videoHeight || 200);
+              canvas.getContext("2d").drawImage(vid, 0, 0, canvas.width, canvas.height);
+              finish(canvas.toDataURL("image/jpeg", 0.72));
+            } catch (_) { finish(""); }
+          };
+          vid.onerror = () => finish("");
+          vid.src = url;
+          setTimeout(() => finish(""), 3000);
+        } catch (_) { resolve(""); }
       });
     }
 
@@ -2582,14 +2626,20 @@
     document.querySelectorAll(".nav-tab").forEach((tab) => { tab.addEventListener("click", () => { switchToTab(tab.dataset.tab); pushNavState(); }); });
 
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join("_"); }
-    function formatClock(ts) { if (!ts) return ""; return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+    function formatClock(ts) {
+      if (!ts) return "";
+      const num = typeof ts === "number" ? ts : Number(ts);
+      if (!num || isNaN(num)) return "";
+      return new Date(num).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
     function formatLastSeen(ts) {
-      if (!ts) return "Last seen recently";
-      const diffSec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+      const num = typeof ts === "number" ? ts : Number(ts);
+      if (!num || isNaN(num)) return "Last seen recently";
+      const diffSec = Math.max(0, Math.floor((Date.now() - num) / 1000));
       if (diffSec < 60) return "Last seen just now";
       const diffMin = Math.floor(diffSec / 60);
       if (diffMin < 60) return `Last seen ${diffMin} min ago`;
-      const d = new Date(ts); const t = formatClock(ts);
+      const d = new Date(num); const t = formatClock(num);
       const isToday = d.toDateString() === new Date().toDateString();
       return isToday ? `Last seen today at ${t}` : `Last seen ${d.toLocaleDateString()} ${t}`;
     }
@@ -2663,8 +2713,9 @@
 
     function getVisibleName(targetUser) {
       if (!targetUser) return "";
-      if (targetUser.isAI || targetUser.uid === currentUser?.uid) return targetUser.name || targetUser.email;
-      return canSeeProfileFields(targetUser) ? (targetUser.name || targetUser.email) : "User";
+      if (targetUser.isAI || targetUser.uid === currentUser?.uid) return targetUser.name || targetUser.email || "User";
+      if (canSeeProfileFields(targetUser)) return targetUser.name || targetUser.email || "User";
+      return targetUser.name || targetUser.email || "User";
     }
 
     function getVisibleAbout(targetUser) {
@@ -2677,7 +2728,8 @@
       if (!u) return false;
       if (u.isAI) return true;
       if (u.online !== true) return false;
-      if (u.lastPing && (Date.now() - u.lastPing) > 90000) return false;
+      const ping = Number(u.lastPing || 0);
+      if (ping && (Date.now() - ping) > 180000) return false;
       return true;
     }
 
@@ -2722,7 +2774,7 @@
           peerOnlineDisc.classList.remove("active"); headerStatus.className = "status-line typing-yellow-bordered"; headerStatus.innerHTML = renderAnimatedTypingHtml();
         } else {
           headerStatus.className = "status-line"; const p = getPresenceDisplay(peer);
-          peerOnlineDisc.classList.toggle("active", p.isOnline); headerStatus.class.toggle("is-online", p.isOnline); headerStatus.innerHTML = p.html;
+          peerOnlineDisc.classList.toggle("active", p.isOnline); headerStatus.classList.toggle("is-online", p.isOnline); headerStatus.innerHTML = p.html;
         }
         updateBlockedComposerState();
       } else {
@@ -2765,7 +2817,7 @@
             if (c && c.senderUid !== myUid && c.candidate && pc && pc.remoteDescription) await pc.addIceCandidate(new RTCIceCandidate(c.candidate)).catch(() => {});
           }
         }
-      });
+      }, () => {});
     }
 
     function createPeerConnection(targetUid, callId, isVideo) {
@@ -2838,44 +2890,76 @@
     }
 
     function setupPresence(uid) {
-      const userRef = db.ref(`users/${uid}`); const connectedRef = db.ref(".info/connected");
-      const markOfflineNow = () => { const now = Date.now(); userRef.update({ online: false, lastSeen: now, lastPing: now }).catch(() => {}); };
-      const markOnlineNow = () => { if (!navigator.onLine || document.hidden) return; userRef.update({ online: true, lastPing: Date.now() }).catch(() => {}); };
+      const userRef = db.ref(`users/${uid}`);
+      const connectedRef = db.ref(".info/connected");
+      const markOfflineNow = () => {
+        const now = Date.now();
+        userRef.update({ online: false, lastSeen: now, lastPing: now }).catch(() => {});
+      };
+      const markOnlineNow = () => {
+        if (document.hidden) return;
+        const now = Date.now();
+        userRef.update({ online: true, lastPing: now, lastSeen: now }).catch(() => {});
+      };
+
+      markOnlineNow();
 
       connectedRef.on("value", (snap) => {
-        if (snap.val() === true && navigator.onLine) { markOnlineNow(); userRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP }); }
-        else { markOfflineNow(); }
-      });
+        if (snap.val() === true) {
+          markOnlineNow();
+          userRef.onDisconnect().update({
+            online: false,
+            lastSeen: firebase.database.ServerValue.TIMESTAMP,
+            lastPing: firebase.database.ServerValue.TIMESTAMP
+          }).catch(() => {});
+        }
+      }, () => {});
 
-      window.addEventListener("offline", markOfflineNow); window.addEventListener("online", markOnlineNow);
-      document.addEventListener("visibilitychange", () => { if (!currentUser) return; if (document.hidden || !navigator.onLine) markOfflineNow(); else markOnlineNow(); });
-      setInterval(() => { if (!currentUser) return; if (!navigator.onLine || document.hidden) markOfflineNow(); else markOnlineNow(); refreshPresenceAndTypingUI(); }, 20000);
+      window.addEventListener("offline", markOfflineNow);
+      window.addEventListener("online", markOnlineNow);
+      document.addEventListener("visibilitychange", () => {
+        if (!currentUser) return;
+        if (document.hidden) markOfflineNow();
+        else markOnlineNow();
+      });
+      setInterval(() => {
+        if (!currentUser) return;
+        if (!document.hidden) markOnlineNow();
+        refreshPresenceAndTypingUI();
+      }, 20000);
+    }
+
+    function attachWatchForPeerChat(myUid, otherUid) {
+      if (!myUid || !otherUid || otherUid === myUid) return;
+      if (watchedChatListeners[otherUid]) return;
+      watchedChatListeners[otherUid] = true;
+      attachPeerTypingListener(otherUid);
+      const chatId = getChatId(myUid, otherUid);
+      db.ref(`chats/${chatId}/messages`).limitToLast(50).on("value", (mSnap) => {
+        let count = 0, hasAnyVisibleMsg = false;
+        const msgs = mSnap.val() || {};
+        Object.values(msgs).forEach((m) => {
+          if (!m) return;
+          if (m.deletedFor && m.deletedFor[myUid]) return;
+          hasAnyVisibleMsg = true;
+          if (m.deletedForEveryone) return;
+          if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") count++;
+        });
+        activeChatIds[otherUid] = hasAnyVisibleMsg;
+        const prev = unreadCounts[otherUid] || 0;
+        unreadCounts[otherUid] = count;
+        if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) triggerMessageVibration();
+        renderUsersList();
+      }, () => {});
     }
 
     function listenActiveChatsAndUnread(myUid) {
       db.ref("users").once("value", (snap) => {
         const usersObj = snap.val() || {};
         Object.keys(usersObj).forEach((otherUid) => {
-          if (otherUid === myUid) return;
-          attachPeerTypingListener(otherUid);
-          const chatId = getChatId(myUid, otherUid);
-          db.ref(`chats/${chatId}/messages`).limitToLast(50).on("value", (mSnap) => {
-            let count = 0, hasAnyVisibleMsg = false;
-            const msgs = mSnap.val() || {};
-            Object.values(msgs).forEach((m) => {
-              if (!m) return;
-              if (m.deletedFor && m.deletedFor[myUid]) return;
-              hasAnyVisibleMsg = true;
-              if (m.deletedForEveryone) return;
-              if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") count++;
-            });
-            activeChatIds[otherUid] = hasAnyVisibleMsg;
-            const prev = unreadCounts[otherUid] || 0; unreadCounts[otherUid] = count;
-            if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) triggerMessageVibration();
-            renderUsersList();
-          });
+          if (otherUid !== myUid) attachWatchForPeerChat(myUid, otherUid);
         });
-      });
+      }).catch(() => {});
     }
 
     function getWallpaperKey() { if (!currentUser || !selectedPeer) return null; return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`; }
@@ -2920,10 +3004,26 @@
 
     logoutBtn.addEventListener("click", performLogout); settingsLogoutBtn.addEventListener("click", performLogout);
 
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
         localStorage.setItem("hasActiveSession", "1"); currentUser = user;
         authScreen.classList.remove("active"); chatScreen.classList.add("active"); syncViewportVars();
+
+        // Ensure current user record exists in RTDB
+        const mySnap = await db.ref(`users/${user.uid}`).once("value").catch(() => null);
+        if (!mySnap || !mySnap.exists()) {
+          await db.ref(`users/${user.uid}`).set({
+            uid: user.uid,
+            name: user.displayName || (user.email ? user.email.split("@")[0] : "User"),
+            email: user.email || "",
+            about: "Hey there! I am using WhatsApp",
+            dp: DEFAULT_DP,
+            online: true,
+            lastSeen: Date.now(),
+            lastPing: Date.now(),
+            privacy: { lastSeenEnabled: true, dpEnabled: true, aboutEnabled: true, statusEnabled: true, lastSeen: "everyone", dp: "everyone", profileFields: "everyone" }
+          }).catch(() => {});
+        }
 
         soundSelect.value = localStorage.getItem("chatSound") || "chime3s";
         const savedToneName = localStorage.getItem("customNotifToneName");
@@ -2937,12 +3037,18 @@
         applyHomeLiveWallpaper(localStorage.getItem("homeLiveWallpaper") || "none");
         applyChatLiveWallpaper(localStorage.getItem("chatLiveWallpaper") || "none");
         refreshNotifStatusLabel(); renderStarredMessagesList(); setupPresence(user.uid); listenActiveChatsAndUnread(user.uid); listenIncomingCalls(user.uid);
+        updateTopHeader();
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
-          Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) attachPeerTypingListener(uid); });
+          Object.keys(allUsers).forEach((uid) => {
+            if (uid !== currentUser.uid) {
+              attachPeerTypingListener(uid);
+              attachWatchForPeerChat(currentUser.uid, uid);
+            }
+          });
           syncSettingsFromUser(); renderUsersList(); renderStatusFeed(); updateTopHeader();
-        });
+        }, () => {});
 
         db.ref("statuses").on("value", (snap) => {
           allStatuses = snap.val() || {}; pruneExpiredStatuses(); renderUsersList(); renderStatusFeed(); updateTopHeader();
@@ -2950,7 +3056,7 @@
             if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) advanceOrExitStatusViewer();
             else renderStatusViewerContent(activeStatusId);
           }
-        });
+        }, () => {});
       } else {
         localStorage.removeItem("hasActiveSession"); currentUser = null; selectedPeer = null;
         chatScreen.classList.remove("active"); authScreen.classList.add("active");
@@ -3007,9 +3113,10 @@
         attachCardLongPress(aiRow, "na_ai_assistant"); usersList.appendChild(aiRow);
       }
 
-      Object.values(allUsers).forEach((u) => {
-        if (u.uid === currentUser.uid) return;
+      const otherUsers = Object.values(allUsers).filter((u) => u && u.uid && u.uid !== currentUser.uid);
+      otherUsers.forEach((u) => {
         attachPeerTypingListener(u.uid);
+        attachWatchForPeerChat(currentUser.uid, u.uid);
 
         const hasChat = !!activeChatIds[u.uid] || (selectedPeer && selectedPeer.uid === u.uid);
         const visName = getVisibleName(u); const visAbout = getVisibleAbout(u);
@@ -3017,7 +3124,7 @@
         const badgeNum = (!selectedPeer || selectedPeer.uid !== u.uid) ? (unreadCounts[u.uid] || 0) : 0;
 
         if (chatFilterMode === "unread" && badgeNum <= 0) return;
-        if (!q && !hasChat) return;
+        if (!q && !hasChat && otherUsers.length > 1) return;
         if (q && !rawMatch.includes(q)) return;
 
         const isBlocked = isUserBlockedByMe(u.uid); const isLocked = !!getChatLockConfig(u.uid);
@@ -3025,7 +3132,7 @@
         const ringClass = getUserStatusRingClass(u.uid); const remoteTypingNow = isPeerTypingNow(u.uid);
         const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: "", isOnline: false, plain: "" };
 
-        const subHtml = isBlocked ? escapeHtml("Blocked") : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout));
+        const subHtml = isBlocked ? escapeHtml("Blocked") : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout || u.email || ""));
         const subClass = "row-sub" + (remoteTypingNow ? " typing-yellow-bordered" : (p.isOnline ? " status-line is-online" : ""));
 
         const card = document.createElement("div");
@@ -3174,6 +3281,7 @@
     cancelChatLockBtn.addEventListener("click", () => { pendingLockPeer = null; chatLockModal.classList.remove("active"); });
 
     function openChatWith(peer) {
+      if (!peer || !currentUser) return;
       unlockAudio(); sendRemoteTypingState(false); exitMsgMultiSelectMode(); loadedMessagesMap = {};
       selectedPeer = peer; unreadCounts[peer.uid] = 0; replyToMsg = null;
       replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
@@ -3191,14 +3299,14 @@
         attachPeerTypingListener(peer.uid);
         if (activePeerTypingRef) activePeerTypingRef.off();
         activePeerTypingRef = db.ref(`typing/${chatId}/${peer.uid}`);
-        activePeerTypingRef.on("value", (snap) => { if (!typingMap[chatId]) typingMap[chatId] = {}; typingMap[chatId][peer.uid] = snap.val() || null; refreshPresenceAndTypingUI(); });
+        activePeerTypingRef.on("value", (snap) => { if (!typingMap[chatId]) typingMap[chatId] = {}; typingMap[chatId][peer.uid] = snap.val() || null; refreshPresenceAndTypingUI(); }, () => {});
       }
 
       db.ref(`chats/${chatId}/pinned`).on("value", (snap) => {
         const pData = snap.val();
         if (pData && pData.text) { pinnedBannerText.textContent = pData.text; pinnedBanner.classList.add("active"); }
         else { pinnedBanner.classList.remove("active"); }
-      });
+      }, () => {});
 
       pinnedBanner.onclick = (e) => { if (e.target.closest("#unpinMsgBtn")) return; jumpAndHighlightQuotedMessage(pinnedBannerText.textContent || ""); };
       unpinMsgBtn.onclick = (e) => { e.stopPropagation(); db.ref(`chats/${chatId}/pinned`).remove().catch(() => {}); };
@@ -3225,12 +3333,12 @@
       }
 
       messagesRef = db.ref(`chats/${chatId}/messages`).limitToLast(60);
-      messagesRef.once("value", () => { isInitialLoad = false; });
+      messagesRef.once("value", () => { isInitialLoad = false; }).catch(() => { isInitialLoad = false; });
 
       messagesRef.on("child_added", (snap) => {
         const msg = snap.val(); if (!msg) return;
         activeChatIds[peer.uid] = true;
-        if (msg.senderId !== currentUser.uid && msg.status !== "seen" && navigator.onLine) {
+        if (msg.senderId !== currentUser.uid && msg.status !== "seen") {
           snap.ref.update({ status: "seen", seenAt: Date.now() }).catch(() => {});
           unreadCounts[peer.uid] = 0; renderUsersList();
         }
@@ -3240,9 +3348,9 @@
           const senderObj = allUsers[msg.senderId] || {};
           triggerSystemNotification(getVisibleName(senderObj), msg.text || msg.sticker || "Media");
         }
-      });
+      }, () => {});
 
-      messagesRef.on("child_changed", (snap) => { const msg = snap.val(); if (msg) renderOrUpdateMessage(snap.key, msg); });
+      messagesRef.on("child_changed", (snap) => { const msg = snap.val(); if (msg) renderOrUpdateMessage(snap.key, msg); }, () => {});
     }
 
     function closeActiveChatToList() {
@@ -3616,8 +3724,8 @@
             text: m.text || "", sticker: m.sticker || "", stickerAnim: m.stickerAnim || "",
             stickerTone: m.stickerTone || "", stickerColor: m.stickerColor || "", stickerShape: m.stickerShape || "",
             mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null, thumbUrl: m.thumbUrl || null,
-            sentOnline: !!navigator.onLine, status: isActuallyOnline(u) ? "delivered" : "sent",
-            timestamp: firebase.database.ServerValue.TIMESTAMP
+            sentOnline: true, status: isActuallyOnline(u) ? "delivered" : "sent",
+            timestamp: Date.now()
           });
           forwardModal.classList.remove("active"); msgActionModal.classList.remove("active"); activeMsgTarget = null;
         });
@@ -3700,7 +3808,10 @@
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
     });
 
-    stickerToggleBtn.addEventListener("click", () => { if (selectedPeer) stickerDrawer.classList.toggle("open"); });
+    stickerToggleBtn.addEventListener("click", () => {
+      if (!selectedPeer) { alert("Select a contact or NA Ai first."); return; }
+      stickerDrawer.classList.toggle("open");
+    });
 
     stickerDrawer.querySelectorAll("[data-sticker]").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -3721,16 +3832,20 @@
         await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
           senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
           sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape,
-          mediaType: null, mediaUrl: null, sentOnline: !!navigator.onLine,
-          status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: firebase.database.ServerValue.TIMESTAMP
+          mediaType: null, mediaUrl: null, sentOnline: true,
+          status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: Date.now()
         });
       });
     });
 
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault(); unlockAudio();
+      if (!currentUser) return;
+      if (!selectedPeer) {
+        alert("Please select a chat card (e.g. NA Ai or a user) from Chats first.");
+        return;
+      }
       if (typingStopTimer) clearTimeout(typingStopTimer); sendRemoteTypingState(false);
-      if (!currentUser || !selectedPeer) return;
       if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
 
       const text = messageInput.value.trim(); if (!text) return;
@@ -3757,248 +3872,308 @@
         return;
       }
 
-      const peerLive = allUsers[selectedPeer.uid] || selectedPeer; const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-      localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`); activeChatIds[selectedPeer.uid] = true;
+      const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid); localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
+      activeChatIds[selectedPeer.uid] = true; renderUsersList();
 
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid, receiverId: selectedPeer.uid, text, replyTo: quoteText,
-        mediaType: null, mediaUrl: null, sentOnline: !!navigator.onLine,
-        status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: firebase.database.ServerValue.TIMESTAMP
-      });
+        mediaType: null, mediaUrl: null, sentOnline: true,
+        status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: Date.now()
+      }).catch((err) => alert("Message send failed: " + err.message));
     });
 
-    attachBtn.addEventListener("click", () => { if (selectedPeer) mediaInput.click(); });
+    attachBtn.addEventListener("click", () => {
+      if (!selectedPeer) { alert("Select a contact or NA Ai first."); return; }
+      if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
+      mediaInput.click();
+    });
 
     mediaInput.addEventListener("change", async (e) => {
-      const files = Array.from(e.target.files || []); if (!files.length || !currentUser || !selectedPeer) return;
-      const chatId = getChatId(currentUser.uid, selectedPeer.uid); const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-      const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent"; activeChatIds[selectedPeer.uid] = true;
-      try {
-        attachBtn.textContent = "⏳";
-        for (const file of files) {
-          const isVideo = file.type.startsWith("video/"); let thumbUrl = null;
-          if (isVideo) {
-            const dur = await getVideoDurationSeconds(file);
-            if (dur > 60) { alert(`"${file.name}" skipped: video must be 1 minute (60s) or less.`); continue; }
-            thumbUrl = await extractVideoFirstFrame(file);
+      const files = Array.from(e.target.files || []);
+      if (!files.length || !currentUser || !selectedPeer) { mediaInput.value = ""; return; }
+      for (const file of files) {
+        const isImg = file.type.startsWith("image/"); const isVid = file.type.startsWith("video/");
+        if (!isImg && !isVid) continue;
+        if (isVid && file.size > 7 * 1024 * 1024) { alert(`Video "${file.name}" is too large (max 7MB).`); continue; }
+        try {
+          const dataUrl = await readOriginalDataUrl(file);
+          const thumbUrl = isVid ? await extractVideoFirstFrame(file) : null;
+          if (selectedPeer.isAI) {
+            const id = "ai_m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5);
+            const m = { id, senderId: currentUser.uid, receiverId: "na_ai_assistant", text: "", mediaType: isImg ? "image" : "video", mediaUrl: dataUrl, thumbUrl, status: "seen", timestamp: Date.now() };
+            renderOrUpdateMessage(id, m);
+            const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`; const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); arr.push(m);
+            localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+          } else {
+            const peerLive = allUsers[selectedPeer.uid] || selectedPeer; const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+            activeChatIds[selectedPeer.uid] = true;
+            await db.ref(`chats/${chatId}/messages`).push({
+              senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+              mediaType: isImg ? "image" : "video", mediaUrl: dataUrl, thumbUrl,
+              sentOnline: true, status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: Date.now()
+            });
           }
-          const finalUrl = await readOriginalDataUrl(file);
-          await db.ref(`chats/${chatId}/messages`).push({
-            senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
-            mediaType: isVideo ? "video" : "image", mediaUrl: finalUrl, thumbUrl: thumbUrl || null,
-            sentOnline: !!navigator.onLine, status: initialStatus, timestamp: firebase.database.ServerValue.TIMESTAMP
-          });
-        }
-      } catch (err) { alert(err.message); }
-      finally { attachBtn.textContent = "📎"; mediaInput.value = ""; }
+        } catch (err) { alert("Failed to send media: " + (err.message || err)); }
+      }
+      mediaInput.value = "";
     });
 
-    // WhatsApp-style Hold-to-Record Voice (Release to Send, Slide Left to Cancel)
-    function resetVoiceRecUi() {
-      isRecordingVoice = false;
-      voiceBtn.classList.remove("recording");
-      voiceRecOverlay.classList.remove("active");
-      messageInput.style.display = "block";
-      stickerToggleBtn.style.display = "grid";
-      attachBtn.style.display = "grid";
-      if (voiceTimerInterval) { clearInterval(voiceTimerInterval); voiceTimerInterval = null; }
-      updateComposerActionButton();
+    // Hold-to-record Voice Note with Slide-Left Cancel
+    function updateVoiceTimerUi() {
+      const m = Math.floor(voiceRecordSeconds / 60);
+      const s = voiceRecordSeconds % 60;
+      voiceRecTimerText.textContent = `${m}:${s < 10 ? "0" : ""}${s}`;
     }
 
     async function beginHoldVoiceRecording(clientX) {
-      if (!selectedPeer || !currentUser || selectedPeer.isAI || isRecordingVoice) return;
-      if (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid)) return;
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Microphone permission not available.");
-        return;
-      }
-
-      voiceCancelled = false;
-      voiceStartX = clientX || 0;
-      voiceRecordSeconds = 0;
-      voiceRecTimerText.textContent = "0:00";
+      if (!selectedPeer || !currentUser || isRecordingVoice) return;
+      if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert("Microphone not supported."); return; }
 
       try {
         activeMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" } : undefined;
-        mediaRecorder = options ? new MediaRecorder(activeMicStream, options) : new MediaRecorder(activeMicStream);
         audioChunks = [];
-        isRecordingVoice = true;
+        voiceCancelled = false;
+        voiceStartX = clientX || 0;
+        voiceRecordSeconds = 0;
+        updateVoiceTimerUi();
 
-        voiceBtn.classList.add("recording");
-        messageInput.style.display = "none";
-        stickerToggleBtn.style.display = "none";
-        attachBtn.style.display = "none";
-        voiceRecOverlay.classList.add("active");
-
-        voiceTimerInterval = setInterval(() => {
-          voiceRecordSeconds += 1;
-          voiceRecTimerText.textContent = fmtAudioSec(voiceRecordSeconds);
-        }, 1000);
-
-        mediaRecorder.ondataavailable = (ev) => {
-          if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
-        };
-
+        mediaRecorder = new MediaRecorder(activeMicStream);
+        mediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) audioChunks.push(ev.data); };
         mediaRecorder.onstop = async () => {
-          if (activeMicStream) {
-            activeMicStream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} });
-            activeMicStream = null;
-          }
-          const wasCancelled = voiceCancelled;
-          const chunksCopy = audioChunks.slice();
-          const mimeType = mediaRecorder ? (mediaRecorder.mimeType || "audio/webm") : "audio/webm";
-          resetVoiceRecUi();
+          if (voiceTimerInterval) { clearInterval(voiceTimerInterval); voiceTimerInterval = null; }
+          if (activeMicStream) { activeMicStream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} }); activeMicStream = null; }
 
-          if (wasCancelled) return;
-          const blob = new Blob(chunksCopy, { type: mimeType });
-          if (blob.size < 250) return;
+          messageInput.style.display = "";
+          voiceRecOverlay.classList.remove("active");
+          voiceBtn.classList.remove("recording");
+          isRecordingVoice = false;
+          updateComposerActionButton();
 
+          if (voiceCancelled || audioChunks.length === 0) { audioChunks = []; return; }
+
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+          audioChunks = [];
           const reader = new FileReader();
-          reader.onloadend = async () => {
-            if (!selectedPeer || !currentUser) return;
-            const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-            activeChatIds[selectedPeer.uid] = true;
-            await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
-              senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
-              mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
-              status: isActuallyOnline(peerLive) ? "delivered" : "sent",
-              timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
+          reader.onload = async () => {
+            const audioDataUrl = reader.result;
+            if (!audioDataUrl || !currentUser || !selectedPeer) return;
+            if (selectedPeer.isAI) {
+              const id = "ai_v_" + Date.now();
+              const m = { id, senderId: currentUser.uid, receiverId: "na_ai_assistant", text: "", mediaType: "audio", mediaUrl: audioDataUrl, status: "seen", timestamp: Date.now() };
+              renderOrUpdateMessage(id, m);
+              const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`; const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); arr.push(m);
+              localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+            } else {
+              const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+              const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+              activeChatIds[selectedPeer.uid] = true;
+              await db.ref(`chats/${chatId}/messages`).push({
+                senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+                mediaType: "audio", mediaUrl: audioDataUrl, sentOnline: true,
+                status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: Date.now()
+              });
+            }
           };
           reader.readAsDataURL(blob);
         };
 
+        isRecordingVoice = true;
+        messageInput.style.display = "none";
+        sendRocketBtn.style.display = "none";
+        voiceRecOverlay.classList.add("active");
+        voiceBtn.classList.add("recording");
         mediaRecorder.start();
+        voiceTimerInterval = setInterval(() => { voiceRecordSeconds++; updateVoiceTimerUi(); }, 1000);
       } catch (err) {
-        resetVoiceRecUi();
-        alert("Mic error: " + err.message);
+        alert("Microphone access denied: " + err.message);
       }
     }
 
-    function finishHoldVoiceRecording(cancelFlag) {
+    function moveHoldVoiceRecording(clientX) {
       if (!isRecordingVoice) return;
-      voiceCancelled = !!cancelFlag;
-      if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        try { mediaRecorder.stop(); } catch (_) { resetVoiceRecUi(); }
-      } else {
-        resetVoiceRecUi();
+      if ((voiceStartX - clientX) > 65) {
+        voiceCancelled = true;
+        voiceRecOverlay.innerHTML = `<span style="color:#ff5252;">🗑 Released to cancel</span>`;
       }
     }
 
-    voiceBtn.addEventListener("pointerdown", (e) => {
+    function releaseHoldVoiceRecording() {
+      if (!isRecordingVoice || !mediaRecorder) return;
+      try { if (mediaRecorder.state !== "inactive") mediaRecorder.stop(); } catch (_) {}
+    }
+
+    voiceBtn.addEventListener("touchstart", (e) => {
+      if (!selectedPeer) { alert("Select a contact or NA Ai first."); return; }
       e.preventDefault();
-      try { voiceBtn.setPointerCapture(e.pointerId); } catch (_) {}
-      beginHoldVoiceRecording(e.clientX);
+      const tx = e.touches && e.touches[0] ? e.touches[0].clientX : 0;
+      beginHoldVoiceRecording(tx);
+    }, { passive: false });
+
+    voiceBtn.addEventListener("touchmove", (e) => {
+      if (!isRecordingVoice || !e.touches || !e.touches[0]) return;
+      moveHoldVoiceRecording(e.touches[0].clientX);
+    }, { passive: true });
+
+    voiceBtn.addEventListener("touchend", (e) => { if (isRecordingVoice) { e.preventDefault(); releaseHoldVoiceRecording(); } }, { passive: false });
+    voiceBtn.addEventListener("touchcancel", releaseHoldVoiceRecording);
+
+    voiceBtn.addEventListener("mousedown", (e) => {
+      if (!selectedPeer) { alert("Select a contact or NA Ai first."); return; }
+      if (e.button === 0) beginHoldVoiceRecording(e.clientX);
+    });
+    window.addEventListener("mousemove", (e) => { if (isRecordingVoice) moveHoldVoiceRecording(e.clientX); });
+    window.addEventListener("mouseup", () => { if (isRecordingVoice) releaseHoldVoiceRecording(); });
+
+    saveAccountBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      const newName = accountNameInput.value.trim(); const newAbout = aboutInput.value.trim();
+      const apiKey = geminiApiKeyInput.value.trim();
+      localStorage.setItem("geminiApiKey", apiKey);
+
+      const updates = {};
+      if (newName) updates.name = newName;
+      updates.about = newAbout;
+      await db.ref(`users/${currentUser.uid}`).update(updates).catch(() => {});
+      syncSettingsFromUser(); renderUsersList(); updateTopHeader();
+      alert("Account settings saved!");
     });
 
-    voiceBtn.addEventListener("pointermove", (e) => {
-      if (!isRecordingVoice) return;
-      if (voiceStartX - e.clientX > 65) {
-        finishHoldVoiceRecording(true);
-      }
-    });
-
-    voiceBtn.addEventListener("pointerup", (e) => {
-      if (!isRecordingVoice) return;
-      try { voiceBtn.releasePointerCapture(e.pointerId); } catch (_) {}
-      finishHoldVoiceRecording(false);
-    });
-
-    voiceBtn.addEventListener("pointercancel", () => {
-      if (isRecordingVoice) finishHoldVoiceRecording(true);
-    });
-
-    function updateStatusPreview() {
-      const txt = statusTextInput.value.trim(); statusPreviewText.textContent = txt || "Type status text";
-      statusPreviewBanner.style.background = selectedStatusBg; statusPreviewBanner.style.color = selectedStatusTextColor;
-      statusPreviewBanner.style.fontFamily = selectedStatusFont;
+    async function savePrivacySettings() {
+      if (!currentUser) return;
+      await db.ref(`users/${currentUser.uid}/privacy`).update({
+        lastSeenEnabled: toggleLastSeenEnabled.checked, dpEnabled: toggleDpEnabled.checked,
+        aboutEnabled: toggleAboutEnabled.checked, statusEnabled: toggleStatusEnabled.checked,
+        lastSeen: privacyLastSeenSelect.value, dp: privacyDpSelect.value, profileFields: privacyProfileFieldsSelect.value
+      }).catch(() => {});
+      refreshPresenceAndTypingUI();
     }
 
-    statusFontSelect.addEventListener("change", () => { selectedStatusFont = statusFontSelect.value; updateStatusPreview(); });
-    statusColorPalette.querySelectorAll("[data-color]").forEach((sw) => {
-      sw.addEventListener("click", () => {
-        statusColorPalette.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-        sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; updateStatusPreview();
-      });
+    [toggleLastSeenEnabled, toggleDpEnabled, toggleAboutEnabled, toggleStatusEnabled, privacyLastSeenSelect, privacyDpSelect, privacyProfileFieldsSelect].forEach((el) => {
+      el.addEventListener("change", savePrivacySettings);
     });
-    customStatusColorPicker.addEventListener("input", () => {
-      statusColorPalette.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-      selectedStatusBg = customStatusColorPicker.value; updateStatusPreview();
+
+    fontSizeSelect.addEventListener("change", () => { localStorage.setItem("chatFontSize", fontSizeSelect.value); document.documentElement.style.setProperty("--msg-font-size", fontSizeSelect.value); });
+    chooseDpBtn.addEventListener("click", () => dpFileInput.click());
+    dpFileInput.addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f || !currentUser) return;
+      try { const dpUrl = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}`).update({ dp: dpUrl }); heroAvatar.src = dpUrl; }
+      catch (err) { alert("Photo upload failed: " + err.message); }
+      dpFileInput.value = "";
     });
-    statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; updateStatusPreview(); });
-    statusTextInput.addEventListener("input", updateStatusPreview);
+
+    chooseWallpaperBtn.addEventListener("click", () => { if (!selectedPeer) { alert("Open a chat first to set its wallpaper."); return; } wallpaperFileInput.click(); });
+    wallpaperFileInput.addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f || !currentUser || !selectedPeer) return;
+      const key = getWallpaperKey();
+      try { const wpUrl = await readOriginalDataUrl(f); localStorage.setItem(key, wpUrl); applyWallpaper(); }
+      catch (err) { alert("Wallpaper failed: " + err.message); }
+      wallpaperFileInput.value = "";
+    });
+    clearWallpaperBtn.addEventListener("click", () => { const key = getWallpaperKey(); if (key) localStorage.removeItem(key); applyWallpaper(); });
+
+    function refreshStatusPreview() {
+      const txt = statusTextInput.value.trim() || "Type status text";
+      statusPreviewText.textContent = txt; statusPreviewBanner.style.background = selectedStatusBg;
+      statusPreviewBanner.style.color = selectedStatusTextColor; statusPreviewBanner.style.fontFamily = selectedStatusFont;
+    }
 
     openAddStatusBtn.addEventListener("click", () => {
-      pendingStatusPhoto = ""; pendingStatusVideo = ""; statusTextInput.value = ""; statusMediaName.textContent = "";
-      selectedStatusBg = "#0d47a1"; selectedStatusTextColor = "#ffffff"; selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
-      statusFontSelect.value = selectedStatusFont; customStatusColorPicker.value = selectedStatusBg; statusTextColorSelect.value = "#ffffff";
-      updateStatusPreview(); addStatusModal.classList.add("active"); pushNavState();
+      pendingStatusPhoto = ""; pendingStatusVideo = ""; statusMediaName.textContent = "";
+      statusTextInput.value = ""; selectedStatusBg = "#0d47a1"; selectedStatusTextColor = "#ffffff";
+      selectedStatusFont = "'Segoe UI', Roboto, sans-serif"; customStatusColorPicker.value = "#0d47a1";
+      statusTextColorSelect.value = "#ffffff"; statusFontSelect.value = selectedStatusFont;
+      document.querySelectorAll(".color-swatch").forEach((s, idx) => s.classList.toggle("selected", idx === 0));
+      refreshStatusPreview(); addStatusModal.classList.add("active"); pushNavState();
     });
 
     closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
-    pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
+    statusTextInput.addEventListener("input", refreshStatusPreview);
+    statusFontSelect.addEventListener("change", () => { selectedStatusFont = statusFontSelect.value; refreshStatusPreview(); });
+    statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; refreshStatusPreview(); });
 
+    statusColorPalette.querySelectorAll(".color-swatch").forEach((sw) => {
+      sw.addEventListener("click", () => {
+        statusColorPalette.querySelectorAll(".color-swatch").forEach((x) => x.classList.remove("selected"));
+        sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; refreshStatusPreview();
+      });
+    });
+
+    customStatusColorPicker.addEventListener("input", () => {
+      statusColorPalette.querySelectorAll(".color-swatch").forEach((x) => x.classList.remove("selected"));
+      selectedStatusBg = customStatusColorPicker.value; refreshStatusPreview();
+    });
+
+    pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
     statusMediaInput.addEventListener("change", async (e) => {
       const f = e.target.files[0]; if (!f) return;
-      try {
-        if (f.type.startsWith("video/")) {
-          const dur = await getVideoDurationSeconds(f);
-          if (dur > 60) { alert("Status video must be 1 minute (60 seconds) or less."); statusMediaInput.value = ""; return; }
-          pendingStatusVideo = await readOriginalDataUrl(f); pendingStatusPhoto = "";
-        } else { pendingStatusPhoto = await readOriginalDataUrl(f); pendingStatusVideo = ""; }
-        statusMediaName.textContent = f.name;
-      } catch (err) { alert(err.message); }
+      if (f.type.startsWith("image/")) {
+        try { pendingStatusPhoto = await readOriginalDataUrl(f); pendingStatusVideo = ""; statusMediaName.textContent = `Photo: ${f.name}`; }
+        catch (err) { alert(err.message); }
+      } else if (f.type.startsWith("video/")) {
+        if (f.size > 7 * 1024 * 1024) { alert("Video max 7MB."); statusMediaInput.value = ""; return; }
+        const dur = await getVideoDurationSeconds(f);
+        if (dur > 61) { alert("Status video must be 1 minute or shorter."); statusMediaInput.value = ""; return; }
+        const reader = new FileReader();
+        reader.onload = () => { pendingStatusVideo = reader.result; pendingStatusPhoto = ""; statusMediaName.textContent = `Video: ${f.name}`; };
+        reader.readAsDataURL(f);
+      }
+      statusMediaInput.value = "";
     });
 
     publishStatusBtn.addEventListener("click", async () => {
       if (!currentUser) return;
       const text = statusTextInput.value.trim();
-      if (!text && !pendingStatusPhoto && !pendingStatusVideo) return;
+      if (!text && !pendingStatusPhoto && !pendingStatusVideo) { alert("Add text, photo, or video."); return; }
       const me = allUsers[currentUser.uid] || {}; const now = Date.now();
       await db.ref("statuses").push({
-        ownerUid: currentUser.uid, ownerName: me.name || currentUser.email, text,
+        ownerUid: currentUser.uid, ownerName: me.name || currentUser.email || "User",
+        ownerDp: me.dp || DEFAULT_DP, text, photoUrl: pendingStatusPhoto || null, videoUrl: pendingStatusVideo || null,
         bgColor: selectedStatusBg, textColor: selectedStatusTextColor, fontFamily: selectedStatusFont,
-        photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "",
-        createdAt: now, expiresAt: now + STATUS_TTL_MS
+        createdAt: now, expiresAt: now + STATUS_TTL_MS, likes: {}, views: {}
       });
       addStatusModal.classList.remove("active");
     });
 
     function renderStatusFeed() {
-      if (!currentUser) return;
-      statusFeedList.innerHTML = "";
-      const items = Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
-        .filter((st) => {
-          if (!st || isStatusExpired(st)) return false;
-          const owner = allUsers[st.ownerUid] || { uid: st.ownerUid };
-          return canSeeStatus(owner);
-        })
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      if (!currentUser) return; pruneExpiredStatuses(); statusFeedList.innerHTML = "";
+      const me = allUsers[currentUser.uid] || {}; const myList = getUserStatuses(currentUser.uid);
 
-      if (!items.length) { statusFeedList.innerHTML = `<div style="color:var(--muted); font-size:13px;">No active statuses (24h)</div>`; return; }
+      const myCircle = document.createElement("div"); myCircle.className = "status-circle-row";
+      if (myList.length) {
+        const latest = myList[0];
+        const thumbHtml = latest.photoUrl ? `<img src="${escapeAttr(latest.photoUrl)}" alt="" />`
+          : (latest.videoUrl ? `<span>▶</span>`
+          : `<span style="background:${escapeAttr(latest.bgColor || "#0d47a1")};color:${escapeAttr(latest.textColor || "#fff")};font-family:${escapeAttr(latest.fontFamily || "inherit")};width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${escapeHtml((latest.text || "T").slice(0, 6))}</span>`);
+        myCircle.innerHTML = `<div class="status-thumb-circle" style="border:2.5px solid var(--status-unseen);">${thumbHtml}</div><div><div style="font-weight:700;">My status (${myList.length})</div><div style="font-size:12px;color:var(--muted);">${formatRemainingTime(latest)}</div></div>`;
+        myCircle.addEventListener("click", () => openStatusQueue(myList, 0));
+      } else {
+        myCircle.innerHTML = `<div class="status-thumb-circle" style="border:2px dashed var(--muted);"><img src="${me.dp || DEFAULT_DP}" alt="" /></div><div><div style="font-weight:700;">My status</div><div style="font-size:12px;color:var(--muted);">No active status</div></div>`;
+        myCircle.addEventListener("click", () => openAddStatusBtn.click());
+      }
+      statusFeedList.appendChild(myCircle);
 
-      const seenMap = getSeenStatusCounts();
-      items.forEach((st, idx) => {
-        const owner = allUsers[st.ownerUid] || {}; const isMine = st.ownerUid === currentUser.uid;
-        const ringColor = isMine ? "#42a5f5" : (seenMap[st.id] ? "#6b7c85" : "#4fc3f7");
-        const circleInner = st.photoUrl
-          ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />`
-          : (st.videoUrl
-            ? `<div style="width:100%;height:100%;background:#0d47a1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;">▶</div>`
-            : `<div style="width:100%;height:100%;background:${escapeAttr(st.bgColor || "#0d47a1")};color:${escapeAttr(st.textColor || "#fff")};font-family:${escapeAttr(st.fontFamily || "sans-serif")};display:flex;align-items:center;justify-content:center;padding:4px;">${escapeHtml((st.text || "").slice(0, 14))}</div>`);
+      const seenMap = getSeenStatusCounts(); const groupedByUser = {};
+      Object.entries(allStatuses).forEach(([id, st]) => {
+        if (!st || isStatusExpired(st) || st.ownerUid === currentUser.uid) return;
+        const ownerObj = allUsers[st.ownerUid] || { uid: st.ownerUid, name: st.ownerName };
+        if (!canSeeStatus(ownerObj)) return;
+        if (!groupedByUser[st.ownerUid]) groupedByUser[st.ownerUid] = [];
+        groupedByUser[st.ownerUid].push({ id, ...st });
+      });
+
+      Object.entries(groupedByUser).forEach(([ownerUid, list]) => {
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        const ownerObj = allUsers[ownerUid] || { uid: ownerUid, name: list[0].ownerName || "User", dp: list[0].ownerDp || DEFAULT_DP };
+        const hasUnseen = list.some((s) => !seenMap[s.id]); const latest = list[0];
+        const thumbHtml = latest.photoUrl ? `<img src="${escapeAttr(latest.photoUrl)}" alt="" />`
+          : (latest.videoUrl ? `<span>▶</span>`
+          : `<span style="background:${escapeAttr(latest.bgColor || "#0d47a1")};color:${escapeAttr(latest.textColor || "#fff")};font-family:${escapeAttr(latest.fontFamily || "inherit")};width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${escapeHtml((latest.text || "T").slice(0, 6))}</span>`);
 
         const row = document.createElement("div"); row.className = "status-circle-row";
-        row.innerHTML = `
-          <div class="status-thumb-circle" style="border: 2.5px solid ${ringColor};">${circleInner}</div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:14px; font-weight:700;">${escapeHtml(isMine ? "My status" : getVisibleName(owner))}</div>
-            <div style="font-size:11.5px; color:var(--muted);">${formatClock(st.createdAt)} • ${formatRemainingTime(st)}</div>
-          </div>
-          <div style="font-size:12px; color:var(--muted);">❤️ ${st.likes ? Object.keys(st.likes).length : 0}</div>
-        `;
-        row.addEventListener("click", () => openStatusQueue(items, idx));
-        statusFeedList.appendChild(row);
+        row.innerHTML = `<div class="status-thumb-circle" style="border:2.5px solid ${hasUnseen ? "var(--status-unseen)" : "var(--status-seen)"};">${thumbHtml}</div><div><div style="font-weight:700;">${escapeHtml(getVisibleName(ownerObj))} (${list.length})</div><div style="font-size:12px;color:var(--muted);">${formatRemainingTime(latest)}</div></div>`;
+        row.addEventListener("click", () => openStatusQueue(list, 0)); statusFeedList.appendChild(row);
       });
     }
 
@@ -4007,164 +4182,95 @@
       if (statusProgressRaf) { cancelAnimationFrame(statusProgressRaf); statusProgressRaf = null; }
     }
 
-    function closeStatusViewer() {
-      clearStatusAutoTimers();
-      statusViewerBody.querySelectorAll("video").forEach((v) => { try { v.pause(); } catch (_) {} });
-      activeStatusId = null; activeStatusQueue = []; activeStatusIndex = 0;
-      statusViewerModal.classList.remove("active");
+    function startStatusAutoTimer(durationMs = STATUS_AUTO_NEXT_MS) {
+      clearStatusAutoTimers(); const start = performance.now(); statusProgressFill.style.width = "0%";
+      const step = (now) => {
+        if (!statusViewerModal.classList.contains("active")) return;
+        const pct = Math.min(100, ((now - start) / durationMs) * 100);
+        statusProgressFill.style.width = `${pct}%`;
+        if (pct < 100) statusProgressRaf = requestAnimationFrame(step);
+      };
+      statusProgressRaf = requestAnimationFrame(step);
+      statusAutoAdvanceTimer = setTimeout(() => { advanceOrExitStatusViewer(); }, durationMs);
     }
 
     function advanceOrExitStatusViewer() {
-      clearStatusAutoTimers();
-      while (activeStatusIndex + 1 < activeStatusQueue.length) {
-        activeStatusIndex += 1;
-        const candidate = activeStatusQueue[activeStatusIndex];
-        const fresh = allStatuses[candidate.id];
-        if (fresh && !isStatusExpired(fresh)) {
-          showStatusAtQueueIndex(activeStatusIndex);
-          return;
-        }
-      }
-      closeStatusViewer();
+      if (activeStatusIndex + 1 < activeStatusQueue.length) {
+        activeStatusIndex += 1; openStatusById(activeStatusQueue[activeStatusIndex].id);
+      } else closeStatusViewer();
     }
 
-    function openStatusQueue(queueList, startIndex) {
-      activeStatusQueue = (queueList || []).filter((st) => st && !isStatusExpired(st));
-      if (!activeStatusQueue.length) return;
-      activeStatusIndex = Math.max(0, Math.min(startIndex || 0, activeStatusQueue.length - 1));
-      statusViewerModal.classList.add("active"); pushNavState();
-      showStatusAtQueueIndex(activeStatusIndex);
+    function openStatusQueue(list, startIndex = 0) {
+      if (!list || !list.length) return;
+      activeStatusQueue = list; activeStatusIndex = Math.max(0, Math.min(startIndex, list.length - 1));
+      openStatusById(activeStatusQueue[activeStatusIndex].id);
     }
 
-    function showStatusAtQueueIndex(idx) {
-      clearStatusAutoTimers();
-      const item = activeStatusQueue[idx];
-      if (!item || !allStatuses[item.id] || isStatusExpired(allStatuses[item.id])) {
-        advanceOrExitStatusViewer();
-        return;
-      }
-      activeStatusId = item.id;
-      recordStatusView(activeStatusId); renderUsersList(); renderStatusFeed();
-      renderStatusViewerContent(activeStatusId);
-
-      const startTs = performance.now();
-      statusProgressFill.style.width = "0%";
-      const tickProgress = (now) => {
-        if (!statusViewerModal.classList.contains("active") || activeStatusId !== item.id) return;
-        const pct = Math.min(100, ((now - startTs) / STATUS_AUTO_NEXT_MS) * 100);
-        statusProgressFill.style.width = `${pct}%`;
-        if (pct < 100) statusProgressRaf = requestAnimationFrame(tickProgress);
-      };
-      statusProgressRaf = requestAnimationFrame(tickProgress);
-      statusAutoAdvanceTimer = setTimeout(() => {
-        advanceOrExitStatusViewer();
-      }, STATUS_AUTO_NEXT_MS);
+    function openStatusById(statusId) {
+      const st = allStatuses[statusId]; if (!st || isStatusExpired(st)) { advanceOrExitStatusViewer(); return; }
+      activeStatusId = statusId; recordStatusView(statusId);
+      statusViewerModal.classList.add("active"); pushNavState(); renderStatusViewerContent(statusId); startStatusAutoTimer(STATUS_AUTO_NEXT_MS);
     }
-
-    nextStatusManualBtn.addEventListener("click", () => advanceOrExitStatusViewer());
 
     function renderStatusViewerContent(statusId) {
       const st = allStatuses[statusId]; if (!st) return;
-      const owner = allUsers[st.ownerUid] || {}; const isMine = st.ownerUid === currentUser.uid;
-      viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
-      viewerOwnerName.textContent = isMine ? "My status" : getVisibleName(owner);
-      viewerTimeText.textContent = `${formatClock(st.createdAt)} • ${formatRemainingTime(st)} (${activeStatusIndex + 1}/${activeStatusQueue.length})`;
-      statusViewerBody.innerHTML = "";
+      const ownerObj = allUsers[st.ownerUid] || { uid: st.ownerUid, name: st.ownerName || "User", dp: st.ownerDp || DEFAULT_DP };
+      viewerOwnerDp.src = canSeeDp(ownerObj) ? (ownerObj.dp || DEFAULT_DP) : DEFAULT_DP;
+      viewerOwnerName.textContent = getVisibleName(ownerObj);
+      viewerTimeText.textContent = `${formatClock(st.createdAt)} • ${formatRemainingTime(st)}`;
 
-      if (st.photoUrl) {
-        const img = document.createElement("img"); img.className = "full-st-img"; img.src = st.photoUrl; statusViewerBody.appendChild(img);
-        if (st.text) { const cap = document.createElement("div"); cap.style.cssText = `font-size:16px;text-align:center;font-family:${st.fontFamily || "sans-serif"};`; cap.textContent = st.text; statusViewerBody.appendChild(cap); }
-      } else if (st.videoUrl) {
-        const vid = document.createElement("video"); vid.className = "full-st-vid"; vid.src = st.videoUrl; vid.controls = true; vid.autoplay = true; vid.playsInline = true; statusViewerBody.appendChild(vid);
-        if (st.text) { const cap = document.createElement("div"); cap.style.cssText = `font-size:16px;text-align:center;font-family:${st.fontFamily || "sans-serif"};`; cap.textContent = st.text; statusViewerBody.appendChild(cap); }
-      } else {
-        const banner = document.createElement("div"); banner.className = "status-text-banner fullscreen-fit";
-        banner.style.background = st.bgColor || "#0d47a1"; banner.style.color = st.textColor || "#ffffff"; banner.style.fontFamily = st.fontFamily || "sans-serif";
-        banner.textContent = st.text || ""; statusViewerBody.appendChild(banner);
+      const likesObj = st.likes || {}; const likeCount = Object.keys(likesObj).filter((k) => likesObj[k]).length;
+      const iLiked = !!(currentUser && likesObj[currentUser.uid]);
+      statusLikeBtn.textContent = `${iLiked ? "❤️" : "🤍"} Like (${likeCount})`;
+
+      statusViewerBody.innerHTML = "";
+      if (st.photoUrl) { const img = document.createElement("img"); img.className = "full-st-img"; img.src = st.photoUrl; img.addEventListener("click", () => openFullPhoto(st.photoUrl)); statusViewerBody.appendChild(img); }
+      if (st.videoUrl) { const vid = document.createElement("video"); vid.className = "full-st-vid"; vid.src = st.videoUrl; vid.controls = true; vid.autoplay = true; vid.playsInline = true; statusViewerBody.appendChild(vid); }
+      if (st.text) {
+        const banner = document.createElement("div");
+        banner.className = (st.photoUrl || st.videoUrl) ? "status-text-banner" : "status-text-banner fullscreen-fit";
+        banner.style.background = st.bgColor || "#0d47a1"; banner.style.color = st.textColor || "#ffffff"; banner.style.fontFamily = st.fontFamily || "inherit";
+        banner.textContent = st.text; statusViewerBody.appendChild(banner);
       }
 
-      const likesObj = st.likes || {}; const likeCount = Object.keys(likesObj).length; const likedByMe = !!likesObj[currentUser.uid];
-      statusLikeBtn.textContent = `${likedByMe ? "❤️ Liked" : "🤍 Like"} (${likeCount})`;
-      statusDeleteBtn.style.display = isMine ? "inline-flex" : "none";
-
-      if (isMine) {
-        statusViewersList.style.display = "block"; const viewsObj = st.views || {}; const entries = Object.values(viewsObj);
-        statusViewersList.innerHTML = `<strong>Viewed by (${entries.length}):</strong>` +
-          (entries.length ? entries.map((v) => `<div>• ${escapeHtml(v.name)} (${v.count || 1}x)</div>`).join("") : `<div>No views yet</div>`);
-      } else { statusViewersList.style.display = "none"; }
+      statusDeleteBtn.style.display = (currentUser && st.ownerUid === currentUser.uid) ? "inline-flex" : "none";
+      const viewsObj = st.views || {}; const entries = Object.entries(viewsObj);
+      statusViewersList.innerHTML = entries.length
+        ? `<strong>Viewed by (${entries.length}):</strong><br>` + entries.map(([uid, v]) => `${escapeHtml(v.name || uid)} — <strong>${v.count || 1}x</strong>`).join("<br>")
+        : "Viewed by: No views yet";
     }
 
+    function closeStatusViewer() {
+      clearStatusAutoTimers();
+      const v = statusViewerBody.querySelector("video"); if (v) { try { v.pause(); } catch (_) {} }
+      statusViewerModal.classList.remove("active"); activeStatusId = null; activeStatusQueue = []; activeStatusIndex = 0;
+    }
+
+    nextStatusManualBtn.addEventListener("click", advanceOrExitStatusViewer);
+    closeStatusViewerBtn.addEventListener("click", closeStatusViewer);
+
     statusLikeBtn.addEventListener("click", async () => {
-      if (!currentUser || !activeStatusId || !allStatuses[activeStatusId]) return;
-      const likeRef = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
-      if (allStatuses[activeStatusId].likes && allStatuses[activeStatusId].likes[currentUser.uid]) await likeRef.remove();
-      else await likeRef.set(true);
+      if (!currentUser || !activeStatusId) return;
+      const ref = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
+      const snap = await ref.once("value");
+      if (snap.val()) await ref.remove(); else await ref.set(true);
     });
 
     statusDeleteBtn.addEventListener("click", async () => {
-      if (!activeStatusId) return;
-      await db.ref(`statuses/${activeStatusId}`).remove();
-      advanceOrExitStatusViewer();
+      if (!currentUser || !activeStatusId) return;
+      const st = allStatuses[activeStatusId];
+      if (!st || st.ownerUid !== currentUser.uid) return;
+      const delId = activeStatusId;
+      activeStatusQueue = activeStatusQueue.filter((item) => item.id !== delId);
+      await db.ref(`statuses/${delId}`).remove();
+      if (activeStatusQueue.length) {
+        activeStatusIndex = Math.min(activeStatusIndex, activeStatusQueue.length - 1);
+        openStatusById(activeStatusQueue[activeStatusIndex].id);
+      } else closeStatusViewer();
     });
 
-    closeStatusViewerBtn.addEventListener("click", closeStatusViewer);
-
-    chooseDpBtn.addEventListener("click", () => dpFileInput.click());
-    dpFileInput.addEventListener("change", async (e) => {
-      const f = e.target.files[0]; if (!f || !currentUser) return;
-      try { const dataUrl = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}`).update({ dp: dataUrl }); }
-      catch (err) { alert(err.message); }
-      dpFileInput.value = "";
-    });
-
-    saveAccountBtn.addEventListener("click", async () => {
-      if (!currentUser) return;
-      const newName = accountNameInput.value.trim(); const newAbout = aboutInput.value.trim();
-      localStorage.setItem("geminiApiKey", geminiApiKeyInput.value.trim());
-      if (newName) await db.ref(`users/${currentUser.uid}`).update({ name: newName, about: newAbout });
-    });
-
-    function savePrivacyPreferences() {
-      if (!currentUser) return;
-      db.ref(`users/${currentUser.uid}/privacy`).update({
-        lastSeenEnabled: toggleLastSeenEnabled.checked, dpEnabled: toggleDpEnabled.checked,
-        aboutEnabled: toggleAboutEnabled.checked, statusEnabled: toggleStatusEnabled.checked,
-        lastSeen: privacyLastSeenSelect.value, dp: privacyDpSelect.value, profileFields: privacyProfileFieldsSelect.value
-      });
-    }
-
-    [toggleLastSeenEnabled, toggleDpEnabled, toggleAboutEnabled, toggleStatusEnabled, privacyLastSeenSelect, privacyDpSelect, privacyProfileFieldsSelect]
-      .forEach((el) => el.addEventListener("change", savePrivacyPreferences));
-
-    fontSizeSelect.addEventListener("change", () => {
-      const sz = fontSizeSelect.value; localStorage.setItem("chatFontSize", sz); document.documentElement.style.setProperty("--msg-font-size", sz);
-    });
-
-    chooseWallpaperBtn.addEventListener("click", () => wallpaperFileInput.click());
-    wallpaperFileInput.addEventListener("change", async (e) => {
-      const f = e.target.files[0]; if (!f || !currentUser) return;
-      try {
-        const dataUrl = await readOriginalDataUrl(f);
-        if (selectedPeer) localStorage.setItem(getWallpaperKey(), dataUrl);
-        else Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) localStorage.setItem(`wp_${currentUser.uid}_${getChatId(currentUser.uid, uid)}`, dataUrl); });
-        applyWallpaper();
-      } catch (err) { alert(err.message); }
-      wallpaperFileInput.value = "";
-    });
-
-    clearWallpaperBtn.addEventListener("click", () => {
-      if (!currentUser) return;
-      if (selectedPeer) localStorage.removeItem(getWallpaperKey());
-      else Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) localStorage.removeItem(`wp_${currentUser.uid}_${getChatId(currentUser.uid, uid)}`); });
-      applyWallpaper();
-    });
-
-    function escapeHtml(str) {
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-    function escapeAttr(str) {
-      return String(str).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-    }
+    function escapeHtml(str) { return String(str || "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
+    function escapeAttr(str) { return String(str || "").replace(/"/g, "&quot;"); }
   </script>
 </body>
 </html>
