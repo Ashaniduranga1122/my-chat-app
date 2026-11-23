@@ -105,7 +105,18 @@
       100% { background-position: 50% 0%; }
     }
 
-    /* Card Live Wallpaper Animations */
+    /* Orbiting Blue Fireball / Beam Perimeter Spin */
+    @property --orbit-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @keyframes orbitPerimeterSpin {
+      0% { --orbit-angle: 0deg; transform: rotate(0deg); }
+      100% { --orbit-angle: 360deg; transform: rotate(360deg); }
+    }
+
     @keyframes cardAuroraMove {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -124,12 +135,13 @@
       50% { filter: brightness(1.18); }
     }
 
-    /* App / Chat Live Wallpapers */
+    /* Rich Live Wallpapers (Planet, Galaxy, Earth, Fish, Butterflies, Snow, etc.) */
     .live-anim-layer {
       position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
-      will-change: transform, opacity; transform: translateZ(0);
+      overflow: hidden; will-change: transform, opacity; transform: translateZ(0);
     }
-    .live-anim-layer.active { opacity: 0.52; }
+    .live-anim-layer.active { opacity: 0.72; }
+
     .live-anim-layer.live-aurora {
       background: radial-gradient(circle at 22% 28%, rgba(30, 136, 229, 0.55), transparent 55%),
                   radial-gradient(circle at 78% 72%, rgba(0, 229, 255, 0.42), transparent 55%), #0b141a;
@@ -141,25 +153,141 @@
       background-size: 28px 28px; animation: gridSlide 4.5s infinite linear;
     }
     .live-anim-layer.live-waves {
-      background: repeating-linear-gradient(-45deg, rgba(30, 136, 229, 0.2) 0px, rgba(30, 136, 229, 0.2) 14px,
-                  rgba(0, 188, 212, 0.22) 14px, rgba(0, 188, 212, 0.22) 28px);
+      background: repeating-linear-gradient(-45deg, rgba(30, 136, 229, 0.22) 0px, rgba(30, 136, 229, 0.22) 14px,
+                  rgba(0, 188, 212, 0.24) 14px, rgba(0, 188, 212, 0.24) 28px);
       background-size: 56px 56px; animation: waveSlide 3.8s infinite linear;
     }
     .live-anim-layer.live-stars {
-      background-image: radial-gradient(2px 2px at 24px 32px, rgba(255,255,255,0.7), transparent),
-                        radial-gradient(2.5px 2.5px at 95px 72px, rgba(79,195,247,0.75), transparent),
-                        radial-gradient(2px 2px at 150px 42px, rgba(255,235,59,0.6), transparent);
+      background-image: radial-gradient(2px 2px at 24px 32px, rgba(255,255,255,0.75), transparent),
+                        radial-gradient(2.5px 2.5px at 95px 72px, rgba(79,195,247,0.8), transparent),
+                        radial-gradient(2px 2px at 150px 42px, rgba(255,235,59,0.65), transparent);
       background-size: 170px 110px; animation: gridSlide 9s infinite linear;
     }
     .live-anim-layer.live-pulse {
-      background: radial-gradient(circle at center, rgba(66, 165, 245, 0.34), rgba(11, 20, 26, 0.92) 72%);
+      background: radial-gradient(circle at center, rgba(66, 165, 245, 0.36), rgba(11, 20, 26, 0.92) 72%);
       animation: pulseScale 3s infinite alternate ease-in-out;
+    }
+
+    /* Planet Orbit Wallpaper */
+    .live-anim-layer.live-planet {
+      background: radial-gradient(circle at 75% 25%, rgba(255, 167, 38, 0.35), transparent 36%),
+                  radial-gradient(circle at 20% 80%, rgba(41, 182, 246, 0.28), transparent 42%),
+                  #060d17;
+    }
+    .live-anim-layer.live-planet::before {
+      content: ""; position: absolute; width: 130px; height: 130px; border-radius: 50%;
+      top: 18%; left: 62%;
+      background: radial-gradient(circle at 30% 30%, #81d4fa, #0277bd 62%, #041e3a 100%);
+      box-shadow: 0 0 36px rgba(41, 182, 246, 0.65), inset -18px -12px 28px rgba(0,0,0,0.65);
+      animation: planetDrift 14s ease-in-out infinite alternate;
+    }
+    .live-anim-layer.live-planet::after {
+      content: ""; position: absolute; width: 220px; height: 64px;
+      top: calc(18% + 34px); left: calc(62% - 45px);
+      border-radius: 50%; border: 3px solid rgba(129, 212, 250, 0.45);
+      transform: rotate(-18deg);
+      box-shadow: 0 0 14px rgba(79, 195, 247, 0.35);
+      animation: planetDrift 14s ease-in-out infinite alternate;
+    }
+    @keyframes planetDrift {
+      0% { transform: translate(0px, 0px) rotate(-2deg); }
+      100% { transform: translate(-22px, 16px) rotate(3deg); }
+    }
+
+    /* Galaxy Spiral Wallpaper */
+    .live-anim-layer.live-galaxy {
+      background: radial-gradient(ellipse at center, rgba(126, 87, 194, 0.38), rgba(13, 71, 161, 0.28) 45%, #050811 85%);
+    }
+    .live-anim-layer.live-galaxy::before {
+      content: ""; position: absolute; inset: -35%;
+      background: conic-gradient(from 0deg at 50% 50%,
+        rgba(66, 165, 245, 0.0) 0deg,
+        rgba(66, 165, 245, 0.34) 65deg,
+        rgba(186, 104, 200, 0.30) 140deg,
+        rgba(0, 229, 255, 0.25) 220deg,
+        rgba(66, 165, 245, 0.0) 360deg);
+      filter: blur(26px);
+      animation: galaxySpin 24s linear infinite;
+    }
+    .live-anim-layer.live-galaxy::after {
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(1.5px 1.5px at 30px 40px, #fff, transparent),
+                        radial-gradient(2px 2px at 120px 90px, #81d4fa, transparent),
+                        radial-gradient(1.5px 1.5px at 200px 160px, #ce93d8, transparent);
+      background-size: 220px 180px;
+      animation: gridSlide 12s linear infinite;
+    }
+    @keyframes galaxySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Earth Horizon Wallpaper */
+    .live-anim-layer.live-earth {
+      background: radial-gradient(circle at 50% 125%, #29b6f6 0%, #0277bd 34%, #01579b 44%, #040d1a 56%, #03070e 100%);
+      animation: pulseScale 5s ease-in-out infinite alternate;
+    }
+    .live-anim-layer.live-earth::before {
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(1.8px 1.8px at 40px 50px, rgba(255,255,255,0.85), transparent),
+                        radial-gradient(1.5px 1.5px at 140px 110px, rgba(179,229,252,0.8), transparent);
+      background-size: 190px 140px;
+    }
+
+    /* Snowfall Wallpaper */
+    .live-anim-layer.live-snow {
+      background: linear-gradient(180deg, #0b1926 0%, #10263a 100%);
+    }
+    .live-anim-layer.live-snow::before,
+    .live-anim-layer.live-snow::after {
+      content: ""; position: absolute; inset: -100% 0 0 0;
+      background-image:
+        radial-gradient(4px 4px at 12% 18%, rgba(255,255,255,0.88), transparent),
+        radial-gradient(3px 3px at 34% 42%, rgba(225,245,254,0.82), transparent),
+        radial-gradient(5px 5px at 58% 12%, rgba(255,255,255,0.9), transparent),
+        radial-gradient(3px 3px at 78% 65%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(4px 4px at 90% 28%, rgba(225,245,254,0.85), transparent);
+      background-size: 260px 260px;
+      animation: snowFallA 7s linear infinite;
+    }
+    .live-anim-layer.live-snow::after {
+      animation: snowFallB 11s linear infinite;
+      opacity: 0.7;
+    }
+    @keyframes snowFallA { 0% { transform: translateY(0); } 100% { transform: translateY(50%); } }
+    @keyframes snowFallB { 0% { transform: translateY(-20%); } 100% { transform: translateY(50%); } }
+
+    /* Swimming Fish Wallpaper */
+    .live-anim-layer.live-fish {
+      background: linear-gradient(180deg, #042f4b 0%, #074f72 55%, #032539 100%);
+    }
+    .live-anim-layer.live-fish .anim-sprite {
+      position: absolute; font-size: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+      animation: fishSwimAcross var(--dur, 11s) linear infinite;
+    }
+    @keyframes fishSwimAcross {
+      0% { left: -45px; transform: translateY(0px) scaleX(1); }
+      50% { transform: translateY(-10px) scaleX(1); }
+      100% { left: calc(100% + 45px); transform: translateY(6px) scaleX(1); }
+    }
+
+    /* Fluttering Butterflies Wallpaper */
+    .live-anim-layer.live-butterfly {
+      background: radial-gradient(circle at 30% 30%, rgba(25, 118, 210, 0.25), transparent 55%),
+                  linear-gradient(180deg, #0d1b2a 0%, #162a3d 100%);
+    }
+    .live-anim-layer.live-butterfly .anim-sprite {
+      position: absolute; font-size: 25px;
+      animation: butterflyGlide var(--dur, 10s) ease-in-out infinite;
+    }
+    @keyframes butterflyGlide {
+      0% { left: -40px; top: var(--topY, 30%); transform: rotate(-10deg) scale(0.95); }
+      33% { top: calc(var(--topY, 30%) - 24px); transform: rotate(12deg) scale(1.08); }
+      66% { top: calc(var(--topY, 30%) + 18px); transform: rotate(-8deg) scale(0.98); }
+      100% { left: calc(100% + 40px); top: var(--topY, 30%); transform: rotate(8deg) scale(0.95); }
     }
 
     @keyframes auroraFloat { 0% { transform: scale(1) translateZ(0); } 100% { transform: scale(1.06) translateZ(0); } }
     @keyframes gridSlide { 0% { background-position: 0 0, 0 0; } 100% { background-position: 28px 28px, 28px 28px; } }
     @keyframes waveSlide { 0% { background-position: 0 0; } 100% { background-position: 56px 56px; } }
-    @keyframes pulseScale { 0% { opacity: 0.35; } 100% { opacity: 0.68; } }
+    @keyframes pulseScale { 0% { opacity: 0.45; } 100% { opacity: 0.82; } }
 
     .screen {
       display: none; position: fixed; top: var(--vtop); left: 0; right: 0;
@@ -280,11 +408,11 @@
     .tab-pane { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
     .tab-pane.active { display: flex; }
 
-    /* Multi-select Bulk Action Bar */
+    /* Multi-select Bulk Action Bars */
     .bulk-select-bar {
       display: none; align-items: center; justify-content: space-between; gap: 6px;
       padding: 8px 10px; background: linear-gradient(90deg, #0d47a1, #1565c0);
-      border-bottom: 1px solid rgba(129, 212, 250, 0.45); flex-shrink: 0; flex-wrap: wrap;
+      border-bottom: 1px solid rgba(129, 212, 250, 0.45); flex-shrink: 0; flex-wrap: wrap; z-index: 14;
     }
     .bulk-select-bar.active { display: flex; }
     .bulk-count-label { font-size: 12.5px; font-weight: 700; color: #ffffff; }
@@ -295,58 +423,76 @@
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
 
-    /* Card View Chat List */
+    /* Card View Chat List with Orbiting Blue Fireball/Beam Border */
     .scroll-list {
-      flex: 1; overflow-y: auto; min-height: 0; padding: 8px 10px 16px 10px;
-      display: flex; flex-direction: column; gap: 8px;
+      flex: 1; overflow-y: auto; min-height: 0; padding: 10px 10px 18px 10px;
+      display: flex; flex-direction: column; gap: 10px;
       -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
     }
 
     .chat-card {
-      display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+      display: flex; align-items: center; gap: 11px; padding: 11px 13px;
       border-radius: 14px; cursor: pointer;
-      background: linear-gradient(135deg, rgba(28, 43, 54, 0.92), rgba(18, 29, 37, 0.95));
-      border: 1px solid rgba(79, 195, 247, 0.16);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+      background: linear-gradient(135deg, rgba(24, 38, 49, 0.96), rgba(14, 24, 32, 0.98));
+      border: 1.5px solid rgba(66, 165, 245, 0.25);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
       transition: transform 0.14s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-      position: relative; overflow: hidden;
+      position: relative; overflow: visible;
     }
-    .chat-card:hover { transform: translateY(-1px); border-color: rgba(79, 195, 247, 0.36); }
+
+    /* Orbiting Blue Fireball / Line along Card Perimeter */
+    .chat-card.card-orbit-fire::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 15px;
+      padding: 2.5px;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 275deg,
+        rgba(30, 136, 229, 0.35) 305deg,
+        #29b6f6 335deg,
+        #80d8ff 350deg,
+        #ffffff 357deg,
+        #42a5f5 360deg
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: orbitPerimeterSpin 3.4s linear infinite;
+      z-index: 2;
+    }
+
+    .chat-card:hover { transform: translateY(-1px); }
     .chat-card:active { transform: scale(0.985); }
     .chat-card.active {
-      border-color: var(--accent-bright);
-      box-shadow: 0 4px 16px rgba(30, 136, 229, 0.28);
+      box-shadow: 0 4px 18px rgba(41, 182, 246, 0.35);
     }
     .chat-card.selected-multi {
       border-color: var(--typing-yellow) !important;
-      background: linear-gradient(135deg, rgba(255, 214, 0, 0.18), rgba(13, 71, 161, 0.38)) !important;
+      background: linear-gradient(135deg, rgba(255, 214, 0, 0.18), rgba(13, 71, 161, 0.42)) !important;
       box-shadow: 0 0 0 2px rgba(255, 214, 0, 0.55);
     }
 
-    /* Card Live Wallpapers */
     .chat-card.card-live-aurora {
       background: linear-gradient(125deg, #07284a, #0e4d8c, #006978, #0b2545);
-      background-size: 280% 280%;
-      animation: cardAuroraMove 6s ease infinite;
+      background-size: 280% 280%; animation: cardAuroraMove 6s ease infinite;
     }
     .chat-card.card-live-waves {
       background-color: #0d2b45;
-      background-image: repeating-linear-gradient(
-        -45deg,
-        rgba(66, 165, 245, 0.16) 0px,
-        rgba(66, 165, 245, 0.16) 10px,
-        rgba(0, 188, 212, 0.12) 10px,
-        rgba(0, 188, 212, 0.12) 24px
-      );
-      background-size: 48px 48px;
-      animation: cardWaveMove 3.2s linear infinite;
+      background-image: repeating-linear-gradient(-45deg, rgba(66, 165, 245, 0.16) 0px, rgba(66, 165, 245, 0.16) 10px,
+                  rgba(0, 188, 212, 0.12) 10px, rgba(0, 188, 212, 0.12) 24px);
+      background-size: 48px 48px; animation: cardWaveMove 3.2s linear infinite;
     }
     .chat-card.card-live-grid {
       background-color: #0c2233;
       background-image: linear-gradient(rgba(79, 195, 247, 0.16) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(79, 195, 247, 0.16) 1px, transparent 1px);
-      background-size: 20px 20px;
-      animation: cardGridMove 4s linear infinite;
+      background-size: 20px 20px; animation: cardGridMove 4s linear infinite;
     }
     .chat-card.card-live-pulse {
       background: radial-gradient(circle at 85% 20%, rgba(66, 165, 245, 0.28), rgba(16, 29, 40, 0.96) 75%);
@@ -356,8 +502,7 @@
       background: linear-gradient(135deg, #0b192c, #132c4a, #091524);
       background-image: radial-gradient(1.5px 1.5px at 18px 18px, rgba(255,255,255,0.55), transparent),
                         radial-gradient(2px 2px at 78% 45%, rgba(79,195,247,0.6), transparent);
-      background-size: 90px 60px;
-      animation: cardGridMove 8s linear infinite;
+      background-size: 90px 60px; animation: cardGridMove 8s linear infinite;
     }
 
     .chat-card .avatar-wrap.status-unseen { border-color: var(--status-unseen); }
@@ -371,7 +516,7 @@
       width: 22px; height: 22px; border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.45);
       display: none; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 800; flex-shrink: 0; background: rgba(0, 0, 0, 0.25);
+      font-size: 12px; font-weight: 800; flex-shrink: 0; background: rgba(0, 0, 0, 0.25); z-index: 3;
     }
     .multi-select-active .select-check-circle { display: inline-flex; }
     .chat-card.selected-multi .select-check-circle {
@@ -481,7 +626,7 @@
     }
     .chat-overlay {
       flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0;
-      display: flex; flex-direction: column; background: rgba(11, 20, 26, 0.22);
+      display: flex; flex-direction: column; background: rgba(11, 20, 26, 0.24);
       overflow: hidden; position: relative; z-index: 2;
     }
 
@@ -513,19 +658,35 @@
     }
 
     .msg-swipe-wrap {
-      position: relative; display: flex; flex-direction: column; max-width: 84%;
+      position: relative; display: flex; align-items: center; gap: 8px; max-width: 88%;
       transition: transform 0.12s ease-out; touch-action: pan-y;
     }
-    .msg-swipe-wrap.sent { align-self: flex-end; }
-    .msg-swipe-wrap.recv { align-self: flex-start; }
+    .msg-swipe-wrap.sent { align-self: flex-end; flex-direction: row-reverse; }
+    .msg-swipe-wrap.recv { align-self: flex-start; flex-direction: row; }
+
+    .msg-check-circle {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      display: none; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; flex-shrink: 0;
+      background: rgba(17, 27, 33, 0.85); cursor: pointer;
+    }
+    .msg-multi-active .msg-check-circle { display: inline-flex; }
+    .msg-swipe-wrap.msg-selected .msg-check-circle {
+      background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow);
+    }
 
     .msg {
-      width: 100%; padding: 8px 11px 6px 11px; border-radius: 10px;
+      flex: 1; min-width: 0; padding: 8px 11px 6px 11px; border-radius: 10px;
       word-wrap: break-word; position: relative; font-size: var(--msg-font-size); line-height: 1.42;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.35); transition: background-color 0.25s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.35); transition: background-color 0.25s ease, box-shadow 0.2s ease;
     }
     .msg.sent { background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { background: var(--recv); border-top-left-radius: 2px; }
+    .msg-swipe-wrap.msg-selected .msg {
+      box-shadow: 0 0 0 2px var(--typing-yellow);
+      filter: brightness(1.12);
+    }
     .msg.deleted-msg { font-style: italic; color: rgba(233, 237, 239, 0.72); }
     .msg.media-only { padding: 3px; background: transparent; box-shadow: none; }
     .msg.media-only .msg-meta {
@@ -814,16 +975,16 @@
               <div class="wa-cat-row" data-panel="panelChats">
                 <div class="wa-cat-icon">💬</div>
                 <div>
-                  <div class="wa-cat-title">Chats & Card Live Wallpapers</div>
-                  <div class="wa-cat-desc">Chat card live wallpaper, font size, chat wallpaper</div>
+                  <div class="wa-cat-title">Chats, Cards & Live Wallpapers</div>
+                  <div class="wa-cat-desc">Orbiting blue fireball card, live wallpapers, font</div>
                 </div>
               </div>
 
               <div class="wa-cat-row" data-panel="panelAppearance">
-                <div class="wa-cat-icon">🎨</div>
+                <div class="wa-cat-icon">🌌</div>
                 <div>
-                  <div class="wa-cat-title">Appearance</div>
-                  <div class="wa-cat-desc">Live wallpaper, vibration</div>
+                  <div class="wa-cat-title">Live Wallpapers & Effects</div>
+                  <div class="wa-cat-desc">Planets, galaxy, earth, fish, butterflies, snow</div>
                 </div>
               </div>
 
@@ -897,8 +1058,9 @@
 
             <!-- Chats & Card Live Wallpapers -->
             <div class="setting-panel-detail setting-card" id="panelChats">
-              <label>Chat Card Live Wallpaper (Select Your Style)</label>
+              <label>Chat Card Border & Background Style</label>
               <select id="chatCardLiveSelect">
+                <option value="card-orbit-fire">Orbiting Blue Fireball Border (Recommended)</option>
                 <option value="none">Default Dark Card</option>
                 <option value="card-live-aurora">Live Aurora Cards</option>
                 <option value="card-live-waves">Live Flowing Waves Cards</option>
@@ -917,11 +1079,17 @@
               <label>Chat Live Wallpaper</label>
               <select id="chatLiveWallpaperSelect">
                 <option value="none">Off</option>
-                <option value="live-aurora">Live Aurora</option>
-                <option value="live-grid">Live Grid Pulse</option>
-                <option value="live-waves">Live Diagonal Waves</option>
-                <option value="live-stars">Live Starfield</option>
-                <option value="live-pulse">Live Blue Pulse</option>
+                <option value="live-planet">🪐 Planet Orbit</option>
+                <option value="live-galaxy">🌌 Galaxy Spiral</option>
+                <option value="live-earth">🌍 Earth Horizon</option>
+                <option value="live-fish">🐟 Swimming Fish</option>
+                <option value="live-butterfly">🦋 Fluttering Butterflies</option>
+                <option value="live-snow">❄️ Snowfall</option>
+                <option value="live-aurora">✨ Live Aurora</option>
+                <option value="live-grid">🔲 Live Grid Pulse</option>
+                <option value="live-waves">🌊 Live Diagonal Waves</option>
+                <option value="live-stars">⭐ Live Starfield</option>
+                <option value="live-pulse">🔵 Live Blue Pulse</option>
               </select>
 
               <label>Chat Photo Wallpaper</label>
@@ -932,16 +1100,22 @@
               </div>
             </div>
 
-            <!-- Appearance -->
+            <!-- Appearance & Rich Live Wallpapers -->
             <div class="setting-panel-detail setting-card" id="panelAppearance">
               <label>App Live Wallpaper</label>
               <select id="homeLiveWallpaperSelect">
                 <option value="none">Off (Static)</option>
-                <option value="live-aurora">Live Aurora</option>
-                <option value="live-grid">Live Grid Pulse</option>
-                <option value="live-waves">Live Diagonal Waves</option>
-                <option value="live-stars">Live Starfield</option>
-                <option value="live-pulse">Live Blue Pulse</option>
+                <option value="live-planet">🪐 Planet Orbit</option>
+                <option value="live-galaxy">🌌 Galaxy Spiral</option>
+                <option value="live-earth">🌍 Earth Horizon</option>
+                <option value="live-fish">🐟 Swimming Fish</option>
+                <option value="live-butterfly">🦋 Fluttering Butterflies</option>
+                <option value="live-snow">❄️ Snowfall</option>
+                <option value="live-aurora">✨ Live Aurora</option>
+                <option value="live-grid">🔲 Live Grid Pulse</option>
+                <option value="live-waves">🌊 Live Diagonal Waves</option>
+                <option value="live-stars">⭐ Live Starfield</option>
+                <option value="live-pulse">🔵 Live Blue Pulse</option>
               </select>
 
               <div class="toggle-line">
@@ -974,6 +1148,16 @@
       <main class="chat-panel" id="chatPanel">
         <div id="chatLiveLayer" class="live-anim-layer"></div>
         <div class="chat-overlay">
+          <div class="bulk-select-bar" id="msgBulkSelectBar">
+            <span class="bulk-count-label" id="msgBulkCountLabel">0 messages selected</span>
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn secondary small" id="msgBulkStarBtn">⭐ Star</button>
+              <button type="button" class="btn secondary small" id="msgBulkCopyBtn">📋 Copy</button>
+              <button type="button" class="btn danger small" id="msgBulkDeleteBtn">🗑 Delete</button>
+              <button type="button" class="btn secondary small" id="msgBulkCancelBtn">✕</button>
+            </div>
+          </div>
+
           <div class="inchat-search-bar" id="inChatSearchBar">
             <input type="text" id="inChatSearchInput" placeholder="Search in chat..." />
             <button type="button" class="icon-btn" id="closeInChatSearchBtn" style="width:28px; height:28px; font-size:14px;">✕</button>
@@ -1294,7 +1478,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    const STATUS_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours auto-expiration
+    const STATUS_TTL_MS = 24 * 60 * 60 * 1000;
 
     function syncViewportVars() {
       const vv = window.visualViewport;
@@ -1363,8 +1547,16 @@
     let typingMap = {};
     let activeChatIds = {};
     let unreadCounts = {};
+    let loadedMessagesMap = {};
+
+    // Chat list multi-select state
     let selectedChatUids = new Set();
     let isMultiSelectMode = false;
+
+    // Inside-chat message multi-select state
+    let selectedMsgIds = new Set();
+    let isMsgMultiSelectMode = false;
+
     let isInitialLoad = true;
     let audioCtx = null;
     let activeMsgTarget = null;
@@ -1433,6 +1625,13 @@
     const menuClearChatBtn = document.getElementById("menuClearChatBtn");
     const menuDeleteChatBtn = document.getElementById("menuDeleteChatBtn");
     const menuBlockBtn = document.getElementById("menuBlockBtn");
+
+    const msgBulkSelectBar = document.getElementById("msgBulkSelectBar");
+    const msgBulkCountLabel = document.getElementById("msgBulkCountLabel");
+    const msgBulkStarBtn = document.getElementById("msgBulkStarBtn");
+    const msgBulkCopyBtn = document.getElementById("msgBulkCopyBtn");
+    const msgBulkDeleteBtn = document.getElementById("msgBulkDeleteBtn");
+    const msgBulkCancelBtn = document.getElementById("msgBulkCancelBtn");
 
     const inChatSearchBar = document.getElementById("inChatSearchBar");
     const inChatSearchInput = document.getElementById("inChatSearchInput");
@@ -1593,16 +1792,16 @@
     });
 
     function getCardLiveStyle() {
-      return localStorage.getItem("chatCardLiveStyle") || "none";
+      return localStorage.getItem("chatCardLiveStyle") || "card-orbit-fire";
     }
     function setCardLiveStyle(val) {
-      localStorage.setItem("chatCardLiveStyle", val || "none");
-      chatCardLiveSelect.value = val || "none";
+      localStorage.setItem("chatCardLiveStyle", val || "card-orbit-fire");
+      chatCardLiveSelect.value = val || "card-orbit-fire";
       renderUsersList();
     }
     chatCardLiveSelect.addEventListener("change", () => setCardLiveStyle(chatCardLiveSelect.value));
 
-    // Multi-Select Controls
+    // Chat Card Multi-Select Controls
     function enterMultiSelectWith(uid) {
       if (!uid) return;
       isMultiSelectMode = true;
@@ -1665,6 +1864,95 @@
       exitMultiSelectMode();
     });
 
+    // Inside-Chat Message Multi-Select Controls
+    function enterMsgMultiSelectWith(msgId) {
+      if (!msgId) return;
+      isMsgMultiSelectMode = true;
+      selectedMsgIds.clear();
+      selectedMsgIds.add(msgId);
+      messagesContainer.classList.add("msg-multi-active");
+      msgBulkSelectBar.classList.add("active");
+      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`;
+      syncSelectedMessageVisuals();
+    }
+
+    function exitMsgMultiSelectMode() {
+      isMsgMultiSelectMode = false;
+      selectedMsgIds.clear();
+      messagesContainer.classList.remove("msg-multi-active");
+      msgBulkSelectBar.classList.remove("active");
+      syncSelectedMessageVisuals();
+    }
+
+    function toggleMsgSelection(msgId) {
+      if (!msgId) return;
+      if (selectedMsgIds.has(msgId)) selectedMsgIds.delete(msgId);
+      else selectedMsgIds.add(msgId);
+      if (selectedMsgIds.size === 0) { exitMsgMultiSelectMode(); return; }
+      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`;
+      syncSelectedMessageVisuals();
+    }
+
+    function syncSelectedMessageVisuals() {
+      messagesContainer.querySelectorAll(".msg-swipe-wrap").forEach((wrap) => {
+        const id = wrap.getAttribute("data-msg-wrap-id");
+        const active = selectedMsgIds.has(id);
+        wrap.classList.toggle("msg-selected", active);
+        const chk = wrap.querySelector(".msg-check-circle");
+        if (chk) chk.textContent = active ? "✓" : "";
+      });
+    }
+
+    msgBulkCancelBtn.addEventListener("click", exitMsgMultiSelectMode);
+
+    msgBulkStarBtn.addEventListener("click", () => {
+      for (const id of Array.from(selectedMsgIds)) {
+        const m = loadedMessagesMap[id];
+        if (m) toggleStarMessage(m);
+      }
+      exitMsgMultiSelectMode();
+    });
+
+    msgBulkCopyBtn.addEventListener("click", () => {
+      const lines = [];
+      for (const id of Array.from(selectedMsgIds)) {
+        const m = loadedMessagesMap[id];
+        if (m && !m.deletedForEveryone && (m.text || m.sticker)) lines.push(m.text || m.sticker);
+      }
+      if (lines.length) {
+        const joined = lines.join("\n");
+        allowExplicitChatCopy = true;
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(joined).catch(() => {});
+        else {
+          const ta = document.createElement("textarea"); ta.value = joined; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+        }
+        setTimeout(() => { allowExplicitChatCopy = false; }, 120);
+      }
+      exitMsgMultiSelectMode();
+    });
+
+    msgBulkDeleteBtn.addEventListener("click", async () => {
+      if (!currentUser || !selectedPeer || !selectedMsgIds.size) return;
+      const ids = Array.from(selectedMsgIds);
+      if (selectedPeer.isAI) {
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
+        let arr = [];
+        try { arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
+        arr = arr.filter((m) => !ids.includes(m.id));
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr));
+        ids.forEach((id) => {
+          const el = messagesContainer.querySelector(`[data-msg-wrap-id="${id}"]`);
+          if (el) el.remove();
+        });
+      } else {
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        for (const id of ids) {
+          await db.ref(`chats/${chatId}/messages/${id}/deletedFor/${currentUser.uid}`).set(true).catch(() => {});
+        }
+      }
+      exitMsgMultiSelectMode();
+    });
+
     // Status 24h Expiration Helpers
     function isStatusExpired(st) {
       if (!st) return true;
@@ -1706,18 +1994,11 @@
       const low = trimmed.toLowerCase();
 
       const isPhotoReq =
-        low.startsWith("photo:") ||
-        low.startsWith("image:") ||
-        low.startsWith("img:") ||
-        trimmed.startsWith("ෆොටෝ:") ||
-        trimmed.startsWith("පින්තූරය:") ||
-        trimmed.startsWith("පින්තූරයක්:");
+        low.startsWith("photo:") || low.startsWith("image:") || low.startsWith("img:") ||
+        trimmed.startsWith("ෆොටෝ:") || trimmed.startsWith("පින්තූරය:") || trimmed.startsWith("පින්තූරයක්:");
 
       if (isPhotoReq) {
-        const subject = trimmed
-          .replace(/^(photo:|image:|img:|ෆොටෝ:|පින්තූරය:|පින්තූරයක්:)/i, "")
-          .trim() || "scenic landscape";
-
+        const subject = trimmed.replace(/^(photo:|image:|img:|ෆොටෝ:|පින්තූරය:|පින්තූරයක්:)/i, "").trim() || "scenic landscape";
         const encodedPrompt = encodeURIComponent(subject + ", high detail, crisp lighting");
         const remoteUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=640&height=420&nologo=true&seed=${Date.now()}`;
 
@@ -1737,7 +2018,6 @@
         };
       }
 
-      // Live text answer via Pollinations AI endpoint with smart Sinhala/English fallback
       try {
         const systemPrompt = "You are NA Ai, a helpful assistant similar to Gemini and Meta AI. Understand any language including Sinhala and English, and reply naturally in the same language the user used.";
         const url = `https://text.pollinations.ai/${encodeURIComponent(trimmed)}?system=${encodeURIComponent(systemPrompt)}`;
@@ -1755,13 +2035,9 @@
 
       const hasSinhala = /[\u0D80-\u0DFF]/.test(trimmed);
       if (hasSinhala) {
-        return {
-          text: `ඔබ ඇසූ **"${trimmed}"** ගැන කෙටි පිළිතුර:\nමෙය සජීවී AI සහායකයායි. ඔබට ඕනෑම ප්‍රශ්නයක් අසන්න හෝ \`photo: <විස්තරය>\` ලෙස ලබා දී පින්තූරයක් නිර්මාණය කරගන්න.`
-        };
+        return { text: `ඔබ ඇසූ **"${trimmed}"** ගැන කෙටි පිළිතුර:\nමෙය සජීවී AI සහායකයායි. ඕනෑම ප්‍රශ්නයක් අසන්න හෝ \`photo: <විස්තරය>\` ලෙස ලබා දී පින්තූරයක් සාදන්න.` };
       }
-      return {
-        text: `Regarding **"${trimmed}"**: Ask any question or type \`photo: <description>\` to generate an AI image.`
-      };
+      return { text: `Regarding **"${trimmed}"**: Ask any question or type \`photo: <description>\` to generate an AI image.` };
     }
 
     function generateAiPhotoDataUrl(promptText) {
@@ -1805,8 +2081,36 @@
     emojiShapeSelect.addEventListener("change", () => setEmojiShape(emojiShapeSelect.value));
     document.querySelectorAll(".tone-chip").forEach((chip) => chip.addEventListener("click", () => setSelectedEmojiTone(chip.dataset.tone || "")));
 
+    function populateLiveSprites(el, mode) {
+      el.innerHTML = "";
+      if (mode === "live-fish") {
+        const fishList = ["🐠", "🐟", "🐡", "🐠", "🐟"];
+        fishList.forEach((em, idx) => {
+          const sp = document.createElement("span");
+          sp.className = "anim-sprite";
+          sp.textContent = em;
+          sp.style.top = `${16 + idx * 17}%`;
+          sp.style.setProperty("--dur", `${9 + idx * 2.2}s`);
+          sp.style.animationDelay = `${-idx * 2.5}s`;
+          el.appendChild(sp);
+        });
+      } else if (mode === "live-butterfly") {
+        const bList = ["🦋", "🦋", "🦋", "🦋"];
+        bList.forEach((em, idx) => {
+          const sp = document.createElement("span");
+          sp.className = "anim-sprite";
+          sp.textContent = em;
+          sp.style.setProperty("--topY", `${20 + idx * 18}%`);
+          sp.style.setProperty("--dur", `${8.5 + idx * 2}s`);
+          sp.style.animationDelay = `${-idx * 2.1}s`;
+          el.appendChild(sp);
+        });
+      }
+    }
+
     function applyLiveLayer(el, mode) {
       el.className = "live-anim-layer";
+      populateLiveSprites(el, mode);
       if (mode && mode !== "none") el.classList.add("active", mode);
     }
 
@@ -2042,6 +2346,7 @@
       if (chatLockModal.classList.contains("active")) { chatLockModal.classList.remove("active"); return; }
       if (callModal.classList.contains("active")) { hangupCall(); return; }
       if (chatMoreMenu.classList.contains("open")) { chatMoreMenu.classList.remove("open"); return; }
+      if (isMsgMultiSelectMode) { exitMsgMultiSelectMode(); return; }
       if (isMultiSelectMode) { exitMultiSelectMode(); return; }
       if (selectedPeer) { closeActiveChatToList(); return; }
       const activeTab = document.querySelector(".nav-tab.active");
@@ -2374,6 +2679,7 @@
         logoutBtn.style.display = "inline-flex";
         chatMoreBtn.style.display = "none";
         chatMoreMenu.classList.remove("open");
+        msgBulkSelectBar.classList.remove("active");
         inChatSearchBar.classList.remove("active");
         pinnedBanner.classList.remove("active");
         stickerDrawer.classList.remove("open");
@@ -2740,23 +3046,17 @@
 
     function attachCardLongPress(cardEl, uid) {
       let timer = null;
-      const trigger = () => {
-        timer = null;
-        enterMultiSelectWith(uid);
-      };
+      const trigger = () => { timer = null; enterMultiSelectWith(uid); };
       const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
       cardEl.addEventListener("touchstart", () => { timer = setTimeout(trigger, 460); }, { passive: true });
       cardEl.addEventListener("touchend", cancel);
       cardEl.addEventListener("touchmove", cancel);
-      cardEl.addEventListener("mousedown", (e) => {
-        if (e.button === 0) timer = setTimeout(trigger, 520);
-      });
+      cardEl.addEventListener("mousedown", (e) => { if (e.button === 0) timer = setTimeout(trigger, 520); });
       cardEl.addEventListener("mouseup", cancel);
       cardEl.addEventListener("mouseleave", cancel);
       cardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); enterMultiSelectWith(uid); });
     }
 
-    // Card View Chat List (Only active chats unless searching)
     function renderUsersList() {
       if (!currentUser) return;
       const q = searchUsersInput.value.trim().toLowerCase();
@@ -2885,6 +3185,8 @@
     function openChatWith(peer) {
       unlockAudio();
       sendRemoteTypingState(false);
+      exitMsgMultiSelectMode();
+      loadedMessagesMap = {};
       selectedPeer = peer; unreadCounts[peer.uid] = 0;
       replyToMsg = null; replyPreviewBar.classList.remove("active");
       stickerDrawer.classList.remove("open"); liveFormatBar.classList.remove("active");
@@ -2968,6 +3270,7 @@
 
     function closeActiveChatToList() {
       sendRemoteTypingState(false);
+      exitMsgMultiSelectMode();
       selectedPeer = null; replyToMsg = null;
       replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
       liveFormatBar.classList.remove("active"); inChatSearchBar.classList.remove("active");
@@ -3087,18 +3390,18 @@
     function attachSwipeToReply(wrapEl, msg) {
       let startX = 0, startY = 0, dx = 0, swiping = false;
       wrapEl.addEventListener("touchstart", (e) => {
-        if (!e.touches || !e.touches[0]) return;
+        if (isMsgMultiSelectMode || !e.touches || !e.touches[0]) return;
         startX = e.touches[0].clientX; startY = e.touches[0].clientY; dx = 0; swiping = true;
       }, { passive: true });
       wrapEl.addEventListener("touchmove", (e) => {
-        if (!swiping || !e.touches || !e.touches[0]) return;
+        if (!swiping || isMsgMultiSelectMode || !e.touches || !e.touches[0]) return;
         const diffX = e.touches[0].clientX - startX; const diffY = Math.abs(e.touches[0].clientY - startY);
         if (diffX > 8 && diffX > diffY) { dx = Math.min(72, diffX); wrapEl.style.transform = `translateX(${dx}px)`; }
       }, { passive: true });
       const finishSwipe = () => {
         if (!swiping) return; swiping = false;
         const triggered = dx >= 46; wrapEl.style.transform = "";
-        if (triggered) { replyToMsg = msg.text || msg.sticker || "[Media]"; replyPreviewText.textContent = replyToMsg; replyPreviewBar.classList.add("active"); messageInput.focus(); }
+        if (triggered && !isMsgMultiSelectMode) { replyToMsg = msg.text || msg.sticker || "[Media]"; replyPreviewText.textContent = replyToMsg; replyPreviewBar.classList.add("active"); messageInput.focus(); }
       };
       wrapEl.addEventListener("touchend", finishSwipe); wrapEl.addEventListener("touchcancel", finishSwipe);
     }
@@ -3113,7 +3416,7 @@
     }
 
     async function handleDoubleTapReaction(msgId, msg) {
-      if (!currentUser || !selectedPeer) return;
+      if (!currentUser || !selectedPeer || isMsgMultiSelectMode) return;
       const quickEmoji = getCustomReactionEmoji();
       const nextVal = msg.reaction === quickEmoji ? null : quickEmoji;
       msg.reaction = nextVal; renderOrUpdateMessage(msgId, msg);
@@ -3126,6 +3429,7 @@
 
     function renderOrUpdateMessage(msgId, msg) {
       if (!currentUser) return;
+      loadedMessagesMap[msgId] = msg;
       const existing = messagesContainer.querySelector(`[data-msg-wrap-id="${msgId}"]`);
       if (msg.deletedFor && msg.deletedFor[currentUser.uid]) { if (existing) existing.remove(); return; }
 
@@ -3166,42 +3470,63 @@
       const timeStr = formatClock(msg.timestamp);
       const tickHtml = isDeletedEveryone ? "" : renderTickSvg(msg);
       const html = `${bodyHtml}<div class="msg-meta"><time>${timeStr}</time>${tickHtml}</div>`;
+      const isChecked = selectedMsgIds.has(msgId);
 
       let wrap = existing;
       if (!wrap) { wrap = document.createElement("div"); wrap.setAttribute("data-msg-wrap-id", msgId); messagesContainer.appendChild(wrap); }
 
-      wrap.className = "msg-swipe-wrap " + (isMine ? "sent" : "recv");
+      wrap.className = "msg-swipe-wrap " + (isMine ? "sent" : "recv") + (isChecked ? " msg-selected" : "");
       const bubbleClass = "msg " + (isMine ? "sent" : "recv") +
         (isDeletedEveryone ? " deleted-msg" : "") + (isMediaOnly ? " media-only" : "") + (isSticker ? " sticker-msg" : "");
 
-      wrap.innerHTML = `<div class="${bubbleClass}">${html}</div>`;
-      const bubbleEl = wrap.firstElementChild;
+      wrap.innerHTML = `<span class="msg-check-circle">${isChecked ? "✓" : ""}</span><div class="${bubbleClass}">${html}</div>`;
+      const checkEl = wrap.querySelector(".msg-check-circle");
+      const bubbleEl = wrap.querySelector(".msg");
+
+      if (checkEl) checkEl.addEventListener("click", (ev) => { ev.stopPropagation(); toggleMsgSelection(msgId); });
 
       const quoteEl = bubbleEl.querySelector("[data-quote-jump]");
       if (quoteEl) {
         quoteEl.addEventListener("click", (ev) => {
           ev.stopPropagation();
-          jumpAndHighlightQuotedMessage(msg.replyTo || "");
+          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
+          else jumpAndHighlightQuotedMessage(msg.replyTo || "");
         });
       }
 
       const photoEl = bubbleEl.querySelector("img.chat-photo");
-      if (photoEl && msg.mediaUrl) photoEl.addEventListener("click", (ev) => { ev.stopPropagation(); openFullPhoto(msg.mediaUrl); });
-
-      const vidCard = bubbleEl.querySelector(".video-thumb-card");
-      if (vidCard && msg.mediaUrl) vidCard.addEventListener("click", (ev) => { ev.stopPropagation(); openFullVideo(msg.mediaUrl); });
-
-      if (!isDeletedEveryone) {
-        attachSwipeToReply(wrap, msg);
-        attachLongPress(bubbleEl, () => openMessageActionSheet(msgId, msg));
-        let lastTap = 0;
-        bubbleEl.addEventListener("click", (ev) => {
-          if (ev.target.closest("[data-quote-jump]")) return;
-          const now = Date.now();
-          if (now - lastTap < 300) { lastTap = 0; handleDoubleTapReaction(msgId, msg); }
-          else { lastTap = now; }
+      if (photoEl && msg.mediaUrl) {
+        photoEl.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
+          else openFullPhoto(msg.mediaUrl);
         });
       }
+
+      const vidCard = bubbleEl.querySelector(".video-thumb-card");
+      if (vidCard && msg.mediaUrl) {
+        vidCard.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
+          else openFullVideo(msg.mediaUrl);
+        });
+      }
+
+      attachSwipeToReply(wrap, msg);
+      attachLongPress(bubbleEl, () => {
+        if (!isMsgMultiSelectMode) enterMsgMultiSelectWith(msgId);
+      });
+
+      let lastTap = 0;
+      bubbleEl.addEventListener("click", (ev) => {
+        if (ev.target.closest("[data-quote-jump]") || ev.target.closest("img.chat-photo") || ev.target.closest(".video-thumb-card")) return;
+        if (isMsgMultiSelectMode) { toggleMsgSelection(msgId); return; }
+        if (isDeletedEveryone) return;
+        const now = Date.now();
+        if (now - lastTap < 300) { lastTap = 0; handleDoubleTapReaction(msgId, msg); }
+        else { lastTap = now; }
+      });
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
