@@ -29,6 +29,8 @@
       --chat-wallpaper: none;
       --msg-font-size: 14.5px;
       --topbar-h: 62px;
+      --vtop: 0px;
+      --vh: 100dvh;
     }
 
     * {
@@ -50,11 +52,13 @@
 
     html, body {
       width: 100%;
-      height: 100dvh;
-      max-height: 100dvh;
+      height: var(--vh);
+      max-height: var(--vh);
       overflow: hidden;
       position: fixed;
-      inset: 0;
+      top: var(--vtop);
+      left: 0;
+      right: 0;
       background: var(--bg-main);
       color: var(--text);
     }
@@ -160,9 +164,11 @@
     .screen {
       display: none;
       position: fixed;
-      inset: 0;
+      top: var(--vtop);
+      left: 0;
+      right: 0;
       width: 100%;
-      height: 100dvh;
+      height: var(--vh);
       flex-direction: column;
       overflow: hidden;
       z-index: 1;
@@ -239,10 +245,10 @@
     .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Permanently Locked Topbar (Never scrolls or moves) */
+    /* Permanently Locked Topbar (Never scrolls, never disappears on keyboard/scroll) */
     .topbar {
       position: fixed;
-      top: 0;
+      top: var(--vtop);
       left: 0;
       right: 0;
       height: var(--topbar-h);
@@ -289,16 +295,15 @@
       background: var(--online-blue); display: inline-block; flex-shrink: 0;
     }
 
-    /* Main Grid starts below fixed topbar */
+    /* Main Grid starts right below locked topbar and fits visible viewport */
     .main-grid {
       display: flex;
       position: fixed;
-      top: var(--topbar-h);
+      top: calc(var(--vtop) + var(--topbar-h));
       left: 0;
       right: 0;
-      bottom: 0;
       width: 100%;
-      height: calc(100dvh - var(--topbar-h));
+      height: calc(var(--vh) - var(--topbar-h));
       min-height: 0;
       overflow: hidden;
       z-index: 2;
@@ -328,7 +333,7 @@
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
 
-    .scroll-list { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+    .scroll-list { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
     .list-row {
       display: flex; align-items: center; gap: 11px; padding: 10px 14px;
       cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03);
@@ -570,7 +575,7 @@
 
     /* Dropdown Menu */
     .dropdown-menu {
-      display: none; position: fixed; top: calc(var(--topbar-h) + 2px); right: 10px;
+      display: none; position: fixed; top: calc(var(--vtop) + var(--topbar-h) + 2px); right: 10px;
       background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 10px;
       min-width: 185px; z-index: 55; box-shadow: 0 8px 20px rgba(0,0,0,0.45); overflow: hidden;
     }
@@ -1207,6 +1212,28 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    // Sync layout strictly with visualViewport so topbar NEVER disappears on scroll or keyboard open
+    function syncViewportVars() {
+      const vv = window.visualViewport;
+      if (vv) {
+        const h = Math.round(vv.height);
+        const top = Math.max(0, Math.round(vv.offsetTop));
+        document.documentElement.style.setProperty("--vh", `${h}px`);
+        document.documentElement.style.setProperty("--vtop", `${top}px`);
+      } else {
+        document.documentElement.style.setProperty("--vh", `${window.innerHeight}px`);
+        document.documentElement.style.setProperty("--vtop", "0px");
+      }
+      window.scrollTo(0, 0);
+    }
+    syncViewportVars();
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", syncViewportVars);
+      window.visualViewport.addEventListener("scroll", syncViewportVars);
+    }
+    window.addEventListener("resize", syncViewportVars);
+    window.addEventListener("scroll", () => window.scrollTo(0, 0));
+
     let allowExplicitChatCopy = false;
     document.addEventListener("copy", (e) => {
       if (!allowExplicitChatCopy) e.preventDefault();
@@ -1534,13 +1561,13 @@
       updateTopHeader();
     }
 
-    // Send typing indicator to Firebase so ONLY the OTHER user sees "Typing..."
+    // Write typing state to Firebase so ONLY the OTHER user sees "Typing..."
     function sendRemoteTypingState(isTyping) {
       if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
       if (isTyping) {
-        ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {});
+        ref.set({ typing: true, updatedAt: Date.now(), fromUid: currentUser.uid, toUid: selectedPeer.uid }).catch(() => {});
         ref.onDisconnect().remove().catch(() => {});
       } else {
         ref.remove().catch(() => {});
@@ -1558,14 +1585,14 @@
 
       if (hasText) {
         const now = Date.now();
-        if (now - lastTypingSentAt > 750) {
+        if (now - lastTypingSentAt > 600) {
           lastTypingSentAt = now;
           sendRemoteTypingState(true);
         }
         if (typingStopTimer) clearTimeout(typingStopTimer);
         typingStopTimer = setTimeout(() => {
           sendRemoteTypingState(false);
-        }, 1800);
+        }, 2000);
       } else {
         if (typingStopTimer) clearTimeout(typingStopTimer);
         sendRemoteTypingState(false);
@@ -1586,11 +1613,12 @@
       if (isUserBlockedByMe(peerUid) || isMeBlockedByPeer(peerUid)) return false;
       const chatId = getChatId(currentUser.uid, peerUid);
       const tEntry = (typingMap[chatId] && typingMap[chatId][peerUid]) || null;
-      if (!tEntry || !tEntry.typing) return false;
-      const age = Date.now() - (tEntry.updatedAt || 0);
-      if (age >= 5000) return false;
+      if (!tEntry || tEntry.typing !== true) return false;
+      const updated = Number(tEntry.updatedAt || 0);
+      const age = updated ? Math.max(0, Date.now() - updated) : 0;
+      if (updated && age >= 6000) return false;
       if (typingExpiryTimer) clearTimeout(typingExpiryTimer);
-      typingExpiryTimer = setTimeout(refreshPresenceAndTypingUI, Math.max(200, 5000 - age + 80));
+      typingExpiryTimer = setTimeout(refreshPresenceAndTypingUI, updated ? Math.max(250, 6000 - age + 80) : 2500);
       return true;
     }
 
@@ -1952,7 +1980,7 @@
       if (!u) return false;
       if (u.isAI) return true;
       if (u.online !== true) return false;
-      if (u.lastPing && (Date.now() - u.lastPing) > 60000) return false;
+      if (u.lastPing && (Date.now() - u.lastPing) > 90000) return false;
       return true;
     }
 
@@ -2311,6 +2339,7 @@
         currentUser = user;
         authScreen.classList.remove("active");
         chatScreen.classList.add("active");
+        syncViewportVars();
 
         soundSelect.value = localStorage.getItem("chatSound") || "chime";
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
@@ -2328,10 +2357,15 @@
         listenUnreadCounters(user.uid);
         listenIncomingCalls(user.uid);
 
-        db.ref("typing").on("value", (snap) => {
+        const typingRootRef = db.ref("typing");
+        const syncTypingSnap = (snap) => {
           typingMap = snap.val() || {};
           refreshPresenceAndTypingUI();
-        });
+        };
+        typingRootRef.on("value", syncTypingSnap);
+        typingRootRef.on("child_added", () => typingRootRef.once("value", syncTypingSnap));
+        typingRootRef.on("child_changed", () => typingRootRef.once("value", syncTypingSnap));
+        typingRootRef.on("child_removed", () => typingRootRef.once("value", syncTypingSnap));
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
