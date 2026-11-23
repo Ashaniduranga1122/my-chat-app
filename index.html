@@ -24,7 +24,6 @@
     .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; }
     .screen.active { display: flex; }
 
-    /* Auth Screen */
     .auth-box {
       max-width: 400px; width: 92%; margin: auto; background: var(--panel);
       padding: 24px; border-radius: 14px; border: 1px solid var(--border);
@@ -42,24 +41,31 @@
     .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
     .err { color: #ff6b6b; font-size: 13px; min-height: 18px; text-align: center; }
 
-    /* App Layout */
     .topbar {
       background: var(--panel); padding: 10px 14px; display: flex;
       align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
       gap: 10px;
     }
     .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .avatar-wrap { position: relative; flex-shrink: 0; }
     .avatar {
       width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-      background: var(--panel-2); border: 1px solid var(--border); flex-shrink: 0;
+      background: var(--panel-2); border: 1px solid var(--border); display: block;
     }
+    .online-dot {
+      width: 11px; height: 11px; border-radius: 50%; background: #25d366;
+      border: 2px solid var(--panel); position: absolute; right: 0; bottom: 0;
+      display: none;
+    }
+    .online-dot.active { display: block; }
+
     .title-wrap { overflow: hidden; }
     .title-wrap h4 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .title-wrap small { color: var(--muted); font-size: 12px; display: block; }
+    .title-wrap small { color: var(--muted); font-size: 12px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-online { color: #25d366 !important; }
 
     .main-grid { display: flex; flex: 1; height: calc(100vh - 62px); overflow: hidden; }
 
-    /* Contacts Sidebar */
     .sidebar {
       width: 320px; max-width: 100%; background: var(--panel);
       border-right: 1px solid var(--border); display: flex; flex-direction: column;
@@ -76,7 +82,6 @@
     }
     .user-item:hover, .user-item.active { background: var(--panel-2); }
 
-    /* Chat Area */
     .chat-panel {
       flex: 1; display: flex; flex-direction: column; position: relative;
       background-color: var(--bg-main);
@@ -118,7 +123,6 @@
       cursor: pointer; flex-shrink: 0;
     }
 
-    /* Settings Modal */
     .modal {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
       z-index: 50; align-items: center; justify-content: center; padding: 16px;
@@ -146,7 +150,6 @@
 </head>
 <body>
 
-  <!-- Login / Register Screen -->
   <section id="authScreen" class="screen active">
     <div class="auth-box">
       <h2 id="authTitle">Log In</h2>
@@ -159,12 +162,14 @@
     </div>
   </section>
 
-  <!-- Main Chat Screen -->
   <section id="chatScreen" class="screen">
     <header class="topbar">
       <div class="user-info">
         <button class="icon-btn" id="backToUsersBtn" style="display:none;">←</button>
-        <img id="myAvatar" class="avatar" src="" alt="DP" />
+        <div class="avatar-wrap">
+          <img id="myAvatar" class="avatar" src="" alt="DP" />
+          <span id="peerOnlineDot" class="online-dot"></span>
+        </div>
         <div class="title-wrap">
           <h4 id="myDisplayName">User</h4>
           <small id="activePeerLabel">කතා කිරීමට කෙනෙකු තෝරන්න</small>
@@ -201,7 +206,6 @@
     </div>
   </section>
 
-  <!-- Settings Modal (DP, Wallpaper, Notification Sound) -->
   <div class="modal" id="settingsModal">
     <div class="modal-card">
       <h3>Profile & Chat Settings</h3>
@@ -233,7 +237,6 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -249,8 +252,9 @@
       appId: "1:346627278467:web:3194f015fbcf7ba50cfdb6"
     };
 
-    const MEDIA_UPLOAD_URL = "";
-    const MEDIA_UPLOAD_PRESET = "";
+    // Photo/Video Upload සඳහා Cloudinary (Unsigned) භාවිත කරන්නේ නම් පහත දෙක පුරවන්න:
+    const MEDIA_UPLOAD_URL = "";    // උදා: "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/auto/upload"
+    const MEDIA_UPLOAD_PRESET = ""; // උදා: "YOUR_UNSIGNED_PRESET"
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -270,6 +274,7 @@
     let messagesRef = null;
     let allUsers = {};
     let isInitialLoad = true;
+    let audioCtx = null;
 
     const authScreen = document.getElementById("authScreen");
     const chatScreen = document.getElementById("chatScreen");
@@ -282,6 +287,7 @@
     const authError = document.getElementById("authError");
 
     const myAvatar = document.getElementById("myAvatar");
+    const peerOnlineDot = document.getElementById("peerOnlineDot");
     const myDisplayName = document.getElementById("myDisplayName");
     const activePeerLabel = document.getElementById("activePeerLabel");
     const usersList = document.getElementById("usersList");
@@ -304,6 +310,73 @@
     const testSoundBtn = document.getElementById("testSoundBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
+    function unlockAudio() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+      } catch (_) {}
+    }
+
+    document.addEventListener("click", unlockAudio, { passive: true });
+    document.addEventListener("touchstart", unlockAudio, { passive: true });
+
+    function formatLastSeen(ts) {
+      if (!ts) return "Offline";
+      const diffSec = Math.floor((Date.now() - ts) / 1000);
+      if (diffSec < 60) return "Last seen just now";
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `Last seen ${diffMin}m ago`;
+      const d = new Date(ts);
+      return "Last seen " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function updatePeerHeaderStatus() {
+      if (!selectedPeer) {
+        activePeerLabel.textContent = "කතා කිරීමට කෙනෙකු තෝරන්න";
+        activePeerLabel.classList.remove("status-online");
+        peerOnlineDot.classList.remove("active");
+        return;
+      }
+      const livePeer = allUsers[selectedPeer.uid] || selectedPeer;
+      const isOnline = !!livePeer.online;
+      peerOnlineDot.classList.toggle("active", isOnline);
+      if (isOnline) {
+        activePeerLabel.textContent = `${livePeer.name || livePeer.email} • Online`;
+        activePeerLabel.classList.add("status-online");
+      } else {
+        activePeerLabel.textContent = `${livePeer.name || livePeer.email} • ${formatLastSeen(livePeer.lastSeen)}`;
+        activePeerLabel.classList.remove("status-online");
+      }
+    }
+
+    function setupPresence(uid) {
+      const userStatusRef = db.ref(`users/${uid}`);
+      const connectedRef = db.ref(".info/connected");
+
+      connectedRef.on("value", (snap) => {
+        if (snap.val() === true) {
+          userStatusRef.update({ online: true });
+          userStatusRef.onDisconnect().update({
+            online: false,
+            lastSeen: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (!currentUser) return;
+        if (document.hidden) {
+          userStatusRef.update({ online: false, lastSeen: Date.now() });
+        } else {
+          userStatusRef.update({ online: true });
+        }
+      });
+    }
+
     function getChatId(uid1, uid2) {
       return [uid1, uid2].sort().join("_");
     }
@@ -312,20 +385,21 @@
       const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime";
       if (mode === "mute") return;
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        unlockAudio();
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
         osc.type = mode === "chime" ? "sine" : "triangle";
-        osc.frequency.setValueAtTime(mode === "chime" ? 660 : 440, ctx.currentTime);
+        osc.frequency.setValueAtTime(mode === "chime" ? 660 : 440, audioCtx.currentTime);
         if (mode === "chime") {
-          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
+          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
         }
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 0.25);
+        osc.stop(audioCtx.currentTime + 0.28);
       } catch (_) {}
     }
 
@@ -336,11 +410,10 @@
       }
       const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
       const savedWp = localStorage.getItem(key);
-      if (savedWp) {
-        document.documentElement.style.setProperty("--chat-wallpaper", `url("${savedWp}")`);
-      } else {
-        document.documentElement.style.setProperty("--chat-wallpaper", "none");
-      }
+      document.documentElement.style.setProperty(
+        "--chat-wallpaper",
+        savedWp ? `url("${savedWp}")` : "none"
+      );
     }
 
     toggleAuthModeBtn.addEventListener("click", () => {
@@ -360,6 +433,7 @@
     });
 
     authSubmitBtn.addEventListener("click", async () => {
+      unlockAudio();
       authError.textContent = "";
       const email = emailInput.value.trim();
       const password = passwordInput.value;
@@ -382,7 +456,8 @@
             name: displayName,
             email: email,
             dp: DEFAULT_DP,
-            updatedAt: Date.now()
+            online: true,
+            lastSeen: Date.now()
           });
         } else {
           await auth.signInWithEmailAndPassword(email, password);
@@ -392,7 +467,10 @@
       }
     });
 
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.addEventListener("click", async () => {
+      if (currentUser) {
+        await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() });
+      }
       if (messagesRef) messagesRef.off();
       auth.signOut();
     });
@@ -406,6 +484,8 @@
         const savedSound = localStorage.getItem("chatSound") || "chime";
         soundSelect.value = savedSound;
 
+        setupPresence(user.uid);
+
         db.ref(`users/${user.uid}`).on("value", (snap) => {
           const data = snap.val() || {};
           myDisplayName.textContent = data.name || user.email;
@@ -415,6 +495,7 @@
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
           renderUsersList();
+          updatePeerHeaderStatus();
         });
       } else {
         currentUser = null;
@@ -433,13 +514,14 @@
         const label = `${u.name || ""} ${u.email || ""}`.toLowerCase();
         if (q && !label.includes(q)) return;
 
+        const statusText = u.online ? "● Online" : formatLastSeen(u.lastSeen);
         const item = document.createElement("div");
         item.className = "user-item" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
         item.innerHTML = `
           <img class="avatar" src="${u.dp || DEFAULT_DP}" alt="DP" />
           <div class="title-wrap">
             <h4>${escapeHtml(u.name || u.email)}</h4>
-            <small>Private Chat</small>
+            <small class="${u.online ? "status-online" : ""}">${escapeHtml(statusText)}</small>
           </div>
         `;
         item.addEventListener("click", () => openChatWith(u));
@@ -450,8 +532,9 @@
     searchUsersInput.addEventListener("input", renderUsersList);
 
     function openChatWith(peer) {
+      unlockAudio();
       selectedPeer = peer;
-      activePeerLabel.textContent = peer.name || peer.email;
+      updatePeerHeaderStatus();
       mainGrid.classList.add("chat-open");
       if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
       renderUsersList();
@@ -510,6 +593,7 @@
 
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      unlockAudio();
       if (!currentUser || !selectedPeer) {
         alert("කරුණාකර මුලින්ම කතා කිරීමට කෙනෙකු තෝරන්න.");
         return;
@@ -541,30 +625,43 @@
       const file = e.target.files[0];
       if (!file || !currentUser || !selectedPeer) return;
 
-      if (!MEDIA_UPLOAD_URL || !MEDIA_UPLOAD_PRESET) {
-        alert("Photo/Video Upload කිරීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න.");
-        mediaInput.value = "";
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", MEDIA_UPLOAD_PRESET);
+      const isVideo = file.type.startsWith("video/");
+      const mediaType = isVideo ? "video" : "image";
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
 
       try {
         attachBtn.textContent = "⏳";
-        const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: formData });
-        const data = await res.json();
-        if (!data.secure_url) throw new Error("Upload failed");
+        let finalUrl = "";
 
-        const mediaType = file.type.startsWith("video/") ? "video" : "image";
-        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        if (MEDIA_UPLOAD_URL && MEDIA_UPLOAD_PRESET) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", MEDIA_UPLOAD_PRESET);
+          const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: formData });
+          const data = await res.json();
+          if (!data.secure_url) throw new Error("Upload failed");
+          finalUrl = data.secure_url;
+        } else if (!isVideo && file.size <= 350 * 1024) {
+          finalUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        } else {
+          throw new Error(
+            isVideo
+              ? "Video Upload කිරීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න."
+              : "350KB ට වඩා විශාල Photo හෝ Video යැවීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න."
+          );
+        }
+
         await db.ref(`chats/${chatId}/messages`).push({
           senderId: currentUser.uid,
           receiverId: selectedPeer.uid,
           text: "",
           mediaType,
-          mediaUrl: data.secure_url,
+          mediaUrl: finalUrl,
           timestamp: firebase.database.ServerValue.TIMESTAMP
         });
       } catch (err) {
@@ -614,7 +711,10 @@
       localStorage.setItem("chatSound", soundSelect.value);
     });
 
-    testSoundBtn.addEventListener("click", playNotificationSound);
+    testSoundBtn.addEventListener("click", () => {
+      unlockAudio();
+      playNotificationSound();
+    });
 
     function escapeHtml(str) {
       return String(str)
