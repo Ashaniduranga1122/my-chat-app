@@ -102,12 +102,14 @@
       75%, 100% { content: ""; }
     }
 
-    @keyframes msgHighlightFlash {
-      0%, 100% { box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
-      50% { box-shadow: 0 0 0 3px var(--typing-yellow); }
+    /* 2-second Highlight when jumping to replied/pinned message */
+    @keyframes msgHighlightTwoSec {
+      0% { background-color: rgba(255, 214, 0, 0.35); box-shadow: 0 0 0 3px var(--typing-yellow); }
+      50% { background-color: rgba(30, 136, 229, 0.35); box-shadow: 0 0 0 3px var(--accent-bright); }
+      100% { background-color: rgba(255, 214, 0, 0.28); box-shadow: 0 0 0 2px var(--typing-yellow); }
     }
-    .msg.msg-highlight {
-      animation: msgHighlightFlash 1.2s ease-in-out 2;
+    .msg.msg-highlight-2s {
+      animation: msgHighlightTwoSec 0.65s ease-in-out 3;
     }
 
     /* Lightweight Hardware-Accelerated Live Wallpapers */
@@ -245,7 +247,7 @@
     .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Permanently Locked Topbar (Never scrolls, never disappears on keyboard/scroll) */
+    /* Permanently Locked Topbar */
     .topbar {
       position: fixed;
       top: var(--vtop);
@@ -295,7 +297,7 @@
       background: var(--online-blue); display: inline-block; flex-shrink: 0;
     }
 
-    /* Main Grid starts right below locked topbar and fits visible viewport */
+    /* Main Grid */
     .main-grid {
       display: flex;
       position: fixed;
@@ -470,6 +472,7 @@
       width: 100%; padding: 8px 11px 6px 11px; border-radius: 10px;
       word-wrap: break-word; position: relative; font-size: var(--msg-font-size); line-height: 1.38;
       box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+      transition: background-color 0.25s ease;
     }
     .msg.sent { background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { background: var(--recv); border-top-left-radius: 2px; }
@@ -513,9 +516,12 @@
     @keyframes stickerCoolTilt { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(7deg); } }
 
     .reply-quote {
-      background: rgba(0, 0, 0, 0.25); border-left: 3px solid var(--accent-bright);
-      padding: 4px 7px; border-radius: 5px; font-size: 11.5px; color: rgba(255,255,255,0.82); margin-bottom: 4px;
+      background: rgba(0, 0, 0, 0.28); border-left: 3px solid var(--accent-bright);
+      padding: 5px 8px; border-radius: 6px; font-size: 11.5px;
+      color: rgba(255,255,255,0.9); margin-bottom: 5px; cursor: pointer;
     }
+    .reply-quote:active { background: rgba(255, 214, 0, 0.22); }
+
     .reaction-badge { display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); font-size: 12px; }
     .msg img.chat-photo { width: 220px; max-width: 72vw; max-height: 260px; object-fit: cover; border-radius: 10px; display: block; cursor: pointer; }
     .video-thumb-card { position: relative; width: 220px; max-width: 72vw; height: 155px; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; }
@@ -696,7 +702,7 @@
         <!-- Chats -->
         <div class="tab-pane active" id="chatsTab">
           <div class="search-bar">
-            <input type="text" id="searchUsersInput" placeholder="Search..." />
+            <input type="text" id="searchUsersInput" placeholder="Search to start new chat..." />
           </div>
           <div class="scroll-list" id="usersList"></div>
         </div>
@@ -789,9 +795,9 @@
                 <input type="checkbox" id="toggleLastSeenEnabled" checked />
               </div>
               <select id="privacyLastSeenSelect">
-                <option value="everyone">Show to: Everyone</option>
-                <option value="contacts">Show to: My contacts</option>
-                <option value="nobody">Show to: Nobody</option>
+                <option value="everyone">Last seen: Everyone</option>
+                <option value="contacts">Last seen: My contacts</option>
+                <option value="nobody">Last seen: Nobody</option>
               </select>
 
               <div class="toggle-line">
@@ -799,9 +805,9 @@
                 <input type="checkbox" id="toggleDpEnabled" checked />
               </div>
               <select id="privacyDpSelect">
-                <option value="everyone">Show to: Everyone</option>
-                <option value="contacts">Show to: My contacts</option>
-                <option value="nobody">Show to: Nobody</option>
+                <option value="everyone">Profile photo: Everyone</option>
+                <option value="contacts">Profile photo: My contacts</option>
+                <option value="nobody">Profile photo: Nobody</option>
               </select>
 
               <div class="toggle-line">
@@ -809,9 +815,9 @@
                 <input type="checkbox" id="toggleAboutEnabled" checked />
               </div>
               <select id="privacyProfileFieldsSelect">
-                <option value="everyone">Show to: Everyone</option>
-                <option value="contacts">Show to: My contacts</option>
-                <option value="nobody">Show to: Nobody</option>
+                <option value="everyone">About & Name: Everyone</option>
+                <option value="contacts">About & Name: My contacts</option>
+                <option value="nobody">About & Name: Nobody</option>
               </select>
 
               <div class="toggle-line">
@@ -912,7 +918,7 @@
           </div>
 
           <div class="messages" id="messagesContainer">
-            <div class="empty-chat">Select a chat to start messaging</div>
+            <div class="empty-chat">Select a chat or search a contact to start messaging</div>
           </div>
 
           <div class="live-format-bar" id="liveFormatBar"></div>
@@ -1212,14 +1218,11 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Sync layout strictly with visualViewport so topbar NEVER disappears on scroll or keyboard open
     function syncViewportVars() {
       const vv = window.visualViewport;
       if (vv) {
-        const h = Math.round(vv.height);
-        const top = Math.max(0, Math.round(vv.offsetTop));
-        document.documentElement.style.setProperty("--vh", `${h}px`);
-        document.documentElement.style.setProperty("--vtop", `${top}px`);
+        document.documentElement.style.setProperty("--vh", `${Math.round(vv.height)}px`);
+        document.documentElement.style.setProperty("--vtop", `${Math.max(0, Math.round(vv.offsetTop))}px`);
       } else {
         document.documentElement.style.setProperty("--vh", `${window.innerHeight}px`);
         document.documentElement.style.setProperty("--vtop", "0px");
@@ -1275,9 +1278,12 @@
     let currentUser = null;
     let selectedPeer = null;
     let messagesRef = null;
+    let activePeerTypingRef = null;
+    let peerTypingListeners = {};
     let allUsers = {};
     let allStatuses = {};
     let typingMap = {};
+    let activeChatIds = {};
     let unreadCounts = {};
     let isInitialLoad = true;
     let audioCtx = null;
@@ -1567,14 +1573,14 @@
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
       if (isTyping) {
-        ref.set({ typing: true, updatedAt: Date.now(), fromUid: currentUser.uid, toUid: selectedPeer.uid }).catch(() => {});
+        ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {});
         ref.onDisconnect().remove().catch(() => {});
       } else {
         ref.remove().catch(() => {});
       }
     }
 
-    messageInput.addEventListener("input", () => {
+    function handleComposerTypingEvent() {
       const val = messageInput.value;
       const hasText = val.trim().length > 0;
 
@@ -1585,14 +1591,14 @@
 
       if (hasText) {
         const now = Date.now();
-        if (now - lastTypingSentAt > 600) {
+        if (now - lastTypingSentAt > 450) {
           lastTypingSentAt = now;
           sendRemoteTypingState(true);
         }
         if (typingStopTimer) clearTimeout(typingStopTimer);
         typingStopTimer = setTimeout(() => {
           sendRemoteTypingState(false);
-        }, 2000);
+        }, 2200);
       } else {
         if (typingStopTimer) clearTimeout(typingStopTimer);
         sendRemoteTypingState(false);
@@ -1605,9 +1611,27 @@
         liveFormatBar.classList.add("active");
         liveFormatBar.innerHTML = `Preview: ${formatRichText(val)}`;
       }
-    });
+    }
 
-    // Returns true ONLY when the OTHER user (peerUid) is actively typing
+    messageInput.addEventListener("input", handleComposerTypingEvent);
+    messageInput.addEventListener("keyup", handleComposerTypingEvent);
+
+    // Direct per-peer typing listener so UI updates immediately whenever peer types
+    function attachPeerTypingListener(peerUid) {
+      if (!currentUser || !peerUid || peerUid === currentUser.uid || peerUid === "na_ai_assistant") return;
+      const chatId = getChatId(currentUser.uid, peerUid);
+      const key = `${chatId}_${peerUid}`;
+      if (peerTypingListeners[key]) return;
+      const pRef = db.ref(`typing/${chatId}/${peerUid}`);
+      const cb = (snap) => {
+        if (!typingMap[chatId]) typingMap[chatId] = {};
+        typingMap[chatId][peerUid] = snap.val() || null;
+        refreshPresenceAndTypingUI();
+      };
+      pRef.on("value", cb);
+      peerTypingListeners[key] = { ref: pRef, cb };
+    }
+
     function isPeerTypingNow(peerUid) {
       if (!currentUser || !peerUid || peerUid === currentUser.uid || peerUid === "na_ai_assistant") return false;
       if (isUserBlockedByMe(peerUid) || isMeBlockedByPeer(peerUid)) return false;
@@ -1616,10 +1640,39 @@
       if (!tEntry || tEntry.typing !== true) return false;
       const updated = Number(tEntry.updatedAt || 0);
       const age = updated ? Math.max(0, Date.now() - updated) : 0;
-      if (updated && age >= 6000) return false;
+      if (updated && age >= 8000) return false;
       if (typingExpiryTimer) clearTimeout(typingExpiryTimer);
-      typingExpiryTimer = setTimeout(refreshPresenceAndTypingUI, updated ? Math.max(250, 6000 - age + 80) : 2500);
+      typingExpiryTimer = setTimeout(refreshPresenceAndTypingUI, updated ? Math.max(250, 8000 - age + 80) : 2500);
       return true;
+    }
+
+    // Highlight and scroll to the original message when user taps a reply quote
+    function jumpAndHighlightQuotedMessage(quotedText) {
+      if (!quotedText) return;
+      const cleanQ = quotedText.replace(/^↪\s*/, "").trim().toLowerCase();
+      if (!cleanQ) return;
+
+      const wraps = Array.from(messagesContainer.querySelectorAll(".msg-swipe-wrap"));
+      const targetWrap = wraps.find((w) => {
+        const bubble = w.querySelector(".msg");
+        if (!bubble) return false;
+        const clone = bubble.cloneNode(true);
+        clone.querySelectorAll(".reply-quote, .msg-meta").forEach((n) => n.remove());
+        return (clone.textContent || "").trim().toLowerCase().includes(cleanQ);
+      });
+
+      if (targetWrap) {
+        targetWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+        const bubble = targetWrap.querySelector(".msg");
+        if (bubble) {
+          bubble.classList.remove("msg-highlight-2s");
+          void bubble.offsetWidth;
+          bubble.classList.add("msg-highlight-2s");
+          setTimeout(() => {
+            bubble.classList.remove("msg-highlight-2s");
+          }, 2000);
+        }
+      }
     }
 
     function isVibrateEnabled() {
@@ -2231,21 +2284,26 @@
       }, 20000);
     }
 
-    function listenUnreadCounters(myUid) {
+    // Track which peers have actual chat messages with currentUser and listen for unread counts
+    function listenActiveChatsAndUnread(myUid) {
       db.ref("users").once("value", (snap) => {
         const usersObj = snap.val() || {};
         Object.keys(usersObj).forEach((otherUid) => {
           if (otherUid === myUid) return;
+          attachPeerTypingListener(otherUid);
           const chatId = getChatId(myUid, otherUid);
           db.ref(`chats/${chatId}/messages`).limitToLast(50).on("value", (mSnap) => {
             let count = 0;
+            let hasAnyVisibleMsg = false;
             const msgs = mSnap.val() || {};
             Object.values(msgs).forEach((m) => {
               if (!m) return;
               if (m.deletedFor && m.deletedFor[myUid]) return;
+              hasAnyVisibleMsg = true;
               if (m.deletedForEveryone) return;
               if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") count++;
             });
+            activeChatIds[otherUid] = hasAnyVisibleMsg;
             const prev = unreadCounts[otherUid] || 0;
             unreadCounts[otherUid] = count;
             if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) triggerMessageVibration();
@@ -2354,21 +2412,14 @@
         refreshNotifStatusLabel();
         renderStarredMessagesList();
         setupPresence(user.uid);
-        listenUnreadCounters(user.uid);
+        listenActiveChatsAndUnread(user.uid);
         listenIncomingCalls(user.uid);
-
-        const typingRootRef = db.ref("typing");
-        const syncTypingSnap = (snap) => {
-          typingMap = snap.val() || {};
-          refreshPresenceAndTypingUI();
-        };
-        typingRootRef.on("value", syncTypingSnap);
-        typingRootRef.on("child_added", () => typingRootRef.once("value", syncTypingSnap));
-        typingRootRef.on("child_changed", () => typingRootRef.once("value", syncTypingSnap));
-        typingRootRef.on("child_removed", () => typingRootRef.once("value", syncTypingSnap));
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
+          Object.keys(allUsers).forEach((uid) => {
+            if (uid !== currentUser.uid) attachPeerTypingListener(uid);
+          });
           syncSettingsFromUser();
           renderUsersList();
           renderStatusFeed();
@@ -2401,15 +2452,16 @@
       if (document.activeElement !== aboutInput) aboutInput.value = me.about || "";
 
       const priv = me.privacy || {};
-      toggleLastSeenEnabled.checked = priv.lastSeenEnabled !== false;
-      toggleDpEnabled.checked = priv.dpEnabled !== false;
-      toggleAboutEnabled.checked = priv.aboutEnabled !== false;
-      toggleStatusEnabled.checked = priv.statusEnabled !== false;
-      privacyLastSeenSelect.value = priv.lastSeen || "everyone";
-      privacyDpSelect.value = priv.dp || "everyone";
-      privacyProfileFieldsSelect.value = priv.profileFields || "everyone";
+      if (document.activeElement !== toggleLastSeenEnabled) toggleLastSeenEnabled.checked = priv.lastSeenEnabled !== false;
+      if (document.activeElement !== toggleDpEnabled) toggleDpEnabled.checked = priv.dpEnabled !== false;
+      if (document.activeElement !== toggleAboutEnabled) toggleAboutEnabled.checked = priv.aboutEnabled !== false;
+      if (document.activeElement !== toggleStatusEnabled) toggleStatusEnabled.checked = priv.statusEnabled !== false;
+      if (document.activeElement !== privacyLastSeenSelect) privacyLastSeenSelect.value = priv.lastSeen || "everyone";
+      if (document.activeElement !== privacyDpSelect) privacyDpSelect.value = priv.dp || "everyone";
+      if (document.activeElement !== privacyProfileFieldsSelect) privacyProfileFieldsSelect.value = priv.profileFields || "everyone";
     }
 
+    // Show ONLY users with active chat messages unless searching
     function renderUsersList() {
       if (!currentUser) return;
       const q = searchUsersInput.value.trim().toLowerCase();
@@ -2428,10 +2480,17 @@
 
       Object.values(allUsers).forEach((u) => {
         if (u.uid === currentUser.uid) return;
+        attachPeerTypingListener(u.uid);
+
+        const hasChat = !!activeChatIds[u.uid] || (selectedPeer && selectedPeer.uid === u.uid);
         const visName = getVisibleName(u);
         const visAbout = getVisibleAbout(u);
-        const label = `${visName} ${u.email || ""} ${visAbout}`.toLowerCase();
-        if (q && !label.includes(q)) return;
+        const rawMatch = `${visName} ${u.name || ""} ${u.email || ""} ${visAbout}`.toLowerCase();
+
+        // When NOT searching, show ONLY peers who have an active chat
+        if (!q && !hasChat) return;
+        // When searching, show matching peers (existing chat or new contact to chat with)
+        if (q && !rawMatch.includes(q)) return;
 
         const isBlocked = isUserBlockedByMe(u.uid);
         const isLocked = !!getChatLockPin(u.uid);
@@ -2565,7 +2624,17 @@
       messageInput.value = draft;
       if (draft.trim()) { liveFormatBar.classList.add("active"); liveFormatBar.innerHTML = `Preview: ${formatRichText(draft)}`; }
 
-      if (!peer.isAI) db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true).catch(() => {});
+      if (!peer.isAI) {
+        db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true).catch(() => {});
+        attachPeerTypingListener(peer.uid);
+        if (activePeerTypingRef) activePeerTypingRef.off();
+        activePeerTypingRef = db.ref(`typing/${chatId}/${peer.uid}`);
+        activePeerTypingRef.on("value", (snap) => {
+          if (!typingMap[chatId]) typingMap[chatId] = {};
+          typingMap[chatId][peer.uid] = snap.val() || null;
+          refreshPresenceAndTypingUI();
+        });
+      }
 
       db.ref(`chats/${chatId}/pinned`).on("value", (snap) => {
         const pData = snap.val();
@@ -2575,14 +2644,7 @@
 
       pinnedBanner.onclick = (e) => {
         if (e.target.closest("#unpinMsgBtn")) return;
-        const pTxt = pinnedBannerText.textContent || "";
-        const wraps = Array.from(messagesContainer.querySelectorAll(".msg-swipe-wrap"));
-        const match = wraps.find((w) => (w.textContent || "").includes(pTxt));
-        if (match) {
-          match.scrollIntoView({ behavior: "smooth", block: "center" });
-          const b = match.querySelector(".msg");
-          if (b) { b.classList.remove("msg-highlight"); void b.offsetWidth; b.classList.add("msg-highlight"); }
-        }
+        jumpAndHighlightQuotedMessage(pinnedBannerText.textContent || "");
       };
 
       unpinMsgBtn.onclick = (e) => { e.stopPropagation(); db.ref(`chats/${chatId}/pinned`).remove().catch(() => {}); };
@@ -2610,6 +2672,7 @@
 
       messagesRef.on("child_added", (snap) => {
         const msg = snap.val(); if (!msg) return;
+        activeChatIds[peer.uid] = true;
         if (msg.senderId !== currentUser.uid && msg.status !== "seen" && navigator.onLine) {
           snap.ref.update({ status: "seen", seenAt: Date.now() }).catch(() => {});
           unreadCounts[peer.uid] = 0; renderUsersList();
@@ -2677,6 +2740,7 @@
       if (selectedPeer.isAI) { localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`); messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`; return; }
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       await db.ref(`chats/${chatId}/messages`).remove();
+      activeChatIds[selectedPeer.uid] = false;
       messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`;
     });
 
@@ -2688,6 +2752,7 @@
         await db.ref(`chats/${chatId}`).remove().catch(() => {});
         await db.ref(`typing/${chatId}`).remove().catch(() => {});
         await db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).remove().catch(() => {});
+        activeChatIds[peer.uid] = false;
       }
       setChatLockPin(peer.uid, null); unreadCounts[peer.uid] = 0;
       if (selectedPeer && selectedPeer.uid === peer.uid) closeActiveChatToList();
@@ -2806,7 +2871,7 @@
           : `color:${escapeAttr(customCol)};`;
         bodyHtml = `<span class="sticker-frame${shapeCls}" style="${frameStyle}"><span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span></span>`;
       } else {
-        const quoteHtml = msg.replyTo ? `<div class="reply-quote">${formatRichText(msg.replyTo)}</div>` : "";
+        const quoteHtml = msg.replyTo ? `<div class="reply-quote" data-quote-jump="${escapeAttr(msg.replyTo)}">${formatRichText(msg.replyTo)}</div>` : "";
         let mediaHtml = "";
         if (msg.mediaType === "image" && msg.mediaUrl) mediaHtml = `<img class="chat-photo" loading="lazy" src="${escapeAttr(msg.mediaUrl)}" alt="" />`;
         else if (msg.mediaType === "video" && msg.mediaUrl) {
@@ -2833,6 +2898,14 @@
       wrap.innerHTML = `<div class="${bubbleClass}">${html}</div>`;
       const bubbleEl = wrap.firstElementChild;
 
+      const quoteEl = bubbleEl.querySelector("[data-quote-jump]");
+      if (quoteEl) {
+        quoteEl.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          jumpAndHighlightQuotedMessage(msg.replyTo || "");
+        });
+      }
+
       const photoEl = bubbleEl.querySelector("img.chat-photo");
       if (photoEl && msg.mediaUrl) photoEl.addEventListener("click", (ev) => { ev.stopPropagation(); openFullPhoto(msg.mediaUrl); });
 
@@ -2843,7 +2916,8 @@
         attachSwipeToReply(wrap, msg);
         attachLongPress(bubbleEl, () => openMessageActionSheet(msgId, msg));
         let lastTap = 0;
-        bubbleEl.addEventListener("click", () => {
+        bubbleEl.addEventListener("click", (ev) => {
+          if (ev.target.closest("[data-quote-jump]")) return;
           const now = Date.now();
           if (now - lastTap < 300) { lastTap = 0; handleDoubleTapReaction(msgId, msg); }
           else { lastTap = now; }
@@ -2990,6 +3064,7 @@
         }
 
         const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+        activeChatIds[selectedPeer.uid] = true;
         await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
           senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
           sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape,
@@ -3030,6 +3105,7 @@
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
+      activeChatIds[selectedPeer.uid] = true;
 
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid, receiverId: selectedPeer.uid, text, replyTo: quoteText,
@@ -3046,6 +3122,7 @@
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
       const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent";
+      activeChatIds[selectedPeer.uid] = true;
       try {
         attachBtn.textContent = "⏳";
         for (const file of files) {
@@ -3086,6 +3163,7 @@
             const reader = new FileReader();
             reader.onloadend = async () => {
               const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+              activeChatIds[selectedPeer.uid] = true;
               await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
                 senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
                 mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
@@ -3119,13 +3197,23 @@
       document.documentElement.style.setProperty("--msg-font-size", sz);
     });
 
-    toggleLastSeenEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/lastSeenEnabled`).set(toggleLastSeenEnabled.checked); });
-    toggleDpEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/dpEnabled`).set(toggleDpEnabled.checked); });
-    toggleAboutEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/aboutEnabled`).set(toggleAboutEnabled.checked); });
-    toggleStatusEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/statusEnabled`).set(toggleStatusEnabled.checked); });
-    privacyLastSeenSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/lastSeen`).set(privacyLastSeenSelect.value); });
-    privacyDpSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/dp`).set(privacyDpSelect.value); });
-    privacyProfileFieldsSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/profileFields`).set(privacyProfileFieldsSelect.value); });
+    async function savePrivacyField(path, val) {
+      if (!currentUser) return;
+      await db.ref(`users/${currentUser.uid}/privacy/${path}`).set(val);
+      if (allUsers[currentUser.uid]) {
+        if (!allUsers[currentUser.uid].privacy) allUsers[currentUser.uid].privacy = {};
+        allUsers[currentUser.uid].privacy[path] = val;
+      }
+      refreshPresenceAndTypingUI();
+    }
+
+    toggleLastSeenEnabled.addEventListener("change", () => savePrivacyField("lastSeenEnabled", toggleLastSeenEnabled.checked));
+    toggleDpEnabled.addEventListener("change", () => savePrivacyField("dpEnabled", toggleDpEnabled.checked));
+    toggleAboutEnabled.addEventListener("change", () => savePrivacyField("aboutEnabled", toggleAboutEnabled.checked));
+    toggleStatusEnabled.addEventListener("change", () => savePrivacyField("statusEnabled", toggleStatusEnabled.checked));
+    privacyLastSeenSelect.addEventListener("change", () => savePrivacyField("lastSeen", privacyLastSeenSelect.value));
+    privacyDpSelect.addEventListener("change", () => savePrivacyField("dp", privacyDpSelect.value));
+    privacyProfileFieldsSelect.addEventListener("change", () => savePrivacyField("profileFields", privacyProfileFieldsSelect.value));
 
     chooseWallpaperBtn.addEventListener("click", () => { if (!selectedPeer) { alert("Open a chat first."); return; } wallpaperFileInput.click(); });
     wallpaperFileInput.addEventListener("change", async (e) => {
