@@ -233,27 +233,24 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs (Compat for simple single-file usage) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    // 1. ඔබේ Firebase Project Configuration මෙහි ඇතුළත් කරන්න
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyB6sxe0wx35Xnm1IWQmQEXYl2GIYZoyoFA",
+      authDomain: "my-chat-2026-27a0b.firebaseapp.com",
+      databaseURL: "https://my-chat-2026-27a0b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "my-chat-2026-27a0b",
+      storageBucket: "my-chat-2026-27a0b.firebasestorage.app",
+      messagingSenderId: "346627278467",
+      appId: "1:346627278467:web:3194f015fbcf7ba50cfdb6"
     };
 
-    // 2. Media Upload Endpoint (උදා: Cloudinary unsigned upload URL හෝ ඔබේ server endpoint)
-    // සටහන: Firebase Storage Blanks / Blaze plan නැති නම්, unsigned media upload URL එකක් යොදන්න.
-    const MEDIA_UPLOAD_URL = ""; // උදා: "https://api.cloudinary.com/v1_1/<cloud_name>/auto/upload"
-    const MEDIA_UPLOAD_PRESET = ""; // උදා: "your_unsigned_preset"
+    const MEDIA_UPLOAD_URL = "";
+    const MEDIA_UPLOAD_PRESET = "";
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -578,7 +575,6 @@
       }
     });
 
-    // Settings Modal Handlers
     openSettingsBtn.addEventListener("click", () => settingsModal.classList.add("active"));
     closeSettingsBtn.addEventListener("click", () => settingsModal.classList.remove("active"));
 
