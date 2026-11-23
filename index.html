@@ -55,14 +55,15 @@
       width: min(390px, 92%);
       margin: auto;
       background: var(--panel);
-      padding: 22px 18px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      padding: 24px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .auth-box h2 { text-align: center; color: var(--accent); font-size: 22px; }
+    .auth-box h2 { text-align: center; color: var(--accent); font-size: 22px; font-weight: 700; }
     .auth-box input {
       width: 100%;
       padding: 12px 14px;
@@ -73,6 +74,7 @@
       outline: none;
       font-size: 14px;
     }
+    .auth-box input:focus { border-color: var(--accent); }
     .err { color: #ff7675; font-size: 12.5px; min-height: 16px; text-align: center; }
 
     /* Buttons */
@@ -91,7 +93,9 @@
       gap: 6px;
       white-space: nowrap;
       flex-shrink: 0;
+      transition: opacity 0.15s ease, transform 0.1s ease;
     }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
     .btn.secondary {
       background: var(--panel-2);
       color: var(--text);
@@ -335,6 +339,7 @@
       gap: 8px;
     }
     .setting-card label { font-size: 13px; font-weight: 600; }
+    .setting-card small { font-size: 11.5px; color: var(--muted); }
     .setting-card input[type="text"], .setting-card select {
       width: 100%;
       padding: 9px 11px;
@@ -467,7 +472,6 @@
     }
     .blocked-banner.active { display: flex; }
 
-    /* Composer strictly fitted to width */
     .composer {
       background: var(--panel);
       padding: 7px 8px;
@@ -578,8 +582,8 @@
 </head>
 <body>
 
-  <!-- Auth Screen -->
-  <section id="authScreen" class="screen active">
+  <!-- Auth Screen (hidden immediately if session cached) -->
+  <section id="authScreen" class="screen">
     <div class="auth-box">
       <h2 id="authTitle">Log in</h2>
       <input type="text" id="nameInput" placeholder="Name" style="display:none;" />
@@ -612,7 +616,6 @@
       </div>
     </header>
 
-    <!-- Chat 3-Dot Menu -->
     <div class="dropdown-menu" id="chatMoreMenu">
       <button class="dropdown-item" id="menuOpenSettingsBtn">Settings</button>
       <button class="dropdown-item" id="menuWallpaperBtn">Wallpaper</button>
@@ -648,6 +651,18 @@
         <!-- Settings -->
         <div class="tab-pane" id="settingsTab">
           <div class="settings-scroll">
+            <div class="setting-card">
+              <label>Notifications</label>
+              <small id="notifPermStatus">Status: Checking...</small>
+              <button class="btn small full" id="enableNotifBtn">Enable notifications</button>
+              <select id="soundSelect">
+                <option value="chime">Tone: Chime</option>
+                <option value="pop">Tone: Pop</option>
+                <option value="mute">Tone: Mute</option>
+              </select>
+              <button class="btn secondary small full" id="testSoundBtn">Test tone</button>
+            </div>
+
             <div class="setting-card">
               <label>Profile photo</label>
               <input type="file" id="dpFileInput" accept="image/*" style="display:none;" />
@@ -699,16 +714,10 @@
             </div>
 
             <div class="setting-card">
-              <label>Chat wallpaper & sound</label>
+              <label>Chat wallpaper</label>
               <input type="file" id="wallpaperFileInput" accept="image/*" style="display:none;" />
               <button class="btn secondary small full" id="chooseWallpaperBtn">Set chat wallpaper</button>
               <button class="btn secondary small full" id="clearWallpaperBtn">Remove wallpaper</button>
-              <select id="soundSelect">
-                <option value="chime">Tone: Chime</option>
-                <option value="pop">Tone: Pop</option>
-                <option value="mute">Tone: Mute</option>
-              </select>
-              <button class="btn secondary small full" id="testSoundBtn">Test tone</button>
             </div>
           </div>
         </div>
@@ -807,7 +816,7 @@
     </div>
   </div>
 
-  <!-- Add Status Modal (WhatsApp color background + text + photo) -->
+  <!-- Add Status Modal -->
   <div class="modal" id="addStatusModal">
     <div class="sheet">
       <h3>New status</h3>
@@ -861,6 +870,13 @@
       </svg>`
     );
 
+    // Immediate session screen without login flash
+    if (localStorage.getItem("hasActiveSession") === "1") {
+      document.getElementById("chatScreen").classList.add("active");
+    } else {
+      document.getElementById("authScreen").classList.add("active");
+    }
+
     let isRegisterMode = false;
     let currentUser = null;
     let selectedPeer = null;
@@ -911,6 +927,8 @@
     const searchUsersInput = document.getElementById("searchUsersInput");
     const statusFeedList = document.getElementById("statusFeedList");
 
+    const notifPermStatus = document.getElementById("notifPermStatus");
+    const enableNotifBtn = document.getElementById("enableNotifBtn");
     const aboutInput = document.getElementById("aboutInput");
     const saveAboutBtn = document.getElementById("saveAboutBtn");
     const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -980,6 +998,71 @@
     const publishStatusBtn = document.getElementById("publishStatusBtn");
     const closeAddStatusBtn = document.getElementById("closeAddStatusBtn");
 
+    // Fast image compression helper for instant loading & reliable wallpaper saving
+    function compressImageDataUrl(file, maxDim = 900, quality = 0.72) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function refreshNotifStatusLabel() {
+      if (!("Notification" in window)) {
+        notifPermStatus.textContent = "Status: Not supported in browser";
+        return;
+      }
+      notifPermStatus.textContent = `Status: ${Notification.permission}`;
+    }
+
+    enableNotifBtn.addEventListener("click", async () => {
+      if (!("Notification" in window)) {
+        alert("Notifications not supported here.");
+        return;
+      }
+      try {
+        const perm = await Notification.requestPermission();
+        refreshNotifStatusLabel();
+        if (perm === "granted") {
+          new Notification("WhatsApp", { body: "Notifications enabled" });
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    function triggerSystemNotification(title, body) {
+      if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+        try {
+          new Notification(title || "WhatsApp", { body: body || "New message" });
+        } catch (_) {}
+      }
+    }
+
     function unlockAudio() {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -997,7 +1080,10 @@
     function switchToTab(tabId) {
       document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tabId));
       document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.id === tabId));
-      if (tabId === "settingsTab") renderSelectedStatusUsersPicker();
+      if (tabId === "settingsTab") {
+        renderSelectedStatusUsersPicker();
+        refreshNotifStatusLabel();
+      }
     }
 
     document.querySelectorAll(".nav-tab").forEach((tab) => {
@@ -1338,6 +1424,7 @@
     });
 
     logoutBtn.addEventListener("click", async () => {
+      localStorage.removeItem("hasActiveSession");
       if (currentUser) {
         await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() }).catch(() => {});
       }
@@ -1347,6 +1434,7 @@
 
     auth.onAuthStateChanged((user) => {
       if (user) {
+        localStorage.setItem("hasActiveSession", "1");
         currentUser = user;
         authScreen.classList.remove("active");
         chatScreen.classList.add("active");
@@ -1355,6 +1443,7 @@
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
         fontSizeSelect.value = savedFont;
         document.documentElement.style.setProperty("--msg-font-size", savedFont);
+        refreshNotifStatusLabel();
 
         setupPresence(user.uid);
 
@@ -1373,6 +1462,7 @@
           updateTopHeader();
         });
       } else {
+        localStorage.removeItem("hasActiveSession");
         currentUser = null;
         selectedPeer = null;
         chatScreen.classList.remove("active");
@@ -1411,7 +1501,7 @@
         row.className = "list-row" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
         row.innerHTML = `
           <div class="avatar-wrap ${ringClass}">
-            <img class="avatar" src="${dpSrc}" alt="" />
+            <img class="avatar" src="${dpSrc}" alt="" loading="lazy" />
             <span class="online-disc ${p.isOnline ? "active" : ""}"></span>
           </div>
           <div class="row-meta">
@@ -1487,7 +1577,7 @@
         isInitialLoad = false;
       });
 
-      messagesRef.on("child_added", (snap) => {
+      messagesRef.on("child_added", async (snap) => {
         const msg = snap.val();
         if (!msg) return;
 
@@ -1498,6 +1588,8 @@
         renderOrUpdateMessage(snap.key, msg);
         if (!isInitialLoad && msg.senderId !== currentUser.uid && !isUserBlockedByMe(msg.senderId)) {
           playNotificationSound();
+          const senderObj = allUsers[msg.senderId] || {};
+          triggerSystemNotification(senderObj.name || "New message", msg.text || "Media");
         }
       });
 
@@ -1675,11 +1767,11 @@
       } else {
         let mediaHtml = "";
         if (msg.mediaType === "image" && msg.mediaUrl) {
-          mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="" />`;
+          mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="" loading="lazy" />`;
         } else if (msg.mediaType === "video" && msg.mediaUrl) {
-          mediaHtml = `<video controls src="${escapeAttr(msg.mediaUrl)}"></video>`;
+          mediaHtml = `<video controls preload="metadata" src="${escapeAttr(msg.mediaUrl)}"></video>`;
         } else if (msg.mediaType === "audio" && msg.mediaUrl) {
-          mediaHtml = `<audio controls src="${escapeAttr(msg.mediaUrl)}"></audio>`;
+          mediaHtml = `<audio controls preload="metadata" src="${escapeAttr(msg.mediaUrl)}"></audio>`;
         }
         const editedHtml = msg.edited ? `<span class="edited-tag">Edited</span>` : "";
         const textHtml = msg.text ? `<div>${escapeHtml(msg.text)}${editedHtml}</div>` : "";
@@ -1824,15 +1916,10 @@
           const data = await res.json();
           if (!data.secure_url) throw new Error("Upload failed");
           finalUrl = data.secure_url;
-        } else if (!isVideo && file.size <= 350 * 1024) {
-          finalUrl = await new Promise((resolve, reject) => {
-            const r = new FileReader();
-            r.onload = () => resolve(r.result);
-            r.onerror = reject;
-            r.readAsDataURL(file);
-          });
+        } else if (!isVideo) {
+          finalUrl = await compressImageDataUrl(file, 850, 0.72);
         } else {
-          throw new Error("Large files/videos require upload config.");
+          throw new Error("Video upload requires MEDIA_UPLOAD_URL & MEDIA_UPLOAD_PRESET.");
         }
 
         await db.ref(`chats/${chatId}/messages`).push({
@@ -1861,11 +1948,14 @@
       if (!isRecordingVoice) {
         try {
           if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Microphone not supported on this browser.");
+            alert("Microphone not available. Check app microphone permission in phone settings.");
             return;
           }
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
+          const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+            ? { mimeType: "audio/webm;codecs=opus" }
+            : undefined;
+          mediaRecorder = options ? new MediaRecorder(stream, options) : new MediaRecorder(stream);
           audioChunks = [];
           isRecordingVoice = true;
           voiceBtn.classList.add("recording");
@@ -1882,7 +1972,7 @@
             isRecordingVoice = false;
 
             const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-            if (blob.size < 300) return;
+            if (blob.size < 250) return;
 
             const reader = new FileReader();
             reader.onloadend = async () => {
@@ -1907,7 +1997,7 @@
           isRecordingVoice = false;
           voiceBtn.classList.remove("recording");
           voiceBtn.textContent = "🎤";
-          alert("Mic permission error: " + err.message);
+          alert("Allow microphone in Phone Settings -> Apps -> Permissions.");
         }
       } else {
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
@@ -1918,14 +2008,14 @@
 
     // Settings
     chooseDpBtn.addEventListener("click", () => dpFileInput.click());
-    dpFileInput.addEventListener("change", (e) => {
+    dpFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f || !currentUser) return;
-      const r = new FileReader();
-      r.onload = async () => {
-        await db.ref(`users/${currentUser.uid}/dp`).set(r.result);
-      };
-      r.readAsDataURL(f);
+      try {
+        const compressed = await compressImageDataUrl(f, 360, 0.75);
+        await db.ref(`users/${currentUser.uid}/dp`).set(compressed);
+      } catch (_) {}
+      dpFileInput.value = "";
     });
 
     saveAboutBtn.addEventListener("click", async () => {
@@ -1984,16 +2074,18 @@
       wallpaperFileInput.click();
     });
 
-    wallpaperFileInput.addEventListener("change", (e) => {
+    wallpaperFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f || !currentUser || !selectedPeer) return;
-      const r = new FileReader();
-      r.onload = () => {
+      try {
+        const compressedWp = await compressImageDataUrl(f, 900, 0.72);
         const key = getWallpaperKey();
-        if (key) localStorage.setItem(key, r.result);
+        if (key) localStorage.setItem(key, compressedWp);
         applyWallpaper();
-      };
-      r.readAsDataURL(f);
+      } catch (err) {
+        alert("Wallpaper error: " + err.message);
+      }
+      wallpaperFileInput.value = "";
     });
 
     clearWallpaperBtn.addEventListener("click", () => {
@@ -2005,7 +2097,7 @@
     soundSelect.addEventListener("change", () => localStorage.setItem("chatSound", soundSelect.value));
     testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); });
 
-    // Status with WhatsApp color background
+    // Status
     openAddStatusBtn.addEventListener("click", () => {
       statusTextInput.value = "";
       pendingStatusPhoto = "";
@@ -2034,13 +2126,14 @@
 
     closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
     pickStatusImgBtn.addEventListener("click", () => statusImageInput.click());
-    statusImageInput.addEventListener("change", (e) => {
+    statusImageInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f) return;
       statusImgName.textContent = f.name;
-      const r = new FileReader();
-      r.onload = () => { pendingStatusPhoto = r.result; };
-      r.readAsDataURL(f);
+      try {
+        pendingStatusPhoto = await compressImageDataUrl(f, 800, 0.7);
+      } catch (_) {}
+      statusImageInput.value = "";
     });
 
     publishStatusBtn.addEventListener("click", async () => {
@@ -2093,12 +2186,12 @@
         card.innerHTML = `
           <div style="display:flex; align-items:center; gap:9px;">
             <div class="avatar-wrap ${ringClass}">
-              <img class="avatar" src="${canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP}" alt="" />
+              <img class="avatar" src="${canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP}" alt="" loading="lazy" />
             </div>
             <div style="font-weight:600; font-size:13.5px;">${escapeHtml(st.ownerName || "")}</div>
           </div>
           ${st.text ? `<div class="status-text-banner" style="background:${escapeAttr(bg)};">${escapeHtml(st.text)}</div>` : ""}
-          ${st.photoUrl ? `<img class="status-media" src="${escapeAttr(st.photoUrl)}" alt="" />` : ""}
+          ${st.photoUrl ? `<img class="status-media" src="${escapeAttr(st.photoUrl)}" alt="" loading="lazy" />` : ""}
           <div class="status-foot">
             <span>${formatClock(st.createdAt)}</span>
             ${isMine ? `<button class="btn danger small" data-del="${escapeAttr(st.id)}">Delete</button>` : ""}
