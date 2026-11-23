@@ -10,6 +10,8 @@
       --panel: #111b21;
       --panel-2: #202c33;
       --accent: #00a884;
+      --online-blue: #4fc3f7;
+      --seen-blue: #34b7f1;
       --text: #e9edef;
       --muted: #8696a0;
       --sent: #005c4b;
@@ -37,47 +39,62 @@
     .btn {
       padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer;
       font-weight: 600; background: var(--accent); color: #06211a;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
     .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+    .btn.full { width: 100%; }
     .err { color: #ff6b6b; font-size: 13px; min-height: 18px; text-align: center; }
 
     .topbar {
       background: var(--panel); padding: 10px 14px; display: flex;
       align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
-      gap: 10px;
+      gap: 10px; z-index: 5;
     }
     .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .avatar-wrap { position: relative; flex-shrink: 0; }
     .avatar {
-      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+      width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
       background: var(--panel-2); border: 1px solid var(--border); display: block;
     }
-    .online-dot {
-      width: 11px; height: 11px; border-radius: 50%; background: #25d366;
-      border: 2px solid var(--panel); position: absolute; right: 0; bottom: 0;
+    .online-disc {
+      width: 13px; height: 13px; border-radius: 50%;
+      background: var(--online-blue);
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.85);
+      border: 2px solid var(--panel);
+      position: absolute; right: -1px; bottom: -1px;
       display: none;
     }
-    .online-dot.active { display: block; }
+    .online-disc.active { display: block; }
 
     .title-wrap { overflow: hidden; }
     .title-wrap h4 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .title-wrap small { color: var(--muted); font-size: 12px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .status-online { color: #25d366 !important; }
+    .status-line {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 12px; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .status-line.is-online { color: var(--online-blue); font-weight: 600; }
+    .mini-disc {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--online-blue);
+      box-shadow: 0 0 6px rgba(79, 195, 247, 0.85);
+      display: inline-block; flex-shrink: 0;
+    }
 
-    .main-grid { display: flex; flex: 1; height: calc(100vh - 62px); overflow: hidden; }
+    .main-grid { display: flex; flex: 1; height: calc(100vh - 64px); overflow: hidden; }
 
     .sidebar {
-      width: 320px; max-width: 100%; background: var(--panel);
+      width: 330px; max-width: 100%; background: var(--panel);
       border-right: 1px solid var(--border); display: flex; flex-direction: column;
     }
-    .sidebar-head { padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+    .sidebar-head { padding: 10px; border-bottom: 1px solid var(--border); }
     .sidebar-head input {
-      flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+      width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
       background: var(--panel-2); color: var(--text); outline: none;
     }
     .user-list { flex: 1; overflow-y: auto; }
     .user-item {
-      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+      display: flex; align-items: center; gap: 11px; padding: 11px 14px;
       cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .user-item:hover, .user-item.active { background: var(--panel-2); }
@@ -86,20 +103,27 @@
       flex: 1; display: flex; flex-direction: column; position: relative;
       background-color: var(--bg-main);
       background-image: var(--chat-wallpaper);
-      background-size: cover; background-position: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .chat-overlay {
       flex: 1; display: flex; flex-direction: column;
-      background: rgba(11, 20, 26, 0.72); height: 100%;
+      background: rgba(11, 20, 26, 0.28);
+      height: 100%; overflow: hidden;
     }
     .messages {
       flex: 1; overflow-y: auto; padding: 16px; display: flex;
       flex-direction: column; gap: 10px;
     }
-    .empty-chat { margin: auto; color: var(--muted); text-align: center; padding: 20px; }
+    .empty-chat {
+      margin: auto; color: var(--text); background: rgba(17, 27, 33, 0.85);
+      padding: 14px 18px; border-radius: 12px; text-align: center; font-size: 13px;
+    }
     .msg {
-      max-width: 75%; padding: 9px 12px; border-radius: 10px;
+      max-width: 76%; padding: 9px 12px 7px 12px; border-radius: 10px;
       word-wrap: break-word; position: relative; font-size: 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.35);
     }
     .msg.sent { align-self: flex-end; background: var(--sent); }
     .msg.recv { align-self: flex-start; background: var(--recv); }
@@ -107,38 +131,63 @@
       max-width: 240px; max-height: 260px; border-radius: 8px;
       display: block; margin-top: 6px;
     }
-    .msg time { display: block; font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 4px; text-align: right; }
+    .msg-meta {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 5px; margin-top: 4px;
+    }
+    .msg-meta time { font-size: 10.5px; color: rgba(255,255,255,0.72); }
+
+    /* Bold WhatsApp-style single & double ticks */
+    .tick-svg {
+      width: 17px; height: 12px; flex-shrink: 0;
+      display: inline-block; vertical-align: middle;
+    }
+    .tick-svg path {
+      fill: none;
+      stroke: rgba(233, 237, 239, 0.78);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .tick-svg.seen path {
+      stroke: var(--seen-blue);
+    }
 
     .composer {
       background: var(--panel); padding: 10px; border-top: 1px solid var(--border);
       display: flex; align-items: center; gap: 8px;
     }
     .composer input[type="text"] {
-      flex: 1; padding: 10px 12px; border-radius: 20px; border: 1px solid var(--border);
+      flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--border);
       background: var(--panel-2); color: var(--text); outline: none;
     }
     .icon-btn {
       background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
-      border-radius: 50%; width: 38px; height: 38px; display: grid; place-items: center;
-      cursor: pointer; flex-shrink: 0;
+      border-radius: 50%; width: 40px; height: 40px; display: grid; place-items: center;
+      cursor: pointer; flex-shrink: 0; font-size: 16px;
     }
 
     .modal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
       z-index: 50; align-items: center; justify-content: center; padding: 16px;
     }
     .modal.active { display: flex; }
     .modal-card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-      width: 100%; max-width: 420px; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      width: 100%; max-width: 420px; padding: 18px; display: flex; flex-direction: column; gap: 14px;
       max-height: 88vh; overflow-y: auto;
     }
-    .modal-card label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
-    .modal-card select, .modal-card input[type="text"] {
-      width: 100%; padding: 9px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--panel-2); color: var(--text);
+    .setting-block {
+      background: var(--panel-2); padding: 12px; border-radius: 10px;
+      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;
     }
-    .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+    .setting-block label { font-size: 13px; color: var(--text); font-weight: 600; }
+    .setting-block small { font-size: 11.5px; color: var(--muted); }
+    .modal-card select {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel); color: var(--text);
+    }
+    .row { display: flex; gap: 8px; justify-content: flex-end; }
 
     @media (max-width: 768px) {
       .sidebar { width: 100%; display: flex; }
@@ -167,12 +216,12 @@
       <div class="user-info">
         <button class="icon-btn" id="backToUsersBtn" style="display:none;">←</button>
         <div class="avatar-wrap">
-          <img id="myAvatar" class="avatar" src="" alt="DP" />
-          <span id="peerOnlineDot" class="online-dot"></span>
+          <img id="headerAvatar" class="avatar" src="" alt="DP" />
+          <span id="peerOnlineDisc" class="online-disc"></span>
         </div>
         <div class="title-wrap">
-          <h4 id="myDisplayName">User</h4>
-          <small id="activePeerLabel">කතා කිරීමට කෙනෙකු තෝරන්න</small>
+          <h4 id="headerTitle">User</h4>
+          <div id="headerStatus" class="status-line">කතා කිරීමට කෙනෙකු තෝරන්න</div>
         </div>
       </div>
       <div style="display:flex; gap:8px;">
@@ -189,7 +238,7 @@
         <div class="user-list" id="usersList"></div>
       </aside>
 
-      <main class="chat-panel">
+      <main class="chat-panel" id="chatPanel">
         <div class="chat-overlay">
           <div class="messages" id="messagesContainer">
             <div class="empty-chat">වම් පසින් පරිශීලකයෙකු තෝරා පෞද්ගලිකව කතා කරන්න.</div>
@@ -208,31 +257,36 @@
 
   <div class="modal" id="settingsModal">
     <div class="modal-card">
-      <h3>Profile & Chat Settings</h3>
+      <h3>Settings</h3>
 
-      <div>
-        <label>Display Picture (DP) වෙනස් කරන්න</label>
-        <input type="file" id="dpFileInput" accept="image/*" />
+      <div class="setting-block">
+        <label>Profile Picture (DP)</label>
+        <small>ඔබේ ගිණුමේ DP එක වෙනස් කරන්න</small>
+        <input type="file" id="dpFileInput" accept="image/*" style="display:none;" />
+        <button type="button" class="btn full" id="chooseDpBtn">DP Photo තෝරන්න</button>
       </div>
 
-      <div>
-        <label>මෙම Chat එකේ Wallpaper එක (ඔබට පමණක් පෙනේ)</label>
-        <input type="file" id="wallpaperFileInput" accept="image/*" />
-        <button type="button" class="btn secondary" id="clearWallpaperBtn" style="margin-top:6px; width:100%;">Wallpaper ඉවත් කරන්න</button>
+      <div class="setting-block">
+        <label>Chat Wallpaper</label>
+        <small>මෙම Chat එකට පමණක් පෙනෙන Wallpaper එකක් දාන්න</small>
+        <input type="file" id="wallpaperFileInput" accept="image/*" style="display:none;" />
+        <button type="button" class="btn full" id="chooseWallpaperBtn">Wallpaper තෝරන්න</button>
+        <button type="button" class="btn secondary full" id="clearWallpaperBtn">Wallpaper ඉවත් කරන්න</button>
       </div>
 
-      <div>
-        <label>Notification Sound තෝරන්න</label>
+      <div class="setting-block">
+        <label>Notification Sound</label>
+        <small>මැසේජ් එද්දී ඇසෙන ශබ්දය තෝරන්න</small>
         <select id="soundSelect">
           <option value="chime">Soft Chime</option>
           <option value="pop">Classic Pop</option>
           <option value="mute">Mute (Sound Off)</option>
         </select>
-        <button type="button" class="btn secondary" id="testSoundBtn" style="margin-top:6px; width:100%;">Sound Test කරන්න</button>
+        <button type="button" class="btn secondary full" id="testSoundBtn">Sound Test කරන්න</button>
       </div>
 
       <div class="row">
-        <button type="button" class="btn secondary" id="closeSettingsBtn">වසන්න</button>
+        <button type="button" class="btn secondary full" id="closeSettingsBtn">වසන්න</button>
       </div>
     </div>
   </div>
@@ -252,9 +306,8 @@
       appId: "1:346627278467:web:3194f015fbcf7ba50cfdb6"
     };
 
-    // Photo/Video Upload සඳහා Cloudinary (Unsigned) භාවිත කරන්නේ නම් පහත දෙක පුරවන්න:
-    const MEDIA_UPLOAD_URL = "";    // උදා: "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/auto/upload"
-    const MEDIA_UPLOAD_PRESET = ""; // උදා: "YOUR_UNSIGNED_PRESET"
+    const MEDIA_UPLOAD_URL = "";
+    const MEDIA_UPLOAD_PRESET = "";
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -286,10 +339,10 @@
     const toggleAuthModeBtn = document.getElementById("toggleAuthModeBtn");
     const authError = document.getElementById("authError");
 
-    const myAvatar = document.getElementById("myAvatar");
-    const peerOnlineDot = document.getElementById("peerOnlineDot");
-    const myDisplayName = document.getElementById("myDisplayName");
-    const activePeerLabel = document.getElementById("activePeerLabel");
+    const headerAvatar = document.getElementById("headerAvatar");
+    const peerOnlineDisc = document.getElementById("peerOnlineDisc");
+    const headerTitle = document.getElementById("headerTitle");
+    const headerStatus = document.getElementById("headerStatus");
     const usersList = document.getElementById("usersList");
     const searchUsersInput = document.getElementById("searchUsersInput");
     const messagesContainer = document.getElementById("messagesContainer");
@@ -304,7 +357,9 @@
     const openSettingsBtn = document.getElementById("openSettingsBtn");
     const closeSettingsBtn = document.getElementById("closeSettingsBtn");
     const dpFileInput = document.getElementById("dpFileInput");
+    const chooseDpBtn = document.getElementById("chooseDpBtn");
     const wallpaperFileInput = document.getElementById("wallpaperFileInput");
+    const chooseWallpaperBtn = document.getElementById("chooseWallpaperBtn");
     const clearWallpaperBtn = document.getElementById("clearWallpaperBtn");
     const soundSelect = document.getElementById("soundSelect");
     const testSoundBtn = document.getElementById("testSoundBtn");
@@ -325,42 +380,61 @@
     document.addEventListener("touchstart", unlockAudio, { passive: true });
 
     function formatLastSeen(ts) {
-      if (!ts) return "Offline";
+      if (!ts) return "Last seen recently";
       const diffSec = Math.floor((Date.now() - ts) / 1000);
       if (diffSec < 60) return "Last seen just now";
       const diffMin = Math.floor(diffSec / 60);
-      if (diffMin < 60) return `Last seen ${diffMin}m ago`;
+      if (diffMin < 60) return `Last seen ${diffMin} min ago`;
       const d = new Date(ts);
-      return "Last seen " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const timeStr = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const isToday = d.toDateString() === new Date().toDateString();
+      return isToday ? `Last seen today at ${timeStr}` : `Last seen ${d.toLocaleDateString()} ${timeStr}`;
     }
 
-    function updatePeerHeaderStatus() {
-      if (!selectedPeer) {
-        activePeerLabel.textContent = "කතා කිරීමට කෙනෙකු තෝරන්න";
-        activePeerLabel.classList.remove("status-online");
-        peerOnlineDot.classList.remove("active");
-        return;
+    function getPresenceMarkup(userObj, showDiscForOnline = true) {
+      if (userObj && userObj.online === true) {
+        return {
+          text: showDiscForOnline
+            ? `<span class="mini-disc"></span><span>Online</span>`
+            : `Online`,
+          isOnline: true
+        };
       }
-      const livePeer = allUsers[selectedPeer.uid] || selectedPeer;
-      const isOnline = !!livePeer.online;
-      peerOnlineDot.classList.toggle("active", isOnline);
-      if (isOnline) {
-        activePeerLabel.textContent = `${livePeer.name || livePeer.email} • Online`;
-        activePeerLabel.classList.add("status-online");
+      return {
+        text: `<span>${escapeHtml(formatLastSeen(userObj && userObj.lastSeen))}</span>`,
+        isOnline: false
+      };
+    }
+
+    function updateHeaderDisplay() {
+      if (!currentUser) return;
+      const me = allUsers[currentUser.uid] || {};
+
+      if (selectedPeer) {
+        const livePeer = allUsers[selectedPeer.uid] || selectedPeer;
+        headerAvatar.src = livePeer.dp || DEFAULT_DP;
+        headerTitle.textContent = livePeer.name || livePeer.email;
+        const p = getPresenceMarkup(livePeer, true);
+        peerOnlineDisc.classList.toggle("active", p.isOnline);
+        headerStatus.classList.toggle("is-online", p.isOnline);
+        headerStatus.innerHTML = p.text;
       } else {
-        activePeerLabel.textContent = `${livePeer.name || livePeer.email} • ${formatLastSeen(livePeer.lastSeen)}`;
-        activePeerLabel.classList.remove("status-online");
+        headerAvatar.src = me.dp || DEFAULT_DP;
+        headerTitle.textContent = me.name || currentUser.email;
+        peerOnlineDisc.classList.remove("active");
+        headerStatus.classList.remove("is-online");
+        headerStatus.textContent = "කතා කිරීමට කෙනෙකු තෝරන්න";
       }
     }
 
     function setupPresence(uid) {
-      const userStatusRef = db.ref(`users/${uid}`);
+      const userRef = db.ref(`users/${uid}`);
       const connectedRef = db.ref(".info/connected");
 
       connectedRef.on("value", (snap) => {
         if (snap.val() === true) {
-          userStatusRef.update({ online: true });
-          userStatusRef.onDisconnect().update({
+          userRef.update({ online: true });
+          userRef.onDisconnect().update({
             online: false,
             lastSeen: firebase.database.ServerValue.TIMESTAMP
           });
@@ -370,9 +444,9 @@
       document.addEventListener("visibilitychange", () => {
         if (!currentUser) return;
         if (document.hidden) {
-          userStatusRef.update({ online: false, lastSeen: Date.now() });
+          userRef.update({ online: false, lastSeen: Date.now() });
         } else {
-          userStatusRef.update({ online: true });
+          userRef.update({ online: true });
         }
       });
     }
@@ -394,7 +468,7 @@
         if (mode === "chime") {
           osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
         }
-        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -403,17 +477,46 @@
       } catch (_) {}
     }
 
+    function getWallpaperStorageKey() {
+      if (!currentUser || !selectedPeer) return null;
+      return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
+    }
+
     function applyLocalWallpaper() {
-      if (!currentUser || !selectedPeer) {
-        document.documentElement.style.setProperty("--chat-wallpaper", "none");
-        return;
+      const key = getWallpaperStorageKey();
+      let savedWp = key ? localStorage.getItem(key) : null;
+      if (!savedWp && currentUser && selectedPeer) {
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        const me = allUsers[currentUser.uid];
+        if (me && me.wallpapers && me.wallpapers[chatId]) {
+          savedWp = me.wallpapers[chatId];
+        }
       }
-      const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
-      const savedWp = localStorage.getItem(key);
       document.documentElement.style.setProperty(
         "--chat-wallpaper",
         savedWp ? `url("${savedWp}")` : "none"
       );
+    }
+
+    function renderTickSvg(msg) {
+      if (msg.senderId !== currentUser.uid) return "";
+      const isSeen = msg.status === "seen";
+      const isDelivered = msg.status === "delivered" || isSeen;
+      const seenClass = isSeen ? " seen" : "";
+
+      if (isDelivered) {
+        return `
+          <svg class="tick-svg${seenClass}" viewBox="0 0 24 16" aria-label="${isSeen ? "Seen" : "Delivered"}">
+            <path d="M2 8.5L6.5 13L15.5 3" />
+            <path d="M8.5 8.5L13 13L22 3" />
+          </svg>
+        `;
+      }
+      return `
+        <svg class="tick-svg" viewBox="0 0 20 16" aria-label="Sent">
+          <path d="M4 8.5L8.5 13L17.5 3" />
+        </svg>
+      `;
     }
 
     toggleAuthModeBtn.addEventListener("click", () => {
@@ -486,16 +589,11 @@
 
         setupPresence(user.uid);
 
-        db.ref(`users/${user.uid}`).on("value", (snap) => {
-          const data = snap.val() || {};
-          myDisplayName.textContent = data.name || user.email;
-          myAvatar.src = data.dp || DEFAULT_DP;
-        });
-
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
           renderUsersList();
-          updatePeerHeaderStatus();
+          updateHeaderDisplay();
+          applyLocalWallpaper();
         });
       } else {
         currentUser = null;
@@ -514,14 +612,17 @@
         const label = `${u.name || ""} ${u.email || ""}`.toLowerCase();
         if (q && !label.includes(q)) return;
 
-        const statusText = u.online ? "● Online" : formatLastSeen(u.lastSeen);
+        const p = getPresenceMarkup(u, true);
         const item = document.createElement("div");
         item.className = "user-item" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
         item.innerHTML = `
-          <img class="avatar" src="${u.dp || DEFAULT_DP}" alt="DP" />
+          <div class="avatar-wrap">
+            <img class="avatar" src="${u.dp || DEFAULT_DP}" alt="DP" />
+            <span class="online-disc ${p.isOnline ? "active" : ""}"></span>
+          </div>
           <div class="title-wrap">
             <h4>${escapeHtml(u.name || u.email)}</h4>
-            <small class="${u.online ? "status-online" : ""}">${escapeHtml(statusText)}</small>
+            <div class="status-line ${p.isOnline ? "is-online" : ""}">${p.text}</div>
           </div>
         `;
         item.addEventListener("click", () => openChatWith(u));
@@ -534,7 +635,7 @@
     function openChatWith(peer) {
       unlockAudio();
       selectedPeer = peer;
-      updatePeerHeaderStatus();
+      updateHeaderDisplay();
       mainGrid.classList.add("chat-open");
       if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
       renderUsersList();
@@ -551,29 +652,41 @@
         isInitialLoad = false;
       });
 
-      messagesRef.on("child_added", (snap) => {
+      messagesRef.on("child_added", async (snap) => {
         const msg = snap.val();
         if (!msg) return;
-        appendMessage(msg);
+
+        if (msg.senderId !== currentUser.uid && msg.status !== "seen") {
+          await snap.ref.update({ status: "seen" });
+        }
+
+        renderOrUpdateMessage(snap.key, msg);
         if (!isInitialLoad && msg.senderId !== currentUser.uid) {
           playNotificationSound();
         }
       });
+
+      messagesRef.on("child_changed", (snap) => {
+        const msg = snap.val();
+        if (!msg) return;
+        renderOrUpdateMessage(snap.key, msg);
+      });
     }
 
     backToUsersBtn.addEventListener("click", () => {
+      selectedPeer = null;
       mainGrid.classList.remove("chat-open");
       backToUsersBtn.style.display = "none";
+      updateHeaderDisplay();
+      applyLocalWallpaper();
+      renderUsersList();
     });
 
-    function appendMessage(msg) {
+    function renderOrUpdateMessage(msgId, msg) {
       const emptyEl = messagesContainer.querySelector(".empty-chat");
       if (emptyEl) emptyEl.remove();
 
-      const div = document.createElement("div");
       const isMine = msg.senderId === currentUser.uid;
-      div.className = "msg " + (isMine ? "sent" : "recv");
-
       let mediaHtml = "";
       if (msg.mediaType === "image" && msg.mediaUrl) {
         mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="Photo" />`;
@@ -585,9 +698,18 @@
       const timeStr = msg.timestamp
         ? new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         : "";
+      const tickHtml = renderTickSvg(msg);
 
-      div.innerHTML = `${textHtml}${mediaHtml}<time>${timeStr}</time>`;
-      messagesContainer.appendChild(div);
+      const content = `${textHtml}${mediaHtml}<div class="msg-meta"><time>${timeStr}</time>${tickHtml}</div>`;
+
+      let div = messagesContainer.querySelector(`[data-msg-id="${msgId}"]`);
+      if (!div) {
+        div = document.createElement("div");
+        div.setAttribute("data-msg-id", msgId);
+        messagesContainer.appendChild(div);
+      }
+      div.className = "msg " + (isMine ? "sent" : "recv");
+      div.innerHTML = content;
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -601,6 +723,9 @@
       const text = messageInput.value.trim();
       if (!text) return;
 
+      const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+      const initialStatus = peerLive && peerLive.online === true ? "delivered" : "sent";
+
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid,
@@ -608,6 +733,7 @@
         text,
         mediaType: null,
         mediaUrl: null,
+        status: initialStatus,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       });
       messageInput.value = "";
@@ -628,6 +754,8 @@
       const isVideo = file.type.startsWith("video/");
       const mediaType = isVideo ? "video" : "image";
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+      const initialStatus = peerLive && peerLive.online === true ? "delivered" : "sent";
 
       try {
         attachBtn.textContent = "⏳";
@@ -652,7 +780,7 @@
           throw new Error(
             isVideo
               ? "Video Upload කිරීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න."
-              : "350KB ට වඩා විශාල Photo හෝ Video යැවීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න."
+              : "350KB ට වඩා විශාල Photo යැවීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න."
           );
         }
 
@@ -662,6 +790,7 @@
           text: "",
           mediaType,
           mediaUrl: finalUrl,
+          status: initialStatus,
           timestamp: firebase.database.ServerValue.TIMESTAMP
         });
       } catch (err) {
@@ -675,36 +804,55 @@
     openSettingsBtn.addEventListener("click", () => settingsModal.classList.add("active"));
     closeSettingsBtn.addEventListener("click", () => settingsModal.classList.remove("active"));
 
+    chooseDpBtn.addEventListener("click", () => dpFileInput.click());
     dpFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file || !currentUser) return;
       const reader = new FileReader();
       reader.onload = async () => {
         await db.ref(`users/${currentUser.uid}/dp`).set(reader.result);
+        alert("DP එක යාවත්කාලීන වුණා!");
       };
       reader.readAsDataURL(file);
+    });
+
+    chooseWallpaperBtn.addEventListener("click", () => {
+      if (!currentUser || !selectedPeer) {
+        alert("Wallpaper දැමීමට මුලින්ම Chat එකක් විවෘත කර තිබිය යුතුය.");
+        return;
+      }
+      wallpaperFileInput.click();
     });
 
     wallpaperFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (!file || !currentUser || !selectedPeer) {
-        alert("Wallpaper දැමීමට Chat එකක් විවෘත කර තිබිය යුතුය.");
-        return;
-      }
+      if (!file || !currentUser || !selectedPeer) return;
       const reader = new FileReader();
-      reader.onload = () => {
-        const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
-        localStorage.setItem(key, reader.result);
+      reader.onload = async () => {
+        const key = getWallpaperStorageKey();
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        try {
+          if (key) localStorage.setItem(key, reader.result);
+          if (reader.result.length <= 450 * 1024) {
+            await db.ref(`users/${currentUser.uid}/wallpapers/${chatId}`).set(reader.result);
+          }
+        } catch (_) {}
         applyLocalWallpaper();
+        alert("Wallpaper එක සකස් කළා!");
       };
       reader.readAsDataURL(file);
     });
 
-    clearWallpaperBtn.addEventListener("click", () => {
+    clearWallpaperBtn.addEventListener("click", async () => {
       if (!currentUser || !selectedPeer) return;
-      const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
-      localStorage.removeItem(key);
+      const key = getWallpaperStorageKey();
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      if (key) localStorage.removeItem(key);
+      try {
+        await db.ref(`users/${currentUser.uid}/wallpapers/${chatId}`).remove();
+      } catch (_) {}
       applyLocalWallpaper();
+      alert("Wallpaper එක ඉවත් කළා!");
     });
 
     soundSelect.addEventListener("change", () => {
