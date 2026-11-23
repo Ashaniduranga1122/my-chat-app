@@ -3,71 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Private Chat App</title>
+  <title>WhatsApp Style Private Chat</title>
   <style>
     :root {
       --bg-main: #0b141a;
       --panel: #111b21;
       --panel-2: #202c33;
+      --panel-3: #2a3942;
       --accent: #00a884;
       --online-blue: #4fc3f7;
-      --seen-blue: #34b7f1;
+      --seen-blue: #53bdeb;
       --text: #e9edef;
       --muted: #8696a0;
       --sent: #005c4b;
       --recv: #202c33;
-      --border: #2a3942;
+      --border: #222e35;
+      --danger: #ef5350;
       --chat-wallpaper: none;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg-main); color: var(--text); height: 100vh; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg-main); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
 
     .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; }
     .screen.active { display: flex; }
 
+    /* Auth */
     .auth-box {
-      max-width: 400px; width: 92%; margin: auto; background: var(--panel);
-      padding: 24px; border-radius: 14px; border: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 14px;
+      max-width: 390px; width: 92%; margin: auto; background: var(--panel);
+      padding: 26px 22px; border-radius: 16px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 13px; box-shadow: 0 10px 30px rgba(0,0,0,0.45);
     }
-    .auth-box h2 { text-align: center; color: var(--accent); }
+    .auth-box h2 { text-align: center; color: var(--accent); font-size: 22px; margin-bottom: 4px; }
     .auth-box input {
-      width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--panel-2); color: var(--text); outline: none;
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--panel-3);
+      background: var(--panel-2); color: var(--text); outline: none; font-size: 14px;
     }
-    .btn {
-      padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer;
-      font-weight: 600; background: var(--accent); color: #06211a;
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
-    .btn.full { width: 100%; }
-    .err { color: #ff6b6b; font-size: 13px; min-height: 18px; text-align: center; }
+    .auth-box input:focus { border-color: var(--accent); }
+    .err { color: #ff7675; font-size: 13px; min-height: 18px; text-align: center; }
 
-    .topbar {
-      background: var(--panel); padding: 10px 14px; display: flex;
-      align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
-      gap: 10px; z-index: 5;
+    /* Buttons */
+    .btn {
+      padding: 10px 14px; border: none; border-radius: 10px; cursor: pointer;
+      font-weight: 600; background: var(--accent); color: #052019; font-size: 13.5px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: transform 0.1s ease, opacity 0.15s ease;
     }
-    .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .btn:active { transform: scale(0.98); }
+    .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--panel-3); }
+    .btn.danger { background: rgba(239, 83, 80, 0.16); color: #ff8a80; border: 1px solid rgba(239, 83, 80, 0.35); }
+    .btn.small { padding: 7px 11px; font-size: 12.5px; border-radius: 8px; }
+    .btn.full { width: 100%; }
+
+    .icon-btn {
+      background: var(--panel-2); color: var(--text); border: 1px solid var(--panel-3);
+      border-radius: 50%; width: 38px; height: 38px; display: grid; place-items: center;
+      cursor: pointer; flex-shrink: 0; font-size: 16px;
+    }
+    .icon-btn:active { background: var(--panel-3); }
+
+    /* Topbar */
+    .topbar {
+      background: var(--panel); padding: 9px 12px; display: flex;
+      align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
+      gap: 8px; min-height: 60px; z-index: 10;
+    }
+    .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
     .avatar-wrap { position: relative; flex-shrink: 0; }
     .avatar {
       width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
-      background: var(--panel-2); border: 1px solid var(--border); display: block;
+      background: var(--panel-2); border: 1px solid var(--panel-3); display: block;
     }
     .online-disc {
-      width: 13px; height: 13px; border-radius: 50%;
+      width: 12px; height: 12px; border-radius: 50%;
       background: var(--online-blue);
-      box-shadow: 0 0 8px rgba(79, 195, 247, 0.85);
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.9);
       border: 2px solid var(--panel);
-      position: absolute; right: -1px; bottom: -1px;
+      position: absolute; right: 0; bottom: 0;
       display: none;
     }
     .online-disc.active { display: block; }
 
-    .title-wrap { overflow: hidden; }
-    .title-wrap h4 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .title-wrap { overflow: hidden; flex: 1; }
+    .title-wrap h4 { font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .status-line {
       display: flex; align-items: center; gap: 6px;
       color: var(--muted); font-size: 12px; margin-top: 2px;
@@ -75,77 +93,134 @@
     }
     .status-line.is-online { color: var(--online-blue); font-weight: 600; }
     .mini-disc {
-      width: 9px; height: 9px; border-radius: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
       background: var(--online-blue);
-      box-shadow: 0 0 6px rgba(79, 195, 247, 0.85);
+      box-shadow: 0 0 6px rgba(79, 195, 247, 0.9);
       display: inline-block; flex-shrink: 0;
     }
+    .top-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
-    .main-grid { display: flex; flex: 1; height: calc(100vh - 64px); overflow: hidden; }
+    /* Main Workspace */
+    .main-grid { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
 
+    /* Left Pane (Chats / Status / Profile) */
     .sidebar {
-      width: 330px; max-width: 100%; background: var(--panel);
+      width: 350px; max-width: 100%; background: var(--panel);
       border-right: 1px solid var(--border); display: flex; flex-direction: column;
     }
-    .sidebar-head { padding: 10px; border-bottom: 1px solid var(--border); }
-    .sidebar-head input {
-      width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--panel-2); color: var(--text); outline: none;
+    .nav-tabs {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      background: var(--panel); border-bottom: 1px solid var(--border);
     }
-    .user-list { flex: 1; overflow-y: auto; }
-    .user-item {
+    .nav-tab {
+      padding: 11px 6px; text-align: center; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .tab-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .tab-pane.active { display: flex; }
+
+    .search-bar { padding: 9px 12px; border-bottom: 1px solid var(--border); background: var(--panel); }
+    .search-bar input {
+      width: 100%; padding: 9px 13px; border-radius: 10px; border: 1px solid var(--panel-3);
+      background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
+    }
+
+    .scroll-list { flex: 1; overflow-y: auto; }
+    .list-row {
       display: flex; align-items: center; gap: 11px; padding: 11px 14px;
       cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04);
     }
-    .user-item:hover, .user-item.active { background: var(--panel-2); }
+    .list-row:hover, .list-row.active { background: var(--panel-2); }
+    .row-meta { flex: 1; min-width: 0; }
+    .row-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .row-name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge-blocked {
+      font-size: 11px; padding: 2px 7px; border-radius: 999px;
+      background: rgba(239,83,80,0.2); color: #ff8a80; font-weight: 600;
+    }
 
+    /* Status Cards */
+    .status-section { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .status-card {
+      background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 12px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .status-media { width: 100%; max-height: 200px; object-fit: cover; border-radius: 9px; }
+    .status-text { font-size: 14px; line-height: 1.4; }
+    .status-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--muted); }
+
+    /* Profile & Settings Pane */
+    .profile-box { padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+    .card-box {
+      background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 12px;
+      padding: 12px; display: flex; flex-direction: column; gap: 9px;
+    }
+    .card-box label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .card-box small { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+    .card-box input[type="text"], .card-box select {
+      width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--panel-3);
+      background: var(--panel); color: var(--text); outline: none; font-size: 13px;
+    }
+    .custom-pick-list {
+      display: none; flex-direction: column; gap: 6px; max-height: 140px;
+      overflow-y: auto; padding: 8px; border-radius: 8px; background: var(--panel);
+      border: 1px solid var(--panel-3);
+    }
+    .custom-pick-list.open { display: flex; }
+    .pick-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; }
+
+    /* Chat Area */
     .chat-panel {
       flex: 1; display: flex; flex-direction: column; position: relative;
       background-color: var(--bg-main);
       background-image: var(--chat-wallpaper);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      background-size: cover; background-position: center; background-repeat: no-repeat;
     }
     .chat-overlay {
       flex: 1; display: flex; flex-direction: column;
-      background: rgba(11, 20, 26, 0.28);
-      height: 100%; overflow: hidden;
+      background: rgba(11, 20, 26, 0.25); height: 100%; overflow: hidden;
     }
     .messages {
-      flex: 1; overflow-y: auto; padding: 16px; display: flex;
-      flex-direction: column; gap: 10px;
+      flex: 1; overflow-y: auto; padding: 14px; display: flex;
+      flex-direction: column; gap: 8px;
     }
     .empty-chat {
-      margin: auto; color: var(--text); background: rgba(17, 27, 33, 0.85);
-      padding: 14px 18px; border-radius: 12px; text-align: center; font-size: 13px;
+      margin: auto; color: var(--text); background: rgba(17, 27, 33, 0.88);
+      padding: 14px 18px; border-radius: 12px; text-align: center; font-size: 13.5px;
+      max-width: 320px;
     }
     .msg {
-      max-width: 76%; padding: 9px 12px 7px 12px; border-radius: 10px;
-      word-wrap: break-word; position: relative; font-size: 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+      max-width: 78%; padding: 8px 11px 6px 11px; border-radius: 10px;
+      word-wrap: break-word; position: relative; font-size: 14px; line-height: 1.38;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.35); cursor: pointer;
     }
-    .msg.sent { align-self: flex-end; background: var(--sent); }
-    .msg.recv { align-self: flex-start; background: var(--recv); }
+    .msg.sent { align-self: flex-end; background: var(--sent); border-top-right-radius: 2px; }
+    .msg.recv { align-self: flex-start; background: var(--recv); border-top-left-radius: 2px; }
+    .msg.deleted-msg { font-style: italic; color: rgba(233, 237, 239, 0.72); cursor: default; }
     .msg img, .msg video {
-      max-width: 240px; max-height: 260px; border-radius: 8px;
-      display: block; margin-top: 6px;
+      max-width: 235px; max-height: 250px; border-radius: 8px;
+      display: block; margin-top: 5px;
     }
+    .edited-tag { font-size: 10.5px; color: rgba(255,255,255,0.62); margin-left: 4px; font-style: italic; }
+
     .msg-meta {
       display: flex; align-items: center; justify-content: flex-end;
-      gap: 5px; margin-top: 4px;
+      gap: 5px; margin-top: 3px;
     }
     .msg-meta time { font-size: 10.5px; color: rgba(255,255,255,0.72); }
 
-    /* Bold WhatsApp-style single & double ticks */
+    /* Bold WhatsApp Double / Single Ticks */
     .tick-svg {
-      width: 17px; height: 12px; flex-shrink: 0;
+      width: 18px; height: 12px; flex-shrink: 0;
       display: inline-block; vertical-align: middle;
     }
     .tick-svg path {
       fill: none;
-      stroke: rgba(233, 237, 239, 0.78);
-      stroke-width: 2.5;
+      stroke: rgba(233, 237, 239, 0.82);
+      stroke-width: 2.6;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -153,41 +228,40 @@
       stroke: var(--seen-blue);
     }
 
+    .blocked-banner {
+      background: rgba(17, 27, 33, 0.94); border-top: 1px solid var(--border);
+      padding: 12px; text-align: center; display: none; flex-direction: column; gap: 8px;
+    }
+    .blocked-banner.active { display: flex; }
+
     .composer {
-      background: var(--panel); padding: 10px; border-top: 1px solid var(--border);
+      background: var(--panel); padding: 9px 10px; border-top: 1px solid var(--border);
       display: flex; align-items: center; gap: 8px;
     }
+    .composer.hidden { display: none; }
     .composer input[type="text"] {
-      flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--border);
-      background: var(--panel-2); color: var(--text); outline: none;
-    }
-    .icon-btn {
-      background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
-      border-radius: 50%; width: 40px; height: 40px; display: grid; place-items: center;
-      cursor: pointer; flex-shrink: 0; font-size: 16px;
+      flex: 1; padding: 10px 14px; border-radius: 22px; border: 1px solid var(--panel-3);
+      background: var(--panel-2); color: var(--text); outline: none; font-size: 14px;
     }
 
+    /* Modals / Action Sheets */
     .modal {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
-      z-index: 50; align-items: center; justify-content: center; padding: 16px;
+      z-index: 60; align-items: center; justify-content: center; padding: 16px;
     }
     .modal.active { display: flex; }
-    .modal-card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
-      width: 100%; max-width: 420px; padding: 18px; display: flex; flex-direction: column; gap: 14px;
-      max-height: 88vh; overflow-y: auto;
+    .sheet {
+      background: var(--panel); border: 1px solid var(--panel-3); border-radius: 14px;
+      width: 100%; max-width: 380px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+      max-height: 86vh; overflow-y: auto;
     }
-    .setting-block {
-      background: var(--panel-2); padding: 12px; border-radius: 10px;
-      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;
+    .sheet h3 { font-size: 16px; margin-bottom: 2px; }
+    .sheet p { font-size: 13px; color: var(--muted); }
+    .sheet input[type="text"], .sheet textarea, .sheet select {
+      width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--panel-3);
+      background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
-    .setting-block label { font-size: 13px; color: var(--text); font-weight: 600; }
-    .setting-block small { font-size: 11.5px; color: var(--muted); }
-    .modal-card select {
-      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--panel); color: var(--text);
-    }
-    .row { display: flex; gap: 8px; justify-content: flex-end; }
+    .sheet textarea { min-height: 75px; resize: vertical; }
 
     @media (max-width: 768px) {
       .sidebar { width: 100%; display: flex; }
@@ -199,6 +273,7 @@
 </head>
 <body>
 
+  <!-- Auth Screen -->
   <section id="authScreen" class="screen active">
     <div class="auth-box">
       <h2 id="authTitle">Log In</h2>
@@ -211,6 +286,7 @@
     </div>
   </section>
 
+  <!-- Main Screen -->
   <section id="chatScreen" class="screen">
     <header class="topbar">
       <div class="user-info">
@@ -220,28 +296,118 @@
           <span id="peerOnlineDisc" class="online-disc"></span>
         </div>
         <div class="title-wrap">
-          <h4 id="headerTitle">User</h4>
-          <div id="headerStatus" class="status-line">කතා කිරීමට කෙනෙකු තෝරන්න</div>
+          <h4 id="headerTitle">Chats</h4>
+          <div id="headerStatus" class="status-line">පෞද්ගලික කතාබහ</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn secondary" id="openSettingsBtn">Settings</button>
-        <button class="btn secondary" id="logoutBtn">Logout</button>
+      <div class="top-actions" id="chatPeerActions" style="display:none;">
+        <button class="btn secondary small" id="toggleBlockBtn">Block</button>
+      </div>
+      <div class="top-actions" id="homeActions">
+        <button class="btn secondary small" id="logoutBtn">Logout</button>
       </div>
     </header>
 
     <div class="main-grid" id="mainGrid">
       <aside class="sidebar">
-        <div class="sidebar-head">
-          <input type="text" id="searchUsersInput" placeholder="පරිශීලකයන් සොයන්න..." />
+        <div class="nav-tabs">
+          <div class="nav-tab active" data-tab="chatsTab">Chats</div>
+          <div class="nav-tab" data-tab="statusTab">Status</div>
+          <div class="nav-tab" data-tab="profileTab">Profile & Privacy</div>
         </div>
-        <div class="user-list" id="usersList"></div>
+
+        <!-- Chats Tab -->
+        <div class="tab-pane active" id="chatsTab">
+          <div class="search-bar">
+            <input type="text" id="searchUsersInput" placeholder="පරිශීලකයන් සොයන්න..." />
+          </div>
+          <div class="scroll-list" id="usersList"></div>
+        </div>
+
+        <!-- Status Tab -->
+        <div class="tab-pane" id="statusTab">
+          <div class="status-section">
+            <button class="btn full" id="openAddStatusBtn">+ අලුත් Status එකක් දාන්න</button>
+          </div>
+          <div class="scroll-list status-section" id="statusFeedList" style="padding-top:0;"></div>
+        </div>
+
+        <!-- Profile & Privacy Tab -->
+        <div class="tab-pane" id="profileTab">
+          <div class="profile-box">
+            <div class="card-box">
+              <label>Profile Picture (DP)</label>
+              <small>ඔබේ DP එක වෙනස් කරන්න (Privacy අනුව අන් අයට පෙනේ)</small>
+              <input type="file" id="dpFileInput" accept="image/*" style="display:none;" />
+              <button class="btn small full" id="chooseDpBtn">DP Photo තෝරන්න</button>
+            </div>
+
+            <div class="card-box">
+              <label>About (Bio)</label>
+              <small>සැමට පෙනෙන About පණිවිඩයක් සකසන්න</small>
+              <input type="text" id="aboutInput" placeholder="උදා: Hey there! I am using chat" maxlength="140" />
+              <button class="btn small full" id="saveAboutBtn">About Save කරන්න</button>
+            </div>
+
+            <div class="card-box">
+              <label>Last Seen & Online Privacy</label>
+              <select id="privacyLastSeenSelect">
+                <option value="everyone">Everyone (සැමට පෙනේ)</option>
+                <option value="contacts">My Contacts (සම්බන්ධතා වලට පමණි)</option>
+                <option value="nobody">Nobody (කිසිවෙකුට නොපෙනේ)</option>
+              </select>
+            </div>
+
+            <div class="card-box">
+              <label>Profile Photo (DP) Privacy</label>
+              <select id="privacyDpSelect">
+                <option value="everyone">Everyone (සැමට පෙනේ)</option>
+                <option value="contacts">My Contacts (සම්බන්ධතා වලට පමණි)</option>
+                <option value="nobody">Nobody (කිසිවෙකුට නොපෙනේ)</option>
+              </select>
+            </div>
+
+            <div class="card-box">
+              <label>Status Privacy</label>
+              <small>Status පෙනිය යුතු පිරිස තෝරන්න</small>
+              <select id="privacyStatusSelect">
+                <option value="everyone">Everyone (සැමට)</option>
+                <option value="contacts">My Contacts (සියලු දෙනාට)</option>
+                <option value="selected">Selected People (තෝරාගත් අයට පමණි)</option>
+                <option value="nobody">Nobody (කිසිවෙකුට නැත)</option>
+              </select>
+              <div class="custom-pick-list" id="statusSelectedUsersBox"></div>
+            </div>
+
+            <div class="card-box">
+              <label>Chat Wallpaper & Sound</label>
+              <small>දැනට විවෘත Chat එකට Wallpaper දාන්න / Sound තෝරන්න</small>
+              <input type="file" id="wallpaperFileInput" accept="image/*" style="display:none;" />
+              <button class="btn secondary small full" id="chooseWallpaperBtn">Chat Wallpaper තෝරන්න</button>
+              <button class="btn secondary small full" id="clearWallpaperBtn">Wallpaper ඉවත් කරන්න</button>
+              <select id="soundSelect">
+                <option value="chime">Notification Sound: Soft Chime</option>
+                <option value="pop">Notification Sound: Classic Pop</option>
+                <option value="mute">Notification Sound: Mute</option>
+              </select>
+              <button class="btn secondary small full" id="testSoundBtn">Sound Test කරන්න</button>
+            </div>
+          </div>
+        </div>
       </aside>
 
+      <!-- Chat Panel -->
       <main class="chat-panel" id="chatPanel">
         <div class="chat-overlay">
           <div class="messages" id="messagesContainer">
             <div class="empty-chat">වම් පසින් පරිශීලකයෙකු තෝරා පෞද්ගලිකව කතා කරන්න.</div>
+          </div>
+
+          <div class="blocked-banner" id="blockedBanner">
+            <div id="blockedBannerText">මෙම පරිශීලකයා Block කර ඇත.</div>
+            <div>
+              <button class="btn secondary small" id="unblockFromBannerBtn">Unblock කරන්න</button>
+            </div>
           </div>
 
           <form class="composer" id="messageForm">
@@ -255,39 +421,38 @@
     </div>
   </section>
 
-  <div class="modal" id="settingsModal">
-    <div class="modal-card">
-      <h3>Settings</h3>
+  <!-- Message Options Modal -->
+  <div class="modal" id="msgActionModal">
+    <div class="sheet">
+      <h3>Message Options</h3>
+      <p id="msgSeenInfoText"></p>
+      <button class="btn secondary full" id="msgEditBtn">Edit Message</button>
+      <button class="btn secondary full" id="msgDeleteMeBtn">Delete for me</button>
+      <button class="btn danger full" id="msgDeleteEveryoneBtn">Delete for everyone</button>
+      <button class="btn secondary full" id="closeMsgModalBtn">Cancel</button>
+    </div>
+  </div>
 
-      <div class="setting-block">
-        <label>Profile Picture (DP)</label>
-        <small>ඔබේ ගිණුමේ DP එක වෙනස් කරන්න</small>
-        <input type="file" id="dpFileInput" accept="image/*" style="display:none;" />
-        <button type="button" class="btn full" id="chooseDpBtn">DP Photo තෝරන්න</button>
-      </div>
+  <!-- Edit Message Modal -->
+  <div class="modal" id="editMsgModal">
+    <div class="sheet">
+      <h3>Edit Message</h3>
+      <textarea id="editMsgTextarea"></textarea>
+      <button class="btn full" id="saveEditedMsgBtn">Save Changes</button>
+      <button class="btn secondary full" id="cancelEditMsgBtn">Cancel</button>
+    </div>
+  </div>
 
-      <div class="setting-block">
-        <label>Chat Wallpaper</label>
-        <small>මෙම Chat එකට පමණක් පෙනෙන Wallpaper එකක් දාන්න</small>
-        <input type="file" id="wallpaperFileInput" accept="image/*" style="display:none;" />
-        <button type="button" class="btn full" id="chooseWallpaperBtn">Wallpaper තෝරන්න</button>
-        <button type="button" class="btn secondary full" id="clearWallpaperBtn">Wallpaper ඉවත් කරන්න</button>
-      </div>
-
-      <div class="setting-block">
-        <label>Notification Sound</label>
-        <small>මැසේජ් එද්දී ඇසෙන ශබ්දය තෝරන්න</small>
-        <select id="soundSelect">
-          <option value="chime">Soft Chime</option>
-          <option value="pop">Classic Pop</option>
-          <option value="mute">Mute (Sound Off)</option>
-        </select>
-        <button type="button" class="btn secondary full" id="testSoundBtn">Sound Test කරන්න</button>
-      </div>
-
-      <div class="row">
-        <button type="button" class="btn secondary full" id="closeSettingsBtn">වසන්න</button>
-      </div>
+  <!-- Add Status Modal -->
+  <div class="modal" id="addStatusModal">
+    <div class="sheet">
+      <h3>New Status</h3>
+      <textarea id="statusTextInput" placeholder="Status පණිවිඩයක් ලියන්න..."></textarea>
+      <input type="file" id="statusImageInput" accept="image/*" style="display:none;" />
+      <button class="btn secondary full" id="pickStatusImgBtn">Status Photo තෝරන්න</button>
+      <small id="statusImgName" style="color:var(--muted);"></small>
+      <button class="btn full" id="publishStatusBtn">Post Status</button>
+      <button class="btn secondary full" id="closeAddStatusBtn">Cancel</button>
     </div>
   </div>
 
@@ -326,9 +491,13 @@
     let selectedPeer = null;
     let messagesRef = null;
     let allUsers = {};
+    let allStatuses = {};
     let isInitialLoad = true;
     let audioCtx = null;
+    let activeMsgTarget = null;
+    let pendingStatusPhoto = "";
 
+    // DOM refs
     const authScreen = document.getElementById("authScreen");
     const chatScreen = document.getElementById("chatScreen");
     const authTitle = document.getElementById("authTitle");
@@ -339,23 +508,28 @@
     const toggleAuthModeBtn = document.getElementById("toggleAuthModeBtn");
     const authError = document.getElementById("authError");
 
+    const backToUsersBtn = document.getElementById("backToUsersBtn");
     const headerAvatar = document.getElementById("headerAvatar");
     const peerOnlineDisc = document.getElementById("peerOnlineDisc");
     const headerTitle = document.getElementById("headerTitle");
     const headerStatus = document.getElementById("headerStatus");
+    const chatPeerActions = document.getElementById("chatPeerActions");
+    const homeActions = document.getElementById("homeActions");
+    const toggleBlockBtn = document.getElementById("toggleBlockBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const mainGrid = document.getElementById("mainGrid");
     const usersList = document.getElementById("usersList");
     const searchUsersInput = document.getElementById("searchUsersInput");
-    const messagesContainer = document.getElementById("messagesContainer");
-    const messageForm = document.getElementById("messageForm");
-    const messageInput = document.getElementById("messageInput");
-    const attachBtn = document.getElementById("attachBtn");
-    const mediaInput = document.getElementById("mediaInput");
-    const mainGrid = document.getElementById("mainGrid");
-    const backToUsersBtn = document.getElementById("backToUsersBtn");
+    const statusFeedList = document.getElementById("statusFeedList");
 
-    const settingsModal = document.getElementById("settingsModal");
-    const openSettingsBtn = document.getElementById("openSettingsBtn");
-    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+    const aboutInput = document.getElementById("aboutInput");
+    const saveAboutBtn = document.getElementById("saveAboutBtn");
+    const privacyLastSeenSelect = document.getElementById("privacyLastSeenSelect");
+    const privacyDpSelect = document.getElementById("privacyDpSelect");
+    const privacyStatusSelect = document.getElementById("privacyStatusSelect");
+    const statusSelectedUsersBox = document.getElementById("statusSelectedUsersBox");
+
     const dpFileInput = document.getElementById("dpFileInput");
     const chooseDpBtn = document.getElementById("chooseDpBtn");
     const wallpaperFileInput = document.getElementById("wallpaperFileInput");
@@ -363,21 +537,67 @@
     const clearWallpaperBtn = document.getElementById("clearWallpaperBtn");
     const soundSelect = document.getElementById("soundSelect");
     const testSoundBtn = document.getElementById("testSoundBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+
+    const messagesContainer = document.getElementById("messagesContainer");
+    const blockedBanner = document.getElementById("blockedBanner");
+    const blockedBannerText = document.getElementById("blockedBannerText");
+    const unblockFromBannerBtn = document.getElementById("unblockFromBannerBtn");
+    const messageForm = document.getElementById("messageForm");
+    const attachBtn = document.getElementById("attachBtn");
+    const mediaInput = document.getElementById("mediaInput");
+    const messageInput = document.getElementById("messageInput");
+
+    const msgActionModal = document.getElementById("msgActionModal");
+    const msgSeenInfoText = document.getElementById("msgSeenInfoText");
+    const msgEditBtn = document.getElementById("msgEditBtn");
+    const msgDeleteMeBtn = document.getElementById("msgDeleteMeBtn");
+    const msgDeleteEveryoneBtn = document.getElementById("msgDeleteEveryoneBtn");
+    const closeMsgModalBtn = document.getElementById("closeMsgModalBtn");
+
+    const editMsgModal = document.getElementById("editMsgModal");
+    const editMsgTextarea = document.getElementById("editMsgTextarea");
+    const saveEditedMsgBtn = document.getElementById("saveEditedMsgBtn");
+    const cancelEditMsgBtn = document.getElementById("cancelEditMsgBtn");
+
+    const addStatusModal = document.getElementById("addStatusModal");
+    const openAddStatusBtn = document.getElementById("openAddStatusBtn");
+    const statusTextInput = document.getElementById("statusTextInput");
+    const statusImageInput = document.getElementById("statusImageInput");
+    const pickStatusImgBtn = document.getElementById("pickStatusImgBtn");
+    const statusImgName = document.getElementById("statusImgName");
+    const publishStatusBtn = document.getElementById("publishStatusBtn");
+    const closeAddStatusBtn = document.getElementById("closeAddStatusBtn");
 
     function unlockAudio() {
       try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === "suspended") {
-          audioCtx.resume();
-        }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
       } catch (_) {}
     }
-
     document.addEventListener("click", unlockAudio, { passive: true });
     document.addEventListener("touchstart", unlockAudio, { passive: true });
+
+    // Tabs switching
+    document.querySelectorAll(".nav-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".nav-tab").forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+        if (tab.dataset.tab === "profileTab") {
+          renderSelectedStatusUsersPicker();
+        }
+      });
+    });
+
+    function getChatId(uid1, uid2) {
+      return [uid1, uid2].sort().join("_");
+    }
+
+    function formatClock(ts) {
+      if (!ts) return "";
+      return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
 
     function formatLastSeen(ts) {
       if (!ts) return "Last seen recently";
@@ -386,44 +606,126 @@
       const diffMin = Math.floor(diffSec / 60);
       if (diffMin < 60) return `Last seen ${diffMin} min ago`;
       const d = new Date(ts);
-      const timeStr = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const t = formatClock(ts);
       const isToday = d.toDateString() === new Date().toDateString();
-      return isToday ? `Last seen today at ${timeStr}` : `Last seen ${d.toLocaleDateString()} ${timeStr}`;
+      return isToday ? `Last seen today at ${t}` : `Last seen ${d.toLocaleDateString()} ${t}`;
     }
 
-    function getPresenceMarkup(userObj, showDiscForOnline = true) {
+    function isUserBlockedByMe(peerUid) {
+      const me = allUsers[currentUser?.uid] || {};
+      return !!(me.blocked && me.blocked[peerUid]);
+    }
+
+    function isMeBlockedByPeer(peerUid) {
+      const peer = allUsers[peerUid] || {};
+      return !!(peer.blocked && peer.blocked[currentUser?.uid]);
+    }
+
+    function canSeeDp(targetUser) {
+      if (!targetUser || !currentUser) return true;
+      if (targetUser.uid === currentUser.uid) return true;
+      const mode = (targetUser.privacy && targetUser.privacy.dp) || "everyone";
+      if (mode === "nobody") return false;
+      if (mode === "contacts") return !!(targetUser.contacts && targetUser.contacts[currentUser.uid]);
+      return true;
+    }
+
+    function canSeePresence(targetUser) {
+      if (!targetUser || !currentUser) return true;
+      if (targetUser.uid === currentUser.uid) return true;
+      if (isUserBlockedByMe(targetUser.uid) || isMeBlockedByPeer(targetUser.uid)) return false;
+      const mode = (targetUser.privacy && targetUser.privacy.lastSeen) || "everyone";
+      if (mode === "nobody") return false;
+      if (mode === "contacts") return !!(targetUser.contacts && targetUser.contacts[currentUser.uid]);
+      return true;
+    }
+
+    function canSeeStatus(ownerUser) {
+      if (!ownerUser || !currentUser) return false;
+      if (ownerUser.uid === currentUser.uid) return true;
+      if (isUserBlockedByMe(ownerUser.uid) || isMeBlockedByPeer(ownerUser.uid)) return false;
+      const priv = ownerUser.privacy || {};
+      const mode = priv.status || "everyone";
+      if (mode === "nobody") return false;
+      if (mode === "contacts") return !!(ownerUser.contacts && ownerUser.contacts[currentUser.uid]);
+      if (mode === "selected") return !!(priv.statusSelected && priv.statusSelected[currentUser.uid]);
+      return true;
+    }
+
+    function getPresenceDisplay(userObj) {
+      if (!canSeePresence(userObj)) {
+        return { html: `<span></span>`, isOnline: false };
+      }
       if (userObj && userObj.online === true) {
         return {
-          text: showDiscForOnline
-            ? `<span class="mini-disc"></span><span>Online</span>`
-            : `Online`,
+          html: `<span class="mini-disc"></span><span>Online</span>`,
           isOnline: true
         };
       }
       return {
-        text: `<span>${escapeHtml(formatLastSeen(userObj && userObj.lastSeen))}</span>`,
+        html: `<span>${escapeHtml(formatLastSeen(userObj && userObj.lastSeen))}</span>`,
         isOnline: false
       };
     }
 
-    function updateHeaderDisplay() {
+    function updateTopHeader() {
       if (!currentUser) return;
       const me = allUsers[currentUser.uid] || {};
 
       if (selectedPeer) {
-        const livePeer = allUsers[selectedPeer.uid] || selectedPeer;
-        headerAvatar.src = livePeer.dp || DEFAULT_DP;
-        headerTitle.textContent = livePeer.name || livePeer.email;
-        const p = getPresenceMarkup(livePeer, true);
-        peerOnlineDisc.classList.toggle("active", p.isOnline);
-        headerStatus.classList.toggle("is-online", p.isOnline);
-        headerStatus.innerHTML = p.text;
+        const peer = allUsers[selectedPeer.uid] || selectedPeer;
+        const dpSrc = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
+        headerAvatar.src = dpSrc;
+        headerTitle.textContent = peer.name || peer.email;
+        chatPeerActions.style.display = "flex";
+        homeActions.style.display = "none";
+
+        const blockedMe = isUserBlockedByMe(peer.uid);
+        toggleBlockBtn.textContent = blockedMe ? "Unblock" : "Block";
+        toggleBlockBtn.classList.toggle("danger", !blockedMe);
+
+        if (blockedMe || isMeBlockedByPeer(peer.uid)) {
+          peerOnlineDisc.classList.remove("active");
+          headerStatus.classList.remove("is-online");
+          headerStatus.textContent = blockedMe ? "Blocked" : "";
+        } else {
+          const p = getPresenceDisplay(peer);
+          peerOnlineDisc.classList.toggle("active", p.isOnline);
+          headerStatus.classList.toggle("is-online", p.isOnline);
+          headerStatus.innerHTML = p.html;
+        }
+        updateBlockedComposerState();
       } else {
         headerAvatar.src = me.dp || DEFAULT_DP;
         headerTitle.textContent = me.name || currentUser.email;
         peerOnlineDisc.classList.remove("active");
         headerStatus.classList.remove("is-online");
-        headerStatus.textContent = "කතා කිරීමට කෙනෙකු තෝරන්න";
+        headerStatus.textContent = me.about || "Private Chat";
+        chatPeerActions.style.display = "none";
+        homeActions.style.display = "flex";
+        blockedBanner.classList.remove("active");
+        messageForm.classList.remove("hidden");
+      }
+    }
+
+    function updateBlockedComposerState() {
+      if (!selectedPeer || !currentUser) return;
+      const blockedMe = isUserBlockedByMe(selectedPeer.uid);
+      const blockedByPeer = isMeBlockedByPeer(selectedPeer.uid);
+
+      if (blockedMe) {
+        blockedBanner.classList.add("active");
+        blockedBannerText.textContent = `${selectedPeer.name || "මෙම පරිශීලකයා"} Block කර ඇත. Unblock කරන තෙක් මැසේජ් යැවිය නොහැක.`;
+        unblockFromBannerBtn.style.display = "inline-flex";
+        messageForm.classList.add("hidden");
+      } else if (blockedByPeer) {
+        blockedBanner.classList.add("active");
+        blockedBannerText.textContent = "ඔබට මෙම පරිශීලකයාට මැසේජ් යැවිය නොහැක.";
+        unblockFromBannerBtn.style.display = "none";
+        messageForm.classList.add("hidden");
+      } else {
+        blockedBanner.classList.remove("active");
+        messageForm.classList.remove("hidden");
       }
     }
 
@@ -451,10 +753,6 @@
       });
     }
 
-    function getChatId(uid1, uid2) {
-      return [uid1, uid2].sort().join("_");
-    }
-
     function playNotificationSound() {
       const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime";
       if (mode === "mute") return;
@@ -468,7 +766,7 @@
         if (mode === "chime") {
           osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
         }
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -477,36 +775,34 @@
       } catch (_) {}
     }
 
-    function getWallpaperStorageKey() {
+    function getWallpaperKey() {
       if (!currentUser || !selectedPeer) return null;
       return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
     }
 
-    function applyLocalWallpaper() {
-      const key = getWallpaperStorageKey();
-      let savedWp = key ? localStorage.getItem(key) : null;
-      if (!savedWp && currentUser && selectedPeer) {
+    function applyWallpaper() {
+      const key = getWallpaperKey();
+      let wp = key ? localStorage.getItem(key) : null;
+      if (!wp && currentUser && selectedPeer) {
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
         const me = allUsers[currentUser.uid];
         if (me && me.wallpapers && me.wallpapers[chatId]) {
-          savedWp = me.wallpapers[chatId];
+          wp = me.wallpapers[chatId];
         }
       }
-      document.documentElement.style.setProperty(
-        "--chat-wallpaper",
-        savedWp ? `url("${savedWp}")` : "none"
-      );
+      document.documentElement.style.setProperty("--chat-wallpaper", wp ? `url("${wp}")` : "none");
     }
 
     function renderTickSvg(msg) {
       if (msg.senderId !== currentUser.uid) return "";
       const isSeen = msg.status === "seen";
-      const isDelivered = msg.status === "delivered" || isSeen;
+      // Data on / active connection or delivered/seen shows double tick
+      const isDouble = isSeen || msg.status === "delivered" || navigator.onLine;
       const seenClass = isSeen ? " seen" : "";
 
-      if (isDelivered) {
+      if (isDouble) {
         return `
-          <svg class="tick-svg${seenClass}" viewBox="0 0 24 16" aria-label="${isSeen ? "Seen" : "Delivered"}">
+          <svg class="tick-svg${seenClass}" viewBox="0 0 24 16" aria-label="${isSeen ? "Seen" : "Sent"}">
             <path d="M2 8.5L6.5 13L15.5 3" />
             <path d="M8.5 8.5L13 13L22 3" />
           </svg>
@@ -519,6 +815,7 @@
       `;
     }
 
+    // Auth logic
     toggleAuthModeBtn.addEventListener("click", () => {
       isRegisterMode = !isRegisterMode;
       authError.textContent = "";
@@ -558,9 +855,16 @@
             uid: cred.user.uid,
             name: displayName,
             email: email,
+            about: "Hey there! I am using Private Chat",
             dp: DEFAULT_DP,
             online: true,
-            lastSeen: Date.now()
+            lastSeen: Date.now(),
+            privacy: {
+              lastSeen: "everyone",
+              dp: "everyone",
+              status: "everyone",
+              statusSelected: {}
+            }
           });
         } else {
           await auth.signInWithEmailAndPassword(email, password);
@@ -583,17 +887,21 @@
         currentUser = user;
         authScreen.classList.remove("active");
         chatScreen.classList.add("active");
-
-        const savedSound = localStorage.getItem("chatSound") || "chime";
-        soundSelect.value = savedSound;
-
+        soundSelect.value = localStorage.getItem("chatSound") || "chime";
         setupPresence(user.uid);
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
+          syncProfileFormFromUser();
           renderUsersList();
-          updateHeaderDisplay();
-          applyLocalWallpaper();
+          renderStatusFeed();
+          updateTopHeader();
+          applyWallpaper();
+        });
+
+        db.ref("statuses").on("value", (snap) => {
+          allStatuses = snap.val() || {};
+          renderStatusFeed();
         });
       } else {
         currentUser = null;
@@ -603,30 +911,49 @@
       }
     });
 
+    function syncProfileFormFromUser() {
+      if (!currentUser || !allUsers[currentUser.uid]) return;
+      const me = allUsers[currentUser.uid];
+      if (document.activeElement !== aboutInput) {
+        aboutInput.value = me.about || "";
+      }
+      const priv = me.privacy || {};
+      privacyLastSeenSelect.value = priv.lastSeen || "everyone";
+      privacyDpSelect.value = priv.dp || "everyone";
+      privacyStatusSelect.value = priv.status || "everyone";
+      statusSelectedUsersBox.classList.toggle("open", (priv.status || "everyone") === "selected");
+    }
+
     function renderUsersList() {
       const q = searchUsersInput.value.trim().toLowerCase();
       usersList.innerHTML = "";
 
       Object.values(allUsers).forEach((u) => {
         if (!currentUser || u.uid === currentUser.uid) return;
-        const label = `${u.name || ""} ${u.email || ""}`.toLowerCase();
+        const label = `${u.name || ""} ${u.email || ""} ${u.about || ""}`.toLowerCase();
         if (q && !label.includes(q)) return;
 
-        const p = getPresenceMarkup(u, true);
-        const item = document.createElement("div");
-        item.className = "user-item" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
-        item.innerHTML = `
+        const isBlocked = isUserBlockedByMe(u.uid);
+        const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
+        const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: `<span>${escapeHtml(u.about || "")}</span>`, isOnline: false };
+
+        const row = document.createElement("div");
+        row.className = "list-row" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
+        row.innerHTML = `
           <div class="avatar-wrap">
-            <img class="avatar" src="${u.dp || DEFAULT_DP}" alt="DP" />
+            <img class="avatar" src="${dpSrc}" alt="DP" />
             <span class="online-disc ${p.isOnline ? "active" : ""}"></span>
           </div>
-          <div class="title-wrap">
-            <h4>${escapeHtml(u.name || u.email)}</h4>
-            <div class="status-line ${p.isOnline ? "is-online" : ""}">${p.text}</div>
+          <div class="row-meta">
+            <div class="row-top">
+              <span class="row-name">${escapeHtml(u.name || u.email)}</span>
+              ${isBlocked ? `<span class="badge-blocked">Blocked</span>` : ""}
+            </div>
+            <div class="row-sub ${p.isOnline ? "status-line is-online" : ""}">${isBlocked ? "Blocked contact" : (u.about || p.html)}</div>
           </div>
         `;
-        item.addEventListener("click", () => openChatWith(u));
-        usersList.appendChild(item);
+        row.addEventListener("click", () => openChatWith(u));
+        usersList.appendChild(row);
       });
     }
 
@@ -635,11 +962,15 @@
     function openChatWith(peer) {
       unlockAudio();
       selectedPeer = peer;
-      updateHeaderDisplay();
       mainGrid.classList.add("chat-open");
       if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
+
+      // Record contact relationship
+      db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true);
+
+      updateTopHeader();
       renderUsersList();
-      applyLocalWallpaper();
+      applyWallpaper();
 
       if (messagesRef) messagesRef.off();
       messagesContainer.innerHTML = "";
@@ -657,11 +988,14 @@
         if (!msg) return;
 
         if (msg.senderId !== currentUser.uid && msg.status !== "seen") {
-          await snap.ref.update({ status: "seen" });
+          await snap.ref.update({
+            status: "seen",
+            seenAt: Date.now()
+          });
         }
 
         renderOrUpdateMessage(snap.key, msg);
-        if (!isInitialLoad && msg.senderId !== currentUser.uid) {
+        if (!isInitialLoad && msg.senderId !== currentUser.uid && !isUserBlockedByMe(msg.senderId)) {
           playNotificationSound();
         }
       });
@@ -677,42 +1011,134 @@
       selectedPeer = null;
       mainGrid.classList.remove("chat-open");
       backToUsersBtn.style.display = "none";
-      updateHeaderDisplay();
-      applyLocalWallpaper();
+      updateTopHeader();
+      applyWallpaper();
       renderUsersList();
     });
 
     function renderOrUpdateMessage(msgId, msg) {
+      if (!currentUser) return;
+      const existing = messagesContainer.querySelector(`[data-msg-id="${msgId}"]`);
+
+      if (msg.deletedFor && msg.deletedFor[currentUser.uid]) {
+        if (existing) existing.remove();
+        return;
+      }
+
       const emptyEl = messagesContainer.querySelector(".empty-chat");
       if (emptyEl) emptyEl.remove();
 
       const isMine = msg.senderId === currentUser.uid;
-      let mediaHtml = "";
-      if (msg.mediaType === "image" && msg.mediaUrl) {
-        mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="Photo" />`;
-      } else if (msg.mediaType === "video" && msg.mediaUrl) {
-        mediaHtml = `<video controls src="${escapeAttr(msg.mediaUrl)}"></video>`;
+      const isDeletedEveryone = !!msg.deletedForEveryone;
+
+      let bodyHtml = "";
+      if (isDeletedEveryone) {
+        bodyHtml = `<div>🚫 This message was deleted</div>`;
+      } else {
+        let mediaHtml = "";
+        if (msg.mediaType === "image" && msg.mediaUrl) {
+          mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="Photo" />`;
+        } else if (msg.mediaType === "video" && msg.mediaUrl) {
+          mediaHtml = `<video controls src="${escapeAttr(msg.mediaUrl)}"></video>`;
+        }
+        const editedHtml = msg.edited ? `<span class="edited-tag">(edited)</span>` : "";
+        const textHtml = msg.text ? `<div>${escapeHtml(msg.text)}${editedHtml}</div>` : "";
+        bodyHtml = `${textHtml}${mediaHtml}`;
       }
 
-      const textHtml = msg.text ? `<div>${escapeHtml(msg.text)}</div>` : "";
-      const timeStr = msg.timestamp
-        ? new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        : "";
-      const tickHtml = renderTickSvg(msg);
+      const timeStr = formatClock(msg.timestamp);
+      const tickHtml = isDeletedEveryone ? "" : renderTickSvg(msg);
+      const html = `${bodyHtml}<div class="msg-meta"><time>${timeStr}</time>${tickHtml}</div>`;
 
-      const content = `${textHtml}${mediaHtml}<div class="msg-meta"><time>${timeStr}</time>${tickHtml}</div>`;
-
-      let div = messagesContainer.querySelector(`[data-msg-id="${msgId}"]`);
+      let div = existing;
       if (!div) {
         div = document.createElement("div");
         div.setAttribute("data-msg-id", msgId);
         messagesContainer.appendChild(div);
       }
-      div.className = "msg " + (isMine ? "sent" : "recv");
-      div.innerHTML = content;
+
+      div.className = "msg " + (isMine ? "sent" : "recv") + (isDeletedEveryone ? " deleted-msg" : "");
+      div.innerHTML = html;
+
+      if (!isDeletedEveryone) {
+        div.onclick = () => openMessageActionSheet(msgId, msg);
+      } else {
+        div.onclick = null;
+      }
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
+    function openMessageActionSheet(msgId, msg) {
+      activeMsgTarget = { msgId, msg };
+      const isMine = msg.senderId === currentUser.uid;
+
+      if (isMine) {
+        msgSeenInfoText.textContent = msg.seenAt
+          ? `Seen at ${formatClock(msg.seenAt)}`
+          : (msg.status === "seen" ? "Seen" : "Not seen yet");
+        msgEditBtn.style.display = msg.text ? "inline-flex" : "none";
+        msgDeleteEveryoneBtn.style.display = "inline-flex";
+      } else {
+        msgSeenInfoText.textContent = `Sent at ${formatClock(msg.timestamp)}`;
+        msgEditBtn.style.display = "none";
+        msgDeleteEveryoneBtn.style.display = "none";
+      }
+
+      msgActionModal.classList.add("active");
+    }
+
+    closeMsgModalBtn.addEventListener("click", () => {
+      msgActionModal.classList.remove("active");
+      activeMsgTarget = null;
+    });
+
+    msgEditBtn.addEventListener("click", () => {
+      if (!activeMsgTarget || !selectedPeer) return;
+      editMsgTextarea.value = activeMsgTarget.msg.text || "";
+      msgActionModal.classList.remove("active");
+      editMsgModal.classList.add("active");
+    });
+
+    cancelEditMsgBtn.addEventListener("click", () => {
+      editMsgModal.classList.remove("active");
+    });
+
+    saveEditedMsgBtn.addEventListener("click", async () => {
+      if (!activeMsgTarget || !selectedPeer) return;
+      const updatedText = editMsgTextarea.value.trim();
+      if (!updatedText) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      await db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}`).update({
+        text: updatedText,
+        edited: true
+      });
+      editMsgModal.classList.remove("active");
+      activeMsgTarget = null;
+    });
+
+    msgDeleteMeBtn.addEventListener("click", async () => {
+      if (!activeMsgTarget || !selectedPeer) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      await db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}/deletedFor/${currentUser.uid}`).set(true);
+      msgActionModal.classList.remove("active");
+      activeMsgTarget = null;
+    });
+
+    msgDeleteEveryoneBtn.addEventListener("click", async () => {
+      if (!activeMsgTarget || !selectedPeer) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      await db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}`).update({
+        deletedForEveryone: true,
+        text: "",
+        mediaUrl: null,
+        mediaType: null
+      });
+      msgActionModal.classList.remove("active");
+      activeMsgTarget = null;
+    });
+
+    // Send Message
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       unlockAudio();
@@ -720,13 +1146,15 @@
         alert("කරුණාකර මුලින්ම කතා කිරීමට කෙනෙකු තෝරන්න.");
         return;
       }
+      if (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid)) return;
+
       const text = messageInput.value.trim();
       if (!text) return;
 
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
       const initialStatus = peerLive && peerLive.online === true ? "delivered" : "sent";
-
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid,
         receiverId: selectedPeer.uid,
@@ -739,6 +1167,7 @@
       messageInput.value = "";
     });
 
+    // Media upload
     attachBtn.addEventListener("click", () => {
       if (!selectedPeer) {
         alert("කරුණාකර මුලින්ම Chat එකක් විවෘත කරන්න.");
@@ -794,16 +1223,31 @@
           timestamp: firebase.database.ServerValue.TIMESTAMP
         });
       } catch (err) {
-        alert("Media Upload දෝෂයක්: " + err.message);
+        alert("Upload දෝෂයක්: " + err.message);
       } finally {
         attachBtn.textContent = "📎";
         mediaInput.value = "";
       }
     });
 
-    openSettingsBtn.addEventListener("click", () => settingsModal.classList.add("active"));
-    closeSettingsBtn.addEventListener("click", () => settingsModal.classList.remove("active"));
+    // Block / Unblock
+    async function toggleBlockPeer() {
+      if (!currentUser || !selectedPeer) return;
+      const peerUid = selectedPeer.uid;
+      const currentlyBlocked = isUserBlockedByMe(peerUid);
+      if (currentlyBlocked) {
+        await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).remove();
+      } else {
+        await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).set(true);
+      }
+      updateTopHeader();
+      renderUsersList();
+    }
 
+    toggleBlockBtn.addEventListener("click", toggleBlockPeer);
+    unblockFromBannerBtn.addEventListener("click", toggleBlockPeer);
+
+    // Profile & Privacy actions
     chooseDpBtn.addEventListener("click", () => dpFileInput.click());
     dpFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -811,14 +1255,62 @@
       const reader = new FileReader();
       reader.onload = async () => {
         await db.ref(`users/${currentUser.uid}/dp`).set(reader.result);
-        alert("DP එක යාවත්කාලීන වුණා!");
+        alert("DP යාවත්කාලීන වුණා!");
       };
       reader.readAsDataURL(file);
     });
 
+    saveAboutBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      await db.ref(`users/${currentUser.uid}/about`).set(aboutInput.value.trim());
+      alert("About සේව් වුණා!");
+    });
+
+    privacyLastSeenSelect.addEventListener("change", async () => {
+      if (!currentUser) return;
+      await db.ref(`users/${currentUser.uid}/privacy/lastSeen`).set(privacyLastSeenSelect.value);
+    });
+
+    privacyDpSelect.addEventListener("change", async () => {
+      if (!currentUser) return;
+      await db.ref(`users/${currentUser.uid}/privacy/dp`).set(privacyDpSelect.value);
+    });
+
+    privacyStatusSelect.addEventListener("change", async () => {
+      if (!currentUser) return;
+      const val = privacyStatusSelect.value;
+      await db.ref(`users/${currentUser.uid}/privacy/status`).set(val);
+      statusSelectedUsersBox.classList.toggle("open", val === "selected");
+      if (val === "selected") renderSelectedStatusUsersPicker();
+    });
+
+    function renderSelectedStatusUsersPicker() {
+      if (!currentUser) return;
+      const me = allUsers[currentUser.uid] || {};
+      const selectedMap = (me.privacy && me.privacy.statusSelected) || {};
+      statusSelectedUsersBox.innerHTML = "";
+
+      Object.values(allUsers).forEach((u) => {
+        if (u.uid === currentUser.uid) return;
+        const checked = !!selectedMap[u.uid];
+        const lbl = document.createElement("label");
+        lbl.className = "pick-item";
+        lbl.innerHTML = `<input type="checkbox" ${checked ? "checked" : ""} /> <span>${escapeHtml(u.name || u.email)}</span>`;
+        const cb = lbl.querySelector("input");
+        cb.addEventListener("change", async () => {
+          if (cb.checked) {
+            await db.ref(`users/${currentUser.uid}/privacy/statusSelected/${u.uid}`).set(true);
+          } else {
+            await db.ref(`users/${currentUser.uid}/privacy/statusSelected/${u.uid}`).remove();
+          }
+        });
+        statusSelectedUsersBox.appendChild(lbl);
+      });
+    }
+
     chooseWallpaperBtn.addEventListener("click", () => {
       if (!currentUser || !selectedPeer) {
-        alert("Wallpaper දැමීමට මුලින්ම Chat එකක් විවෘත කර තිබිය යුතුය.");
+        alert("Wallpaper දැමීමට Chat එකක් විවෘත කර තිබිය යුතුය.");
         return;
       }
       wallpaperFileInput.click();
@@ -829,7 +1321,7 @@
       if (!file || !currentUser || !selectedPeer) return;
       const reader = new FileReader();
       reader.onload = async () => {
-        const key = getWallpaperStorageKey();
+        const key = getWallpaperKey();
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
         try {
           if (key) localStorage.setItem(key, reader.result);
@@ -837,22 +1329,22 @@
             await db.ref(`users/${currentUser.uid}/wallpapers/${chatId}`).set(reader.result);
           }
         } catch (_) {}
-        applyLocalWallpaper();
-        alert("Wallpaper එක සකස් කළා!");
+        applyWallpaper();
+        alert("Wallpaper සකස් කළා!");
       };
       reader.readAsDataURL(file);
     });
 
     clearWallpaperBtn.addEventListener("click", async () => {
       if (!currentUser || !selectedPeer) return;
-      const key = getWallpaperStorageKey();
+      const key = getWallpaperKey();
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       if (key) localStorage.removeItem(key);
       try {
         await db.ref(`users/${currentUser.uid}/wallpapers/${chatId}`).remove();
       } catch (_) {}
-      applyLocalWallpaper();
-      alert("Wallpaper එක ඉවත් කළා!");
+      applyWallpaper();
+      alert("Wallpaper ඉවත් කළා!");
     });
 
     soundSelect.addEventListener("change", () => {
@@ -863,6 +1355,90 @@
       unlockAudio();
       playNotificationSound();
     });
+
+    // Status logic
+    openAddStatusBtn.addEventListener("click", () => {
+      statusTextInput.value = "";
+      pendingStatusPhoto = "";
+      statusImgName.textContent = "";
+      addStatusModal.classList.add("active");
+    });
+
+    closeAddStatusBtn.addEventListener("click", () => {
+      addStatusModal.classList.remove("active");
+    });
+
+    pickStatusImgBtn.addEventListener("click", () => statusImageInput.click());
+    statusImageInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      statusImgName.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingStatusPhoto = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    publishStatusBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      const txt = statusTextInput.value.trim();
+      if (!txt && !pendingStatusPhoto) {
+        alert("Status text එකක් හෝ Photo එකක් තෝරන්න.");
+        return;
+      }
+
+      const me = allUsers[currentUser.uid] || {};
+      await db.ref("statuses").push({
+        ownerUid: currentUser.uid,
+        ownerName: me.name || currentUser.email,
+        text: txt,
+        photoUrl: pendingStatusPhoto || "",
+        createdAt: Date.now()
+      });
+
+      addStatusModal.classList.remove("active");
+    });
+
+    function renderStatusFeed() {
+      if (!currentUser) return;
+      statusFeedList.innerHTML = "";
+
+      const entries = Object.entries(allStatuses)
+        .map(([id, st]) => ({ id, ...st }))
+        .filter((st) => {
+          const owner = allUsers[st.ownerUid] || { uid: st.ownerUid };
+          return canSeeStatus(owner);
+        })
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if (!entries.length) {
+        statusFeedList.innerHTML = `<div class="empty-chat">දැනට පෙනෙන Status නොමැත.</div>`;
+        return;
+      }
+
+      entries.forEach((st) => {
+        const isMine = st.ownerUid === currentUser.uid;
+        const card = document.createElement("div");
+        card.className = "status-card";
+        card.innerHTML = `
+          <div style="font-weight:600; font-size:13.5px;">${escapeHtml(st.ownerName || "User")}</div>
+          ${st.text ? `<div class="status-text">${escapeHtml(st.text)}</div>` : ""}
+          ${st.photoUrl ? `<img class="status-media" src="${escapeAttr(st.photoUrl)}" alt="Status" />` : ""}
+          <div class="status-foot">
+            <span>${formatClock(st.createdAt)}</span>
+            ${isMine ? `<button class="btn danger small" data-del-status="${escapeAttr(st.id)}">Delete</button>` : ""}
+          </div>
+        `;
+        const delBtn = card.querySelector("[data-del-status]");
+        if (delBtn) {
+          delBtn.addEventListener("click", async () => {
+            await db.ref(`statuses/${st.id}`).remove();
+          });
+        }
+        statusFeedList.appendChild(card);
+      });
+    }
 
     function escapeHtml(str) {
       return String(str)
