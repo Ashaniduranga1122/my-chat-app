@@ -28,6 +28,7 @@
       --danger: #ef5350;
       --chat-wallpaper: none;
       --msg-font-size: 14.5px;
+      --topbar-h: 62px;
     }
 
     * {
@@ -55,7 +56,7 @@
       color: var(--text);
     }
 
-    /* High-contrast Yellow text with Black border for Typing... */
+    /* High-contrast Yellow text with Black border + Animated Dots for Typing... */
     .typing-yellow-bordered {
       color: var(--typing-yellow) !important;
       font-weight: 800 !important;
@@ -71,9 +72,32 @@
          0px    0px   4px #000000 !important;
     }
 
+    .typing-anim-wrap {
+      display: inline-flex;
+      align-items: baseline;
+    }
+
+    .typing-dots-anim {
+      display: inline-block;
+      min-width: 18px;
+      text-align: left;
+    }
+
+    .typing-dots-anim::after {
+      content: "";
+      animation: typingDotsCycle 1.2s steps(1, end) infinite;
+    }
+
+    @keyframes typingDotsCycle {
+      0%, 24% { content: "."; }
+      25%, 49% { content: ".."; }
+      50%, 74% { content: "..."; }
+      75%, 100% { content: ""; }
+    }
+
     /* Lightweight Hardware-Accelerated Live Wallpapers */
     .live-anim-layer {
-      position: absolute;
+      position: fixed;
       inset: 0;
       pointer-events: none;
       opacity: 0;
@@ -204,8 +228,15 @@
     .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Fixed / Sticky Topbar */
+    /* Permanently Fixed Topbar (Never scrolls or disappears) */
     .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--topbar-h);
+      min-height: var(--topbar-h);
+      max-height: var(--topbar-h);
       background: var(--panel);
       padding: 8px 10px;
       display: flex;
@@ -213,11 +244,9 @@
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
       gap: 6px;
-      min-height: 60px;
       width: 100%;
-      flex-shrink: 0;
-      z-index: 30;
-      position: relative;
+      z-index: 45;
+      transform: translateZ(0);
     }
     .peer-trigger { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1; }
     .avatar-wrap {
@@ -239,7 +268,7 @@
     .status-line {
       display: flex; align-items: center; gap: 5px;
       color: var(--muted); font-size: 11.5px; margin-top: 2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 17px;
     }
     .status-line.is-online { color: var(--online-blue); font-weight: 600; }
     .mini-disc {
@@ -247,10 +276,19 @@
       background: var(--online-blue); display: inline-block; flex-shrink: 0;
     }
 
-    /* Main Grid */
+    /* Main Grid starts below fixed topbar */
     .main-grid {
-      display: flex; flex: 1; width: 100%; min-height: 0;
-      overflow: hidden; position: relative; z-index: 2;
+      display: flex;
+      position: fixed;
+      top: var(--topbar-h);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100% - var(--topbar-h));
+      min-height: 0;
+      overflow: hidden;
+      z-index: 2;
     }
 
     .sidebar {
@@ -285,7 +323,7 @@
     .list-row:hover, .list-row.active { background: var(--panel-2); }
     .row-meta { flex: 1; min-width: 0; }
     .row-name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 15px; }
+    .row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
 
     .unread-badge {
       min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
@@ -519,9 +557,9 @@
 
     /* Dropdown Menu */
     .dropdown-menu {
-      display: none; position: fixed; top: 58px; right: 10px;
+      display: none; position: fixed; top: calc(var(--topbar-h) + 2px); right: 10px;
       background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 10px;
-      min-width: 185px; z-index: 50; box-shadow: 0 8px 20px rgba(0,0,0,0.45); overflow: hidden;
+      min-width: 185px; z-index: 55; box-shadow: 0 8px 20px rgba(0,0,0,0.45); overflow: hidden;
     }
     .dropdown-menu.open { display: flex; flex-direction: column; }
     .dropdown-item {
@@ -861,7 +899,7 @@
 
           <div class="live-format-bar" id="liveFormatBar"></div>
 
-          <!-- Emoji / Sticker Drawer with Custom Color & Shape Customization -->
+          <!-- Emoji / Sticker Drawer -->
           <div class="sticker-drawer" id="stickerDrawer">
             <div class="tone-picker-strip">
               <span>Color:</span>
@@ -1200,7 +1238,6 @@
     let allUsers = {};
     let allStatuses = {};
     let typingMap = {};
-    let localTypingActive = false;
     let unreadCounts = {};
     let isInitialLoad = true;
     let audioCtx = null;
@@ -1215,7 +1252,7 @@
     let lockModalMode = null;
     let pendingLockPeer = null;
     let typingStopTimer = null;
-    let lastFirebaseTypingPush = 0;
+    let lastTypingSentAt = 0;
 
     let mediaRecorder = null;
     let audioChunks = [];
@@ -1420,6 +1457,10 @@
       });
     });
 
+    function renderAnimatedTypingHtml() {
+      return `<span class="typing-anim-wrap">Typing<span class="typing-dots-anim"></span></span>`;
+    }
+
     function getCustomReactionEmoji() { return localStorage.getItem("customQuickReaction") || "❤️"; }
     function setCustomReactionEmoji(em) { if (em && em.trim()) localStorage.setItem("customQuickReaction", em.trim()); }
 
@@ -1474,7 +1515,8 @@
       return s;
     }
 
-    function pushTypingToFirebase(isTyping) {
+    // Send typing indicator to Firebase so ONLY the OTHER user sees "Typing..."
+    function sendRemoteTypingState(isTyping) {
       if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
@@ -1485,15 +1527,9 @@
       }
     }
 
-    // Immediate Typing... feedback when typing
     messageInput.addEventListener("input", () => {
       const val = messageInput.value;
       const hasText = val.trim().length > 0;
-      localTypingActive = hasText;
-
-      // Instant UI update without waiting for network
-      updateTopHeader();
-      updateUserRowTypingFast(currentUser?.uid, selectedPeer?.uid, hasText);
 
       if (currentUser && selectedPeer) {
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
@@ -1502,19 +1538,16 @@
 
       if (hasText) {
         const now = Date.now();
-        if (now - lastFirebaseTypingPush > 900) {
-          lastFirebaseTypingPush = now;
-          pushTypingToFirebase(true);
+        if (now - lastTypingSentAt > 850) {
+          lastTypingSentAt = now;
+          sendRemoteTypingState(true);
         }
         if (typingStopTimer) clearTimeout(typingStopTimer);
         typingStopTimer = setTimeout(() => {
-          localTypingActive = false;
-          pushTypingToFirebase(false);
-          updateTopHeader();
-        }, 1500);
+          sendRemoteTypingState(false);
+        }, 1600);
       } else {
-        localTypingActive = false;
-        pushTypingToFirebase(false);
+        sendRemoteTypingState(false);
       }
 
       if (!hasText) {
@@ -1526,23 +1559,14 @@
       }
     });
 
-    function updateUserRowTypingFast(myUid, peerUid, isTyping) {
-      if (!myUid || !peerUid) return;
-      const subEl = usersList.querySelector(`[data-peer-sub="${peerUid}"]`);
-      if (!subEl) return;
-      if (isTyping) {
-        subEl.className = "row-sub typing-yellow-bordered";
-        subEl.textContent = "Typing...";
-      }
-    }
-
+    // Returns true ONLY when the OTHER user (peerUid) is actively typing
     function isPeerTypingNow(peerUid) {
-      if (!currentUser || !peerUid || peerUid === "na_ai_assistant") return false;
+      if (!currentUser || !peerUid || peerUid === currentUser.uid || peerUid === "na_ai_assistant") return false;
       if (isUserBlockedByMe(peerUid) || isMeBlockedByPeer(peerUid)) return false;
       const chatId = getChatId(currentUser.uid, peerUid);
       const tEntry = (typingMap[chatId] && typingMap[chatId][peerUid]) || null;
       if (!tEntry || !tEntry.typing) return false;
-      return (Date.now() - (tEntry.updatedAt || 0)) < 4000;
+      return (Date.now() - (tEntry.updatedAt || 0)) < 4500;
     }
 
     function isVibrateEnabled() {
@@ -1678,7 +1702,6 @@
     infoAvatar.addEventListener("click", () => openFullPhoto(infoAvatar.src));
     heroAvatar.addEventListener("click", () => openFullPhoto(heroAvatar.src));
 
-    // Fast media reader + smart image optimization for smooth performance
     function readOriginalDataUrl(file) {
       return new Promise((resolve, reject) => {
         if (!file.type.startsWith("image/")) {
@@ -1953,17 +1976,17 @@
         const blockedMe = isUserBlockedByMe(peer.uid);
         menuBlockBtn.textContent = blockedMe ? "Unblock" : "Block";
 
-        const selfTypingNow = localTypingActive || messageInput.value.trim().length > 0;
+        // Show Typing... ONLY when the OTHER peer is typing
         const remoteTypingNow = isPeerTypingNow(peer.uid);
 
         if (blockedMe || isMeBlockedByPeer(peer.uid)) {
           peerOnlineDisc.classList.remove("active");
           headerStatus.className = "status-line";
           headerStatus.textContent = "";
-        } else if (remoteTypingNow || selfTypingNow) {
+        } else if (remoteTypingNow) {
           peerOnlineDisc.classList.remove("active");
           headerStatus.className = "status-line typing-yellow-bordered";
-          headerStatus.textContent = "Typing...";
+          headerStatus.innerHTML = renderAnimatedTypingHtml();
         } else {
           headerStatus.className = "status-line";
           const p = getPresenceDisplay(peer);
@@ -2250,8 +2273,7 @@
 
     async function performLogout() {
       localStorage.removeItem("hasActiveSession");
-      localTypingActive = false;
-      pushTypingToFirebase(false);
+      sendRemoteTypingState(false);
       if (currentUser) await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() }).catch(() => {});
       if (messagesRef) messagesRef.off();
       auth.signOut();
@@ -2359,12 +2381,14 @@
         const isLocked = !!getChatLockPin(u.uid);
         const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
         const ringClass = getUserStatusRingClass(u.uid);
-        const typingNow = isPeerTypingNow(u.uid) || (localTypingActive && selectedPeer && selectedPeer.uid === u.uid);
+        const remoteTypingNow = isPeerTypingNow(u.uid);
         const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: "", isOnline: false, plain: "" };
         const badgeNum = (!selectedPeer || selectedPeer.uid !== u.uid) ? (unreadCounts[u.uid] || 0) : 0;
 
-        const subText = isBlocked ? "Blocked" : (typingNow ? "Typing..." : (p.plain || visAbout));
-        const subClass = "row-sub" + (typingNow ? " typing-yellow-bordered" : (p.isOnline ? " status-line is-online" : ""));
+        const subHtml = isBlocked
+          ? escapeHtml("Blocked")
+          : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout));
+        const subClass = "row-sub" + (remoteTypingNow ? " typing-yellow-bordered" : (p.isOnline ? " status-line is-online" : ""));
 
         const row = document.createElement("div");
         row.className = "list-row" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
@@ -2375,7 +2399,7 @@
           </div>
           <div class="row-meta">
             <div class="row-name">${escapeHtml(visName)} ${isLocked ? "🔒" : ""}</div>
-            <div class="${subClass}" data-peer-sub="${escapeAttr(u.uid)}">${escapeHtml(subText)}</div>
+            <div class="${subClass}">${subHtml}</div>
           </div>
           ${badgeNum > 0 ? `<span class="unread-badge">${badgeNum}</span>` : ""}
         `;
@@ -2471,8 +2495,7 @@
 
     function openChatWith(peer) {
       unlockAudio();
-      localTypingActive = false;
-      pushTypingToFirebase(false);
+      sendRemoteTypingState(false);
       selectedPeer = peer; unreadCounts[peer.uid] = 0;
       replyToMsg = null; replyPreviewBar.classList.remove("active");
       stickerDrawer.classList.remove("open"); liveFormatBar.classList.remove("active");
@@ -2484,7 +2507,6 @@
       const chatId = getChatId(currentUser.uid, peer.uid);
       const draft = localStorage.getItem(`draft_${currentUser.uid}_${chatId}`) || "";
       messageInput.value = draft;
-      localTypingActive = draft.trim().length > 0;
       if (draft.trim()) { liveFormatBar.classList.add("active"); liveFormatBar.innerHTML = `Preview: ${formatRichText(draft)}`; }
 
       if (!peer.isAI) db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true).catch(() => {});
@@ -2536,8 +2558,7 @@
     }
 
     function closeActiveChatToList() {
-      localTypingActive = false;
-      pushTypingToFirebase(false);
+      sendRemoteTypingState(false);
       selectedPeer = null; replyToMsg = null;
       replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
       liveFormatBar.classList.remove("active"); inChatSearchBar.classList.remove("active");
@@ -2912,8 +2933,7 @@
 
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault(); unlockAudio();
-      localTypingActive = false;
-      pushTypingToFirebase(false);
+      sendRemoteTypingState(false);
       if (!currentUser || !selectedPeer) return;
       if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
 
