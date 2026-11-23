@@ -63,7 +63,6 @@
       color: var(--text);
     }
 
-    /* High-contrast Yellow text with Black border + Animated Dots for Typing... */
     .typing-yellow-bordered {
       color: var(--typing-yellow) !important;
       font-weight: 800 !important;
@@ -103,7 +102,7 @@
       100% { background-position: 50% 0%; }
     }
 
-    /* Perimeter Serpent / Blue Light Path along Card Border (Never spins the center!) */
+    /* Perimeter Serpent / Light Trace along Card Border */
     @keyframes serpentPerimeterTravel {
       0% { stroke-dashoffset: 0; }
       100% { stroke-dashoffset: -1200; }
@@ -127,7 +126,7 @@
       50% { filter: brightness(1.18); }
     }
 
-    /* Rich Live Wallpapers (Galaxy & Stars, Planets, Earth, Fish, Butterflies, Snow, etc.) */
+    /* Rich Live Wallpapers */
     .live-anim-layer {
       position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
       overflow: hidden; will-change: transform, opacity; transform: translateZ(0);
@@ -164,7 +163,6 @@
       animation: pulseScale 3s infinite alternate ease-in-out;
     }
 
-    /* Planet Orbit & Multi-Planet Wallpaper */
     .live-anim-layer.live-planet {
       background:
         radial-gradient(circle at 75% 22%, rgba(255, 167, 38, 0.34), transparent 36%),
@@ -188,16 +186,9 @@
       box-shadow: 0 0 22px rgba(255, 167, 38, 0.55);
       animation: moonOrbit 18s ease-in-out infinite alternate;
     }
-    @keyframes planetDrift {
-      0% { transform: translate(0px, 0px); }
-      100% { transform: translate(-24px, 16px); }
-    }
-    @keyframes moonOrbit {
-      0% { transform: translate(0px, 0px); }
-      100% { transform: translate(34px, -22px); }
-    }
+    @keyframes planetDrift { 0% { transform: translate(0px, 0px); } 100% { transform: translate(-24px, 16px); } }
+    @keyframes moonOrbit { 0% { transform: translate(0px, 0px); } 100% { transform: translate(34px, -22px); } }
 
-    /* Galaxy Spiral + Deep Stars Wallpaper */
     .live-anim-layer.live-galaxy {
       background: radial-gradient(ellipse at center, rgba(126, 87, 194, 0.42), rgba(13, 71, 161, 0.32) 45%, #040711 85%);
     }
@@ -224,7 +215,6 @@
     }
     @keyframes galaxySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Earth Horizon + Stars Wallpaper */
     .live-anim-layer.live-earth {
       background: radial-gradient(circle at 50% 125%, #29b6f6 0%, #0277bd 34%, #01579b 44%, #040d1a 56%, #02060c 100%);
       animation: pulseScale 5s ease-in-out infinite alternate;
@@ -239,7 +229,6 @@
       animation: starDrift 20s linear infinite;
     }
 
-    /* Snowfall Wallpaper */
     .live-anim-layer.live-snow {
       background: linear-gradient(180deg, #0b1926 0%, #10263a 100%);
     }
@@ -259,7 +248,6 @@
     @keyframes snowFallA { 0% { transform: translateY(0); } 100% { transform: translateY(50%); } }
     @keyframes snowFallB { 0% { transform: translateY(-20%); } 100% { transform: translateY(50%); } }
 
-    /* Swimming Fish Wallpaper */
     .live-anim-layer.live-fish {
       background: linear-gradient(180deg, #042f4b 0%, #074f72 55%, #032539 100%);
     }
@@ -273,7 +261,6 @@
       100% { left: calc(100% + 45px); transform: translateY(6px); }
     }
 
-    /* Fluttering Butterflies Wallpaper */
     .live-anim-layer.live-butterfly {
       background: radial-gradient(circle at 30% 30%, rgba(25, 118, 210, 0.25), transparent 55%),
                   linear-gradient(180deg, #0d1b2a 0%, #162a3d 100%);
@@ -301,7 +288,6 @@
     }
     .screen.active { display: flex; }
 
-    /* Auth */
     .auth-box {
       width: min(390px, 92%); margin: auto; background: var(--panel); padding: 24px 20px;
       border-radius: 16px; border: 1px solid var(--panel-3); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
@@ -315,7 +301,6 @@
     .auth-box input:focus { border-color: var(--accent-bright); }
     .err { color: #ff7675; font-size: 12.5px; min-height: 16px; text-align: center; }
 
-    /* Fitted Animated Buttons */
     .btn {
       position: relative; overflow: hidden; padding: 8px 12px; border: none; border-radius: 10px;
       cursor: pointer; font-weight: 600; background: linear-gradient(135deg, var(--accent-bright), var(--accent));
@@ -339,7 +324,6 @@
     .icon-btn:active { background: rgba(255, 255, 255, 0.18); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Permanently Locked Topbar with Flowing Blue Waterfall */
     .topbar {
       position: fixed; top: var(--vtop); left: 0; right: 0;
       height: var(--topbar-h); min-height: var(--topbar-h); max-height: var(--topbar-h);
@@ -389,7 +373,6 @@
       background: #e1f5fe; box-shadow: 0 0 6px #ffffff; display: inline-block; flex-shrink: 0;
     }
 
-    /* Main Grid */
     .main-grid {
       display: flex; position: fixed; top: calc(var(--vtop) + var(--topbar-h));
       left: 0; right: 0; width: 100%; height: calc(var(--vh) - var(--topbar-h));
@@ -437,7 +420,6 @@
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
 
-    /* Card View Chat List */
     .scroll-list {
       flex: 1; overflow-y: auto; min-height: 0; padding: 10px 10px 18px 10px;
       display: flex; flex-direction: column; gap: 10px;
@@ -454,81 +436,37 @@
       position: relative; overflow: visible;
     }
 
-    /* SVG Perimeter Serpent / Light Trace along Card Border */
     .card-border-svg {
-      position: absolute;
-      inset: -2px;
-      width: calc(100% + 4px);
-      height: calc(100% + 4px);
-      pointer-events: none;
-      display: none;
-      z-index: 2;
-      overflow: visible;
+      position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px);
+      pointer-events: none; display: none; z-index: 2; overflow: visible;
     }
-    .chat-card.card-serpent-border .card-border-svg {
-      display: block;
-    }
-    .serpent-base-stroke {
-      fill: none;
-      stroke: rgba(41, 182, 246, 0.22);
-      stroke-width: 2;
-    }
+    .chat-card.card-serpent-border .card-border-svg { display: block; }
+    .serpent-base-stroke { fill: none; stroke: rgba(41, 182, 246, 0.22); stroke-width: 2; }
     .serpent-travel-stroke {
-      fill: none;
-      stroke: #4fc3f7;
-      stroke-width: 3;
-      stroke-linecap: round;
-      stroke-dasharray: 95 1105;
-      filter: drop-shadow(0 0 6px #29b6f6);
+      fill: none; stroke: #4fc3f7; stroke-width: 3; stroke-linecap: round;
+      stroke-dasharray: 95 1105; filter: drop-shadow(0 0 6px #29b6f6);
       animation: serpentPerimeterTravel 4.2s linear infinite;
     }
     .serpent-head-stroke {
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 3.4;
-      stroke-linecap: round;
-      stroke-dasharray: 18 1182;
-      filter: drop-shadow(0 0 8px #80d8ff);
+      fill: none; stroke: #ffffff; stroke-width: 3.4; stroke-linecap: round;
+      stroke-dasharray: 18 1182; filter: drop-shadow(0 0 8px #80d8ff);
       animation: serpentPerimeterTravel 4.2s linear infinite;
     }
 
     .chat-card:hover { transform: translateY(-1px); }
     .chat-card:active { transform: scale(0.985); }
-    .chat-card.active {
-      box-shadow: 0 4px 18px rgba(41, 182, 246, 0.35);
-    }
+    .chat-card.active { box-shadow: 0 4px 18px rgba(41, 182, 246, 0.35); }
     .chat-card.selected-multi {
       border-color: var(--typing-yellow) !important;
       background: linear-gradient(135deg, rgba(255, 214, 0, 0.18), rgba(13, 71, 161, 0.42)) !important;
       box-shadow: 0 0 0 2px rgba(255, 214, 0, 0.55);
     }
 
-    .chat-card.card-live-aurora {
-      background: linear-gradient(125deg, #07284a, #0e4d8c, #006978, #0b2545);
-      background-size: 280% 280%; animation: cardAuroraMove 6s ease infinite;
-    }
-    .chat-card.card-live-waves {
-      background-color: #0d2b45;
-      background-image: repeating-linear-gradient(-45deg, rgba(66, 165, 245, 0.16) 0px, rgba(66, 165, 245, 0.16) 10px,
-                  rgba(0, 188, 212, 0.12) 10px, rgba(0, 188, 212, 0.12) 24px);
-      background-size: 48px 48px; animation: cardWaveMove 3.2s linear infinite;
-    }
-    .chat-card.card-live-grid {
-      background-color: #0c2233;
-      background-image: linear-gradient(rgba(79, 195, 247, 0.16) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(79, 195, 247, 0.16) 1px, transparent 1px);
-      background-size: 20px 20px; animation: cardGridMove 4s linear infinite;
-    }
-    .chat-card.card-live-pulse {
-      background: radial-gradient(circle at 85% 20%, rgba(66, 165, 245, 0.28), rgba(16, 29, 40, 0.96) 75%);
-      animation: cardPulseAnim 3.2s ease-in-out infinite;
-    }
-    .chat-card.card-live-stars {
-      background: linear-gradient(135deg, #0b192c, #132c4a, #091524);
-      background-image: radial-gradient(1.5px 1.5px at 18px 18px, rgba(255,255,255,0.55), transparent),
-                        radial-gradient(2px 2px at 78% 45%, rgba(79,195,247,0.6), transparent);
-      background-size: 90px 60px; animation: cardGridMove 8s linear infinite;
-    }
+    .chat-card.card-live-aurora { background: linear-gradient(125deg, #07284a, #0e4d8c, #006978, #0b2545); background-size: 280% 280%; animation: cardAuroraMove 6s ease infinite; }
+    .chat-card.card-live-waves { background-color: #0d2b45; background-image: repeating-linear-gradient(-45deg, rgba(66, 165, 245, 0.16) 0px, rgba(66, 165, 245, 0.16) 10px, rgba(0, 188, 212, 0.12) 10px, rgba(0, 188, 212, 0.12) 24px); background-size: 48px 48px; animation: cardWaveMove 3.2s linear infinite; }
+    .chat-card.card-live-grid { background-color: #0c2233; background-image: linear-gradient(rgba(79, 195, 247, 0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(79, 195, 247, 0.16) 1px, transparent 1px); background-size: 20px 20px; animation: cardGridMove 4s linear infinite; }
+    .chat-card.card-live-pulse { background: radial-gradient(circle at 85% 20%, rgba(66, 165, 245, 0.28), rgba(16, 29, 40, 0.96) 75%); animation: cardPulseAnim 3.2s ease-in-out infinite; }
+    .chat-card.card-live-stars { background: linear-gradient(135deg, #0b192c, #132c4a, #091524); background-image: radial-gradient(1.5px 1.5px at 18px 18px, rgba(255,255,255,0.55), transparent), radial-gradient(2px 2px at 78% 45%, rgba(79,195,247,0.6), transparent); background-size: 90px 60px; animation: cardGridMove 8s linear infinite; }
 
     .chat-card .avatar-wrap.status-unseen { border-color: var(--status-unseen); }
     .chat-card .avatar-wrap.status-seen { border-color: var(--status-seen); }
@@ -544,9 +482,7 @@
       font-size: 12px; font-weight: 800; flex-shrink: 0; background: rgba(0, 0, 0, 0.25); z-index: 3;
     }
     .multi-select-active .select-check-circle { display: inline-flex; }
-    .chat-card.selected-multi .select-check-circle {
-      background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow);
-    }
+    .chat-card.selected-multi .select-check-circle { background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow); }
 
     .row-meta { flex: 1; min-width: 0; z-index: 1; }
     .row-name { font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -570,7 +506,6 @@
     }
     .ai-chip:active { transform: scale(0.93); }
 
-    /* Status & Settings */
     .status-pad { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
     .status-circle-row {
       display: flex; align-items: center; gap: 12px; padding: 10px 12px;
@@ -587,7 +522,7 @@
       border-radius: 12px; padding: 24px 18px; text-align: center; font-size: 20px; font-weight: 700;
       min-height: 150px; width: 100%; display: flex; align-items: center; justify-content: center; word-break: break-word;
     }
-    .status-text-banner.fullscreen-fit { min-height: 55vh; width: 100%; font-size: 26px; border-radius: 16px; }
+    .status-text-banner.fullscreen-fit { min-height: 50vh; width: 100%; font-size: 26px; border-radius: 16px; }
 
     .color-palette { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .color-swatch { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
@@ -630,7 +565,7 @@
     .setting-panel-detail.open { display: flex; }
     .setting-card label { font-size: 13px; font-weight: 600; }
     .setting-card small { font-size: 11.5px; color: var(--muted); }
-    .setting-card input[type="text"], .setting-card select {
+    .setting-card input[type="text"], .setting-card input[type="password"], .setting-card select {
       width: 100%; padding: 9px 11px; border-radius: 8px;
       border: 1px solid var(--panel-3); background: var(--panel); color: var(--text); outline: none; font-size: 13px;
     }
@@ -640,7 +575,6 @@
     }
     .toggle-line input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-bright); cursor: pointer; }
 
-    /* Chat Area */
     .chat-panel {
       flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0;
       display: flex; flex-direction: column; position: relative;
@@ -696,9 +630,7 @@
       background: rgba(17, 27, 33, 0.85); cursor: pointer;
     }
     .msg-multi-active .msg-check-circle { display: inline-flex; }
-    .msg-swipe-wrap.msg-selected .msg-check-circle {
-      background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow);
-    }
+    .msg-swipe-wrap.msg-selected .msg-check-circle { background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow); }
 
     .msg {
       flex: 1; min-width: 0; padding: 8px 11px 6px 11px; border-radius: 10px;
@@ -707,10 +639,7 @@
     }
     .msg.sent { background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { background: var(--recv); border-top-left-radius: 2px; }
-    .msg-swipe-wrap.msg-selected .msg {
-      box-shadow: 0 0 0 2px var(--typing-yellow);
-      filter: brightness(1.12);
-    }
+    .msg-swipe-wrap.msg-selected .msg { box-shadow: 0 0 0 2px var(--typing-yellow); filter: brightness(1.12); }
     .msg.deleted-msg { font-style: italic; color: rgba(233, 237, 239, 0.72); }
     .msg.media-only { padding: 3px; background: transparent; box-shadow: none; }
     .msg.media-only .msg-meta {
@@ -719,10 +648,14 @@
     }
     .msg.sticker-msg { background: transparent; box-shadow: none; padding: 2px; }
 
-    .sticker-frame {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 8px; border: 2px solid transparent;
+    .fwd-sender-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; color: #b3e5fc; background: rgba(0, 0, 0, 0.28);
+      padding: 3px 7px; border-radius: 999px; margin-bottom: 5px;
     }
+    .fwd-sender-chip img { width: 16px; height: 16px; border-radius: 50%; object-fit: cover; }
+
+    .sticker-frame { display: inline-flex; align-items: center; justify-content: center; padding: 8px; border: 2px solid transparent; }
     .sticker-frame.shape-circle { border-radius: 50%; background: rgba(255,255,255,0.06); }
     .sticker-frame.shape-square { border-radius: 14px; background: rgba(255,255,255,0.06); }
     .sticker-frame.shape-diamond { border-radius: 14px; transform: rotate(8deg); background: rgba(255,255,255,0.06); }
@@ -755,7 +688,6 @@
       padding: 5px 8px; border-radius: 6px; font-size: 11.5px;
       color: rgba(255,255,255,0.9); margin-bottom: 5px; cursor: pointer;
     }
-    .reply-quote:active { background: rgba(255, 214, 0, 0.22); }
 
     .reaction-badge { display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); font-size: 12px; }
     .msg img.chat-photo { width: 230px; max-width: 74vw; max-height: 270px; object-fit: cover; border-radius: 10px; display: block; cursor: pointer; margin-top: 4px; }
@@ -814,7 +746,6 @@
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 14px;
     }
 
-    /* Dropdown Menu */
     .dropdown-menu {
       display: none; position: fixed; top: calc(var(--vtop) + var(--topbar-h) + 2px); right: 10px;
       background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 10px;
@@ -829,7 +760,6 @@
     .dropdown-item:active, .dropdown-item:hover { background: var(--panel-3); }
     .dropdown-item.danger { color: #ff8a80; }
 
-    /* Modals & Viewers */
     .modal {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82);
       z-index: 60; align-items: center; justify-content: center; padding: 16px;
@@ -837,8 +767,8 @@
     .modal.active { display: flex; }
     .sheet {
       background: var(--panel); border: 1px solid var(--panel-3); border-radius: 14px;
-      width: 100%; max-width: 380px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-      max-height: 86vh; overflow-y: auto;
+      width: 100%; max-width: 390px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+      max-height: 88vh; overflow-y: auto;
     }
     .sheet h3 { font-size: 16px; }
     .sheet p { font-size: 12.5px; color: var(--muted); }
@@ -851,6 +781,23 @@
     .reaction-bar { display: flex; justify-content: space-around; background: var(--panel-2); padding: 8px; border-radius: 10px; }
     .reaction-bar button { background: transparent; border: none; font-size: 20px; cursor: pointer; }
 
+    /* Pattern Lock 3x3 Grid */
+    .pattern-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+      padding: 14px; background: var(--panel-2); border-radius: 12px; border: 1px solid var(--panel-3);
+      justify-items: center;
+    }
+    .pattern-node {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--panel); border: 2px solid var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.14s ease;
+    }
+    .pattern-node.active {
+      background: var(--accent-bright); border-color: #ffffff; color: #000000;
+      box-shadow: 0 0 12px rgba(66, 165, 245, 0.85); transform: scale(1.08);
+    }
+
     .media-viewer-modal { display: none; position: fixed; inset: 0; background: #000000; z-index: 80; flex-direction: column; }
     .media-viewer-modal.active { display: flex; }
     .media-viewer-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(0,0,0,0.75); z-index: 2; }
@@ -860,12 +807,20 @@
 
     .status-viewer-modal {
       display: none; position: fixed; inset: 0; background: #090e12;
-      z-index: 75; flex-direction: column; justify-content: space-between; padding: 14px;
+      z-index: 75; flex-direction: column; justify-content: space-between; padding: 12px 14px 14px 14px;
     }
     .status-viewer-modal.active { display: flex; }
+    .status-progress-track {
+      width: 100%; height: 4px; background: rgba(255, 255, 255, 0.22);
+      border-radius: 999px; overflow: hidden; margin-bottom: 10px;
+    }
+    .status-progress-fill {
+      height: 100%; width: 0%; background: var(--accent-bright);
+      transition: width 0.1s linear;
+    }
     .status-viewer-body { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; overflow-y: auto; padding: 10px 0; }
-    .status-viewer-body img.full-st-img, .status-viewer-body video.full-st-vid { max-width: 100%; max-height: 60vh; border-radius: 10px; object-fit: contain; }
-    .viewer-list-box { background: var(--panel); border: 1px solid var(--panel-3); border-radius: 10px; padding: 10px 12px; max-height: 145px; overflow-y: auto; font-size: 12.5px; }
+    .status-viewer-body img.full-st-img, .status-viewer-body video.full-st-vid { max-width: 100%; max-height: 56vh; border-radius: 10px; object-fit: contain; }
+    .viewer-list-box { background: var(--panel); border: 1px solid var(--panel-3); border-radius: 10px; padding: 10px 12px; max-height: 135px; overflow-y: auto; font-size: 12.5px; }
 
     @media (max-width: 768px) {
       .sidebar { width: 100%; display: flex; }
@@ -920,7 +875,7 @@
       <button class="dropdown-item" id="menuOpenSettingsBtn">Settings</button>
       <button class="dropdown-item" id="menuWallpaperBtn">Wallpaper</button>
       <button class="dropdown-item" id="menuFontSizeBtn">Font size</button>
-      <button class="dropdown-item" id="menuLockChatBtn">Lock chat</button>
+      <button class="dropdown-item" id="menuLockChatBtn">Lock chat (Fingerprint / Pattern / PIN)</button>
       <button class="dropdown-item" id="menuClearChatBtn">Clear messages</button>
       <button class="dropdown-item danger" id="menuDeleteChatBtn">Delete chat</button>
       <button class="dropdown-item danger" id="menuBlockBtn">Block</button>
@@ -980,16 +935,16 @@
               <div class="wa-cat-row" data-panel="panelAccount">
                 <div class="wa-cat-icon">🔑</div>
                 <div>
-                  <div class="wa-cat-title">Account</div>
-                  <div class="wa-cat-desc">Name, about/note, account info, log out</div>
+                  <div class="wa-cat-title">Account & Live AI Key</div>
+                  <div class="wa-cat-desc">Name, note, Gemini API key, log out</div>
                 </div>
               </div>
 
               <div class="wa-cat-row" data-panel="panelPrivacy">
                 <div class="wa-cat-icon">🔒</div>
                 <div>
-                  <div class="wa-cat-title">Privacy</div>
-                  <div class="wa-cat-desc">Photo, last seen/online, name, about, blocks</div>
+                  <div class="wa-cat-title">Privacy & Chat Locks</div>
+                  <div class="wa-cat-desc">Last seen, photo, blocks, fingerprint/pattern locks</div>
                 </div>
               </div>
 
@@ -1005,14 +960,14 @@
                 <div class="wa-cat-icon">💬</div>
                 <div>
                   <div class="wa-cat-title">Chats, Cards & Live Wallpapers</div>
-                  <div class="wa-cat-desc">Perimeter serpent border, live wallpapers, font</div>
+                  <div class="wa-cat-desc">Serpent border, live wallpapers, font size</div>
                 </div>
               </div>
 
               <div class="wa-cat-row" data-panel="panelAppearance">
                 <div class="wa-cat-icon">🌌</div>
                 <div>
-                  <div class="wa-cat-title">Live Wallpapers & Effects</div>
+                  <div class="wa-cat-title">Live Wallpapers & Fun Effects</div>
                   <div class="wa-cat-desc">Galaxy, stars, planets, earth, fish, butterflies, snow</div>
                 </div>
               </div>
@@ -1020,18 +975,20 @@
               <div class="wa-cat-row" data-panel="panelNotifications">
                 <div class="wa-cat-icon">🔔</div>
                 <div>
-                  <div class="wa-cat-title">Notifications</div>
-                  <div class="wa-cat-desc">Alert permission, tones, vibrate</div>
+                  <div class="wa-cat-title">Notifications & Call Info</div>
+                  <div class="wa-cat-desc">Alerts, tones, vibrate, call capabilities</div>
                 </div>
               </div>
             </div>
 
-            <!-- Account -->
+            <!-- Account & Gemini API Key -->
             <div class="setting-panel-detail setting-card" id="panelAccount">
               <label>Account Name</label>
               <input type="text" id="accountNameInput" placeholder="Your name" maxlength="60" />
               <label>About / Note</label>
               <input type="text" id="aboutInput" placeholder="About" maxlength="140" />
+              <label>Gemini API Key (Optional — for direct Gemini live replies)</label>
+              <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy... (Leave empty for free live AI)" />
               <button class="btn small" id="saveAccountBtn">Save</button>
               <small id="accountUidText"></small>
               <button class="btn danger small" id="settingsLogoutBtn">Log out</button>
@@ -1168,6 +1125,7 @@
                 <option value="mute">Tone: Mute</option>
               </select>
               <button class="btn secondary small" id="testSoundBtn">Test tone</button>
+              <small>Note: Browser calls use WebRTC microphone/camera while open; native phone ringing requires a mobile app wrapper.</small>
             </div>
           </div>
         </div>
@@ -1203,11 +1161,12 @@
             <div class="empty-chat">Select a chat card or search a contact to start messaging</div>
           </div>
 
+          <!-- Fun & Useful Prompts for NA Ai (No Boredom!) -->
           <div class="ai-quick-bar" id="aiQuickBar">
-            <button type="button" class="ai-chip" data-ai-prompt="සිංහලෙන් කෙටි අදහසක් කියන්න">💡 සිංහල අදහසක්</button>
-            <button type="button" class="ai-chip" data-ai-prompt="photo: futuristic blue city glowing at night">🖼 AI Photo</button>
-            <button type="button" class="ai-chip" data-ai-prompt="photo: tropical waterfall in Sri Lanka nature">🌊 Waterfall Photo</button>
-            <button type="button" class="ai-chip" data-ai-prompt="Explain how an electric motor works in simple Sinhala">⚙️ Motor Explain</button>
+            <button type="button" class="ai-chip" data-ai-prompt="මට සිංහල තේරවිල්ලක් කියලා උත්තරේ ටිකකින් දෙන්න">🧩 සිංහල තේරවිල්ලක්</button>
+            <button type="button" class="ai-chip" data-ai-prompt="පාලුව නැති වෙන්න රසවත් කරුණු 3ක් සිංහලෙන් කියන්න">✨ රසවත් කරුණු</button>
+            <button type="button" class="ai-chip" data-ai-prompt="photo: futuristic robot in neon night city">🖼 AI Photo</button>
+            <button type="button" class="ai-chip" data-ai-prompt="මට කෙටි IQ ප්‍රශ්නයක් අහන්න">🧠 IQ ප්‍රශ්නයක්</button>
           </div>
 
           <div class="live-format-bar" id="liveFormatBar"></div>
@@ -1285,6 +1244,7 @@
       <img id="callPeerDp" class="hero-avatar" src="" alt="" />
       <h3 id="callPeerName">Call</h3>
       <p id="callStatusText">Connecting...</p>
+      <small style="color:var(--muted);">Browser WebRTC call (requires mic/camera permission & open page; native phone call is not triggered by web browsers).</small>
       <div style="display:flex; gap:8px; width:100%; justify-content:center; flex-wrap:wrap;">
         <video id="remoteCallVideo" autoplay playsinline style="display:none; width:100%; max-height:170px; border-radius:10px; background:#000;"></video>
         <audio id="remoteCallAudio" autoplay playsinline></audio>
@@ -1320,17 +1280,25 @@
     </div>
   </div>
 
-  <!-- Fullscreen Status Viewer -->
+  <!-- Fullscreen Status Viewer (Auto-advances every 10s, exits when no more statuses) -->
   <div class="status-viewer-modal" id="statusViewerModal">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <img id="viewerOwnerDp" class="avatar" src="" alt="" />
-        <div>
-          <div id="viewerOwnerName" style="font-weight:700; font-size:14px;"></div>
-          <div id="viewerTimeText" style="font-size:11.5px; color:var(--muted);"></div>
+    <div>
+      <div class="status-progress-track">
+        <div class="status-progress-fill" id="statusProgressFill"></div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img id="viewerOwnerDp" class="avatar" src="" alt="" />
+          <div>
+            <div id="viewerOwnerName" style="font-weight:700; font-size:14px;"></div>
+            <div id="viewerTimeText" style="font-size:11.5px; color:var(--muted);"></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn secondary small" id="nextStatusManualBtn">Next ⏭</button>
+          <button class="btn secondary small" id="closeStatusViewerBtn">Close</button>
         </div>
       </div>
-      <button class="btn secondary small" id="closeStatusViewerBtn">Close</button>
     </div>
 
     <div class="status-viewer-body" id="statusViewerBody"></div>
@@ -1377,20 +1345,51 @@
     </div>
   </div>
 
-  <!-- Chat Lock PIN Modal -->
+  <!-- Customizable Chat Lock Modal (Fingerprint / Pattern / PIN) -->
   <div class="modal" id="chatLockModal">
     <div class="sheet">
       <h3 id="chatLockModalTitle">Chat lock</h3>
-      <p id="chatLockModalDesc">Enter passcode</p>
-      <input type="password" id="chatLockPinInput" maxlength="8" placeholder="Passcode" />
-      <div style="display:flex; gap:8px;">
+      <p id="chatLockModalDesc">Choose lock method or unlock chat</p>
+
+      <select id="lockMethodSelect">
+        <option value="pattern">Pattern Lock (3x3 Grid — Great for non-fingerprint phones)</option>
+        <option value="fingerprint">Fingerprint / Biometric Lock (Device Biometrics)</option>
+        <option value="pin">Passcode / PIN Lock</option>
+      </select>
+
+      <div id="patternLockSection" style="display:flex; flex-direction:column; gap:8px;">
+        <small id="patternStatusLabel">Tap nodes in order (at least 4 points), then tap Confirm</small>
+        <div class="pattern-grid" id="patternGrid">
+          <div class="pattern-node" data-pt="1">1</div>
+          <div class="pattern-node" data-pt="2">2</div>
+          <div class="pattern-node" data-pt="3">3</div>
+          <div class="pattern-node" data-pt="4">4</div>
+          <div class="pattern-node" data-pt="5">5</div>
+          <div class="pattern-node" data-pt="6">6</div>
+          <div class="pattern-node" data-pt="7">7</div>
+          <div class="pattern-node" data-pt="8">8</div>
+          <div class="pattern-node" data-pt="9">9</div>
+        </div>
+        <button type="button" class="btn secondary small" id="resetPatternBtn">Reset Pattern</button>
+      </div>
+
+      <div id="fingerprintLockSection" style="display:none; flex-direction:column; gap:8px;">
+        <small>Uses your device's Fingerprint / Biometric authenticator if supported.</small>
+        <button type="button" class="btn" id="triggerBiometricBtn">👆 Verify Fingerprint</button>
+      </div>
+
+      <div id="pinLockSection" style="display:none; flex-direction:column; gap:8px;">
+        <input type="password" id="chatLockPinInput" maxlength="10" placeholder="Enter PIN / Passcode" />
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:4px;">
         <button class="btn" id="confirmChatLockBtn">Confirm</button>
         <button class="btn secondary" id="cancelChatLockBtn">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Message Action Modal (Forward, Edit, Delete for Me, Delete for Everyone, Pin, Star, Copy, React) -->
+  <!-- Message Action Modal -->
   <div class="modal" id="msgActionModal">
     <div class="sheet">
       <h3>Message options</h3>
@@ -1420,10 +1419,18 @@
     </div>
   </div>
 
-  <!-- Forward Target Modal -->
+  <!-- Forward Target Modal (Shows Sender Name + DP!) -->
   <div class="modal" id="forwardModal">
     <div class="sheet">
-      <h3>Forward to</h3>
+      <h3>Forward message</h3>
+      <div id="forwardSenderPreview" style="display:flex; align-items:center; gap:8px; background:var(--panel-2); padding:8px 10px; border-radius:10px; border:1px solid var(--panel-3);">
+        <img id="fwdOriginDp" src="" alt="" style="width:32px; height:32px; border-radius:50%; object-fit:cover;" />
+        <div style="font-size:12px;">
+          <div style="color:var(--muted);">From:</div>
+          <strong id="fwdOriginName"></strong>
+        </div>
+      </div>
+      <p>Select recipient:</p>
       <div id="forwardUsersList" style="display:flex; flex-direction:column; gap:6px;"></div>
       <button type="button" class="btn secondary" id="closeForwardModalBtn">Cancel</button>
     </div>
@@ -1508,6 +1515,7 @@
     const db = firebase.database();
 
     const STATUS_TTL_MS = 24 * 60 * 60 * 1000;
+    const STATUS_AUTO_NEXT_MS = 10000;
 
     function syncViewportVars() {
       const vv = window.visualViewport;
@@ -1553,7 +1561,7 @@
       uid: "na_ai_assistant",
       name: "NA Ai",
       email: "ai@na-assistant.local",
-      about: "Smart AI • Sinhala & All Languages • Photo Gen",
+      about: "Real-Time Live AI • Sinhala & All Languages • Photo Gen",
       dp: NA_AI_DP,
       online: true,
       isAI: true
@@ -1589,14 +1597,25 @@
     let audioCtx = null;
     let activeMsgTarget = null;
     let replyToMsg = null;
+
+    // Status auto-advance timers
     let activeStatusId = null;
+    let activeStatusQueue = [];
+    let activeStatusIndex = 0;
+    let statusAutoAdvanceTimer = null;
+    let statusProgressRaf = null;
+
     let pendingStatusPhoto = "";
     let pendingStatusVideo = "";
     let selectedStatusBg = "#0d47a1";
     let selectedStatusTextColor = "#ffffff";
     let selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
+
+    // Lock modal state (Fingerprint / Pattern / PIN)
     let lockModalMode = null;
     let pendingLockPeer = null;
+    let patternSequence = [];
+
     let typingStopTimer = null;
     let typingExpiryTimer = null;
     let lastTypingSentAt = 0;
@@ -1686,6 +1705,7 @@
     const heroName = document.getElementById("heroName");
     const heroEmail = document.getElementById("heroEmail");
     const accountNameInput = document.getElementById("accountNameInput");
+    const geminiApiKeyInput = document.getElementById("geminiApiKeyInput");
     const saveAccountBtn = document.getElementById("saveAccountBtn");
     const accountUidText = document.getElementById("accountUidText");
     const settingsLogoutBtn = document.getElementById("settingsLogoutBtn");
@@ -1748,6 +1768,7 @@
     const closeContactInfoBtn = document.getElementById("closeContactInfoBtn");
 
     const statusViewerModal = document.getElementById("statusViewerModal");
+    const statusProgressFill = document.getElementById("statusProgressFill");
     const viewerOwnerDp = document.getElementById("viewerOwnerDp");
     const viewerOwnerName = document.getElementById("viewerOwnerName");
     const viewerTimeText = document.getElementById("viewerTimeText");
@@ -1755,6 +1776,7 @@
     const statusLikeBtn = document.getElementById("statusLikeBtn");
     const statusDeleteBtn = document.getElementById("statusDeleteBtn");
     const statusViewersList = document.getElementById("statusViewersList");
+    const nextStatusManualBtn = document.getElementById("nextStatusManualBtn");
     const closeStatusViewerBtn = document.getElementById("closeStatusViewerBtn");
 
     const photoViewerModal = document.getElementById("photoViewerModal");
@@ -1771,6 +1793,14 @@
     const chatLockModal = document.getElementById("chatLockModal");
     const chatLockModalTitle = document.getElementById("chatLockModalTitle");
     const chatLockModalDesc = document.getElementById("chatLockModalDesc");
+    const lockMethodSelect = document.getElementById("lockMethodSelect");
+    const patternLockSection = document.getElementById("patternLockSection");
+    const patternStatusLabel = document.getElementById("patternStatusLabel");
+    const patternGrid = document.getElementById("patternGrid");
+    const resetPatternBtn = document.getElementById("resetPatternBtn");
+    const fingerprintLockSection = document.getElementById("fingerprintLockSection");
+    const triggerBiometricBtn = document.getElementById("triggerBiometricBtn");
+    const pinLockSection = document.getElementById("pinLockSection");
     const chatLockPinInput = document.getElementById("chatLockPinInput");
     const confirmChatLockBtn = document.getElementById("confirmChatLockBtn");
     const cancelChatLockBtn = document.getElementById("cancelChatLockBtn");
@@ -1790,6 +1820,8 @@
     const closeMsgModalBtn = document.getElementById("closeMsgModalBtn");
 
     const forwardModal = document.getElementById("forwardModal");
+    const fwdOriginDp = document.getElementById("fwdOriginDp");
+    const fwdOriginName = document.getElementById("fwdOriginName");
     const forwardUsersList = document.getElementById("forwardUsersList");
     const closeForwardModalBtn = document.getElementById("closeForwardModalBtn");
 
@@ -1827,9 +1859,7 @@
       });
     });
 
-    function getCardLiveStyle() {
-      return localStorage.getItem("chatCardLiveStyle") || "card-serpent-border";
-    }
+    function getCardLiveStyle() { return localStorage.getItem("chatCardLiveStyle") || "card-serpent-border"; }
     function setCardLiveStyle(val) {
       localStorage.setItem("chatCardLiveStyle", val || "card-serpent-border");
       chatCardLiveSelect.value = val || "card-serpent-border";
@@ -1849,30 +1879,21 @@
 
     function enterMultiSelectWith(uid) {
       if (!uid) return;
-      isMultiSelectMode = true;
-      selectedChatUids.clear();
-      selectedChatUids.add(uid);
-      sidebarPane.classList.add("multi-select-active");
-      bulkSelectBar.classList.add("active");
-      bulkCountLabel.textContent = `${selectedChatUids.size} selected`;
-      renderUsersList();
+      isMultiSelectMode = true; selectedChatUids.clear(); selectedChatUids.add(uid);
+      sidebarPane.classList.add("multi-select-active"); bulkSelectBar.classList.add("active");
+      bulkCountLabel.textContent = `${selectedChatUids.size} selected`; renderUsersList();
     }
 
     function exitMultiSelectMode() {
-      isMultiSelectMode = false;
-      selectedChatUids.clear();
-      sidebarPane.classList.remove("multi-select-active");
-      bulkSelectBar.classList.remove("active");
-      renderUsersList();
+      isMultiSelectMode = false; selectedChatUids.clear();
+      sidebarPane.classList.remove("multi-select-active"); bulkSelectBar.classList.remove("active"); renderUsersList();
     }
 
     function toggleChatSelection(uid) {
       if (!uid) return;
-      if (selectedChatUids.has(uid)) selectedChatUids.delete(uid);
-      else selectedChatUids.add(uid);
+      if (selectedChatUids.has(uid)) selectedChatUids.delete(uid); else selectedChatUids.add(uid);
       if (selectedChatUids.size === 0) { exitMultiSelectMode(); return; }
-      bulkCountLabel.textContent = `${selectedChatUids.size} selected`;
-      renderUsersList();
+      bulkCountLabel.textContent = `${selectedChatUids.size} selected`; renderUsersList();
     }
 
     bulkCancelBtn.addEventListener("click", exitMultiSelectMode);
@@ -1897,8 +1918,7 @@
 
     bulkDeleteBtn.addEventListener("click", async () => {
       if (!currentUser || !selectedChatUids.size) return;
-      const targets = Array.from(selectedChatUids);
-      for (const uid of targets) {
+      for (const uid of Array.from(selectedChatUids)) {
         if (uid === "na_ai_assistant") localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
         else await deleteEntireChat(allUsers[uid] || { uid });
       }
@@ -1907,30 +1927,21 @@
 
     function enterMsgMultiSelectWith(msgId) {
       if (!msgId) return;
-      isMsgMultiSelectMode = true;
-      selectedMsgIds.clear();
-      selectedMsgIds.add(msgId);
-      messagesContainer.classList.add("msg-multi-active");
-      msgBulkSelectBar.classList.add("active");
-      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`;
-      syncSelectedMessageVisuals();
+      isMsgMultiSelectMode = true; selectedMsgIds.clear(); selectedMsgIds.add(msgId);
+      messagesContainer.classList.add("msg-multi-active"); msgBulkSelectBar.classList.add("active");
+      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`; syncSelectedMessageVisuals();
     }
 
     function exitMsgMultiSelectMode() {
-      isMsgMultiSelectMode = false;
-      selectedMsgIds.clear();
-      messagesContainer.classList.remove("msg-multi-active");
-      msgBulkSelectBar.classList.remove("active");
-      syncSelectedMessageVisuals();
+      isMsgMultiSelectMode = false; selectedMsgIds.clear();
+      messagesContainer.classList.remove("msg-multi-active"); msgBulkSelectBar.classList.remove("active"); syncSelectedMessageVisuals();
     }
 
     function toggleMsgSelection(msgId) {
       if (!msgId) return;
-      if (selectedMsgIds.has(msgId)) selectedMsgIds.delete(msgId);
-      else selectedMsgIds.add(msgId);
+      if (selectedMsgIds.has(msgId)) selectedMsgIds.delete(msgId); else selectedMsgIds.add(msgId);
       if (selectedMsgIds.size === 0) { exitMsgMultiSelectMode(); return; }
-      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`;
-      syncSelectedMessageVisuals();
+      msgBulkCountLabel.textContent = `${selectedMsgIds.size} selected`; syncSelectedMessageVisuals();
     }
 
     function syncSelectedMessageVisuals() {
@@ -1944,28 +1955,15 @@
     }
 
     msgBulkCancelBtn.addEventListener("click", exitMsgMultiSelectMode);
-
-    msgBulkStarBtn.addEventListener("click", () => {
-      for (const id of Array.from(selectedMsgIds)) {
-        const m = loadedMessagesMap[id];
-        if (m) toggleStarMessage(m);
-      }
-      exitMsgMultiSelectMode();
-    });
+    msgBulkStarBtn.addEventListener("click", () => { for (const id of Array.from(selectedMsgIds)) { const m = loadedMessagesMap[id]; if (m) toggleStarMessage(m); } exitMsgMultiSelectMode(); });
 
     msgBulkCopyBtn.addEventListener("click", () => {
       const lines = [];
-      for (const id of Array.from(selectedMsgIds)) {
-        const m = loadedMessagesMap[id];
-        if (m && !m.deletedForEveryone && (m.text || m.sticker)) lines.push(m.text || m.sticker);
-      }
+      for (const id of Array.from(selectedMsgIds)) { const m = loadedMessagesMap[id]; if (m && !m.deletedForEveryone && (m.text || m.sticker)) lines.push(m.text || m.sticker); }
       if (lines.length) {
-        const joined = lines.join("\n");
-        allowExplicitChatCopy = true;
+        const joined = lines.join("\n"); allowExplicitChatCopy = true;
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(joined).catch(() => {});
-        else {
-          const ta = document.createElement("textarea"); ta.value = joined; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
-        }
+        else { const ta = document.createElement("textarea"); ta.value = joined; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
         setTimeout(() => { allowExplicitChatCopy = false; }, 120);
       }
       exitMsgMultiSelectMode();
@@ -1976,19 +1974,13 @@
       const ids = Array.from(selectedMsgIds);
       if (selectedPeer.isAI) {
         const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
-        let arr = [];
-        try { arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
+        let arr = []; try { arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
         arr = arr.filter((m) => !ids.includes(m.id));
         localStorage.setItem(aiHistoryKey, JSON.stringify(arr));
-        ids.forEach((id) => {
-          const el = messagesContainer.querySelector(`[data-msg-wrap-id="${id}"]`);
-          if (el) el.remove();
-        });
+        ids.forEach((id) => { const el = messagesContainer.querySelector(`[data-msg-wrap-id="${id}"]`); if (el) el.remove(); });
       } else {
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-        for (const id of ids) {
-          await db.ref(`chats/${chatId}/messages/${id}/deletedFor/${currentUser.uid}`).set(true).catch(() => {});
-        }
+        for (const id of ids) await db.ref(`chats/${chatId}/messages/${id}/deletedFor/${currentUser.uid}`).set(true).catch(() => {});
       }
       exitMsgMultiSelectMode();
     });
@@ -2013,20 +2005,13 @@
     async function pruneExpiredStatuses() {
       if (!allStatuses || typeof allStatuses !== "object") return;
       for (const [id, st] of Object.entries(allStatuses)) {
-        if (isStatusExpired(st)) {
-          delete allStatuses[id];
-          db.ref(`statuses/${id}`).remove().catch(() => {});
-        }
+        if (isStatusExpired(st)) { delete allStatuses[id]; db.ref(`statuses/${id}`).remove().catch(() => {}); }
       }
     }
 
-    setInterval(() => {
-      pruneExpiredStatuses();
-      renderStatusFeed();
-      renderUsersList();
-      updateTopHeader();
-    }, 30000);
+    setInterval(() => { pruneExpiredStatuses(); renderStatusFeed(); renderUsersList(); updateTopHeader(); }, 30000);
 
+    // Real-Time Live AI (Gemini API if configured + Live AI endpoint fallback)
     async function askLiveAI(promptText) {
       const trimmed = promptText.trim();
       const low = trimmed.toLowerCase();
@@ -2041,8 +2026,7 @@
         const remoteUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=640&height=420&nologo=true&seed=${Date.now()}`;
 
         const loadedUrl = await new Promise((resolve) => {
-          const testImg = new Image();
-          testImg.crossOrigin = "anonymous";
+          const testImg = new Image(); testImg.crossOrigin = "anonymous";
           const t = setTimeout(() => resolve(null), 9000);
           testImg.onload = () => { clearTimeout(t); resolve(remoteUrl); };
           testImg.onerror = () => { clearTimeout(t); resolve(null); };
@@ -2056,11 +2040,33 @@
         };
       }
 
+      const geminiKey = (localStorage.getItem("geminiApiKey") || "").trim();
+      if (geminiKey) {
+        try {
+          const gResp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                systemInstruction: { parts: [{ text: "You are NA Ai, a live conversational assistant like Gemini. Reply naturally and helpfully in the exact language of the user (including Sinhala or English)." }] },
+                contents: [{ role: "user", parts: [{ text: trimmed }] }]
+              })
+            }
+          );
+          if (gResp.ok) {
+            const gJson = await gResp.json();
+            const gText = gJson?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("").trim();
+            if (gText) return { text: gText };
+          }
+        } catch (_) {}
+      }
+
       try {
-        const systemPrompt = "You are NA Ai, a helpful assistant similar to Gemini and Meta AI. Understand any language including Sinhala and English, and reply naturally in the same language the user used.";
+        const systemPrompt = "You are NA Ai, a live conversational assistant like Gemini. Answer any question directly in the same language the user used (Sinhala, English, etc.).";
         const url = `https://text.pollinations.ai/${encodeURIComponent(trimmed)}?system=${encodeURIComponent(systemPrompt)}`;
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8500);
+        const timer = setTimeout(() => controller.abort(), 9000);
         const resp = await fetch(url, { signal: controller.signal });
         clearTimeout(timer);
         if (resp.ok) {
@@ -2070,10 +2076,11 @@
       } catch (_) {}
 
       const hasSinhala = /[\u0D80-\u0DFF]/.test(trimmed);
-      if (hasSinhala) {
-        return { text: `ඔබ ඇසූ **"${trimmed}"** ගැන කෙටි පිළිතුර:\nමෙය සජීවී AI සහායකයායි. ඕනෑම ප්‍රශ්නයක් අසන්න හෝ \`photo: <විස්තරය>\` ලෙස ලබා දී පින්තූරයක් සාදන්න.` };
-      }
-      return { text: `Regarding **"${trimmed}"**: Ask any question or type \`photo: <description>\` to generate an AI image.` };
+      return {
+        text: hasSinhala
+          ? `සජීවී සම්බන්ධතාව තාවකාලිකව ප්‍රමාද වුණා. නැවතත් **"${trimmed}"** අසන්න (හෝ Settings -> Account හි Gemini API Key එක එක් කරන්න).`
+          : `Live connection timed out. Please ask **"${trimmed}"** again (or add a Gemini API Key in Settings -> Account).`
+      };
     }
 
     function generateAiPhotoDataUrl(promptText) {
@@ -2102,16 +2109,10 @@
     }
 
     function getCustomEmojiColor() { return localStorage.getItem("customEmojiColor") || "#42a5f5"; }
-    function setCustomEmojiColor(col) {
-      localStorage.setItem("customEmojiColor", col || "#42a5f5");
-      customEmojiColorPicker.value = col || "#42a5f5";
-    }
+    function setCustomEmojiColor(col) { localStorage.setItem("customEmojiColor", col || "#42a5f5"); customEmojiColorPicker.value = col || "#42a5f5"; }
 
     function getEmojiShape() { return localStorage.getItem("customEmojiShape") || "shape-none"; }
-    function setEmojiShape(sh) {
-      localStorage.setItem("customEmojiShape", sh || "shape-none");
-      emojiShapeSelect.value = sh || "shape-none";
-    }
+    function setEmojiShape(sh) { localStorage.setItem("customEmojiShape", sh || "shape-none"); emojiShapeSelect.value = sh || "shape-none"; }
 
     customEmojiColorPicker.addEventListener("input", () => setCustomEmojiColor(customEmojiColorPicker.value));
     emojiShapeSelect.addEventListener("change", () => setEmojiShape(emojiShapeSelect.value));
@@ -2121,15 +2122,13 @@
       el.innerHTML = "";
       if (mode === "live-fish") {
         ["🐠", "🐟", "🐡", "🐠", "🐟"].forEach((em, idx) => {
-          const sp = document.createElement("span");
-          sp.className = "anim-sprite"; sp.textContent = em;
+          const sp = document.createElement("span"); sp.className = "anim-sprite"; sp.textContent = em;
           sp.style.top = `${16 + idx * 17}%`; sp.style.setProperty("--dur", `${9 + idx * 2.2}s`);
           sp.style.animationDelay = `${-idx * 2.5}s`; el.appendChild(sp);
         });
       } else if (mode === "live-butterfly") {
         ["🦋", "🦋", "🦋", "🦋"].forEach((em, idx) => {
-          const sp = document.createElement("span");
-          sp.className = "anim-sprite"; sp.textContent = em;
+          const sp = document.createElement("span"); sp.className = "anim-sprite"; sp.textContent = em;
           sp.style.setProperty("--topY", `${20 + idx * 18}%`); sp.style.setProperty("--dur", `${8.5 + idx * 2}s`);
           sp.style.animationDelay = `${-idx * 2.1}s`; el.appendChild(sp);
         });
@@ -2137,22 +2136,12 @@
     }
 
     function applyLiveLayer(el, mode) {
-      el.className = "live-anim-layer";
-      populateLiveSprites(el, mode);
+      el.className = "live-anim-layer"; populateLiveSprites(el, mode);
       if (mode && mode !== "none") el.classList.add("active", mode);
     }
 
-    function applyHomeLiveWallpaper(mode) {
-      localStorage.setItem("homeLiveWallpaper", mode || "none");
-      homeLiveWallpaperSelect.value = mode || "none";
-      applyLiveLayer(homeLiveLayer, mode);
-    }
-
-    function applyChatLiveWallpaper(mode) {
-      localStorage.setItem("chatLiveWallpaper", mode || "none");
-      chatLiveWallpaperSelect.value = mode || "none";
-      applyLiveLayer(chatLiveLayer, mode);
-    }
+    function applyHomeLiveWallpaper(mode) { localStorage.setItem("homeLiveWallpaper", mode || "none"); homeLiveWallpaperSelect.value = mode || "none"; applyLiveLayer(homeLiveLayer, mode); }
+    function applyChatLiveWallpaper(mode) { localStorage.setItem("chatLiveWallpaper", mode || "none"); chatLiveWallpaperSelect.value = mode || "none"; applyLiveLayer(chatLiveLayer, mode); }
 
     homeLiveWallpaperSelect.addEventListener("change", () => applyHomeLiveWallpaper(homeLiveWallpaperSelect.value));
     chatLiveWallpaperSelect.addEventListener("change", () => applyChatLiveWallpaper(chatLiveWallpaperSelect.value));
@@ -2200,8 +2189,7 @@
       const pRef = db.ref(`typing/${chatId}/${peerUid}`);
       const cb = (snap) => {
         if (!typingMap[chatId]) typingMap[chatId] = {};
-        typingMap[chatId][peerUid] = snap.val() || null;
-        refreshPresenceAndTypingUI();
+        typingMap[chatId][peerUid] = snap.val() || null; refreshPresenceAndTypingUI();
       };
       pRef.on("value", cb); peerTypingListeners[key] = { ref: pRef, cb };
     }
@@ -2226,28 +2214,19 @@
       if (!cleanQ) return;
       const wraps = Array.from(messagesContainer.querySelectorAll(".msg-swipe-wrap"));
       const targetWrap = wraps.find((w) => {
-        const bubble = w.querySelector(".msg");
-        if (!bubble) return false;
-        const clone = bubble.cloneNode(true);
-        clone.querySelectorAll(".reply-quote, .msg-meta").forEach((n) => n.remove());
+        const bubble = w.querySelector(".msg"); if (!bubble) return false;
+        const clone = bubble.cloneNode(true); clone.querySelectorAll(".reply-quote, .msg-meta, .fwd-sender-chip").forEach((n) => n.remove());
         return (clone.textContent || "").trim().toLowerCase().includes(cleanQ);
       });
       if (targetWrap) {
         targetWrap.scrollIntoView({ behavior: "smooth", block: "center" });
         const bubble = targetWrap.querySelector(".msg");
-        if (bubble) {
-          bubble.classList.remove("msg-highlight-2s"); void bubble.offsetWidth;
-          bubble.classList.add("msg-highlight-2s");
-          setTimeout(() => bubble.classList.remove("msg-highlight-2s"), 2000);
-        }
+        if (bubble) { bubble.classList.remove("msg-highlight-2s"); void bubble.offsetWidth; bubble.classList.add("msg-highlight-2s"); setTimeout(() => bubble.classList.remove("msg-highlight-2s"), 2000); }
       }
     }
 
     function isVibrateEnabled() { const saved = localStorage.getItem("chatVibrate"); return saved === null ? true : saved === "1"; }
-    function setVibrateEnabled(val) {
-      localStorage.setItem("chatVibrate", val ? "1" : "0");
-      vibrateToggleAppearance.checked = val; vibrateToggleNotif.checked = val;
-    }
+    function setVibrateEnabled(val) { localStorage.setItem("chatVibrate", val ? "1" : "0"); vibrateToggleAppearance.checked = val; vibrateToggleNotif.checked = val; }
     vibrateToggleAppearance.addEventListener("change", () => setVibrateEnabled(vibrateToggleAppearance.checked));
     vibrateToggleNotif.addEventListener("change", () => setVibrateEnabled(vibrateToggleNotif.checked));
 
@@ -2320,7 +2299,7 @@
     window.addEventListener("popstate", () => {
       if (photoViewerModal.classList.contains("active")) { photoViewerModal.classList.remove("active"); return; }
       if (videoViewerModal.classList.contains("active")) { videoViewerEl.pause(); videoViewerModal.classList.remove("active"); return; }
-      if (statusViewerModal.classList.contains("active")) { statusViewerModal.classList.remove("active"); activeStatusId = null; return; }
+      if (statusViewerModal.classList.contains("active")) { closeStatusViewer(); return; }
       if (addStatusModal.classList.contains("active")) { addStatusModal.classList.remove("active"); return; }
       if (contactInfoModal.classList.contains("active")) { contactInfoModal.classList.remove("active"); return; }
       if (forwardModal.classList.contains("active")) { forwardModal.classList.remove("active"); return; }
@@ -2465,11 +2444,17 @@
     function isUserBlockedByMe(peerUid) { const me = allUsers[currentUser?.uid] || {}; return !!(me.blocked && me.blocked[peerUid]); }
     function isMeBlockedByPeer(peerUid) { const peer = allUsers[peerUid] || {}; return !!(peer.blocked && peer.blocked[currentUser?.uid]); }
 
-    function getChatLockPin(peerUid) { if (!currentUser || !peerUid) return null; return localStorage.getItem(`lock_${currentUser.uid}_${peerUid}`); }
-    function setChatLockPin(peerUid, pin) {
+    // Customizable Chat Lock (Pattern / Fingerprint / PIN)
+    function getChatLockConfig(peerUid) {
+      if (!currentUser || !peerUid) return null;
+      const raw = localStorage.getItem(`lockcfg_${currentUser.uid}_${peerUid}`);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch (_) { return null; }
+    }
+    function setChatLockConfig(peerUid, cfg) {
       if (!currentUser || !peerUid) return;
-      if (pin) localStorage.setItem(`lock_${currentUser.uid}_${peerUid}`, pin);
-      else localStorage.removeItem(`lock_${currentUser.uid}_${peerUid}`);
+      if (!cfg) localStorage.removeItem(`lockcfg_${currentUser.uid}_${peerUid}`);
+      else localStorage.setItem(`lockcfg_${currentUser.uid}_${peerUid}`, JSON.stringify(cfg));
     }
 
     function canSeeDp(targetUser) {
@@ -2773,6 +2758,7 @@
         authScreen.classList.remove("active"); chatScreen.classList.add("active"); syncViewportVars();
 
         soundSelect.value = localStorage.getItem("chatSound") || "chime";
+        geminiApiKeyInput.value = localStorage.getItem("geminiApiKey") || "";
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
         fontSizeSelect.value = savedFont; document.documentElement.style.setProperty("--msg-font-size", savedFont);
         setCardLiveStyle(getCardLiveStyle()); setVibrateEnabled(isVibrateEnabled());
@@ -2790,7 +2776,7 @@
         db.ref("statuses").on("value", (snap) => {
           allStatuses = snap.val() || {}; pruneExpiredStatuses(); renderUsersList(); renderStatusFeed(); updateTopHeader();
           if (activeStatusId && statusViewerModal.classList.contains("active")) {
-            if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) { statusViewerModal.classList.remove("active"); activeStatusId = null; }
+            if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) advanceOrExitStatusViewer();
             else renderStatusViewerContent(activeStatusId);
           }
         });
@@ -2844,7 +2830,7 @@
           ${createPerimeterSerpentSvg()}
           <span class="select-check-circle">${aiSelected ? "✓" : ""}</span>
           <div class="avatar-wrap"><img class="avatar" src="${NA_AI_DP}" alt="" /><span class="online-disc active"></span></div>
-          <div class="row-meta"><div class="row-name">NA Ai ✨</div><div class="row-sub status-line is-online">Live AI • Sinhala & All Lang • Photo Gen</div></div>
+          <div class="row-meta"><div class="row-name">NA Ai ✨</div><div class="row-sub status-line is-online">Real-Time Live AI • Sinhala & All Lang • Photo Gen</div></div>
         `;
         aiRow.addEventListener("click", () => { if (isMultiSelectMode) toggleChatSelection("na_ai_assistant"); else openChatWith(NA_AI_USER); });
         attachCardLongPress(aiRow, "na_ai_assistant"); usersList.appendChild(aiRow);
@@ -2863,7 +2849,7 @@
         if (!q && !hasChat) return;
         if (q && !rawMatch.includes(q)) return;
 
-        const isBlocked = isUserBlockedByMe(u.uid); const isLocked = !!getChatLockPin(u.uid);
+        const isBlocked = isUserBlockedByMe(u.uid); const isLocked = !!getChatLockConfig(u.uid);
         const isSelected = selectedChatUids.has(u.uid); const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
         const ringClass = getUserStatusRingClass(u.uid); const remoteTypingNow = isPeerTypingNow(u.uid);
         const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: "", isOnline: false, plain: "" };
@@ -2891,7 +2877,7 @@
           ev.stopPropagation();
           if (isMultiSelectMode) { toggleChatSelection(u.uid); return; }
           const stList = getUserStatuses(u.uid);
-          if (stList.length) openStatusViewer(stList[0].id); else openContactInfoModal(u);
+          if (stList.length) openStatusQueue(stList, 0); else openContactInfoModal(u);
         });
 
         card.addEventListener("click", () => { if (isMultiSelectMode) toggleChatSelection(u.uid); else handleSelectPeer(u); });
@@ -2904,27 +2890,123 @@
     headerAvatarWrap.addEventListener("click", (ev) => {
       ev.stopPropagation(); if (!selectedPeer || selectedPeer.isAI) return;
       const stList = getUserStatuses(selectedPeer.uid);
-      if (stList.length) openStatusViewer(stList[0].id); else openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer);
+      if (stList.length) openStatusQueue(stList, 0); else openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer);
     });
 
     headerTitleWrap.addEventListener("click", () => { if (!selectedPeer || selectedPeer.isAI) return; openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); });
 
+    // Pattern / Fingerprint / PIN Lock UI Logic
+    function resetPatternUi() {
+      patternSequence = [];
+      patternGrid.querySelectorAll(".pattern-node").forEach((n) => n.classList.remove("active"));
+    }
+
+    patternGrid.querySelectorAll(".pattern-node").forEach((node) => {
+      node.addEventListener("click", () => {
+        const pt = node.dataset.pt;
+        if (!patternSequence.includes(pt)) {
+          patternSequence.push(pt);
+          node.classList.add("active");
+          patternStatusLabel.textContent = `Pattern: ${patternSequence.join(" → ")}`;
+        }
+      });
+    });
+    resetPatternBtn.addEventListener("click", () => { resetPatternUi(); patternStatusLabel.textContent = "Pattern reset"; });
+
+    function updateLockMethodSections() {
+      const m = lockMethodSelect.value;
+      patternLockSection.style.display = m === "pattern" ? "flex" : "none";
+      fingerprintLockSection.style.display = m === "fingerprint" ? "flex" : "none";
+      pinLockSection.style.display = m === "pin" ? "flex" : "none";
+    }
+    lockMethodSelect.addEventListener("change", updateLockMethodSections);
+
+    async function verifyBiometricPrompt() {
+      if (!window.PublicKeyCredential || !navigator.credentials) {
+        alert("Fingerprint/Biometric is not available on this browser. Please use Pattern or PIN.");
+        return false;
+      }
+      try {
+        const challenge = new Uint8Array(16);
+        crypto.getRandomValues(challenge);
+        await navigator.credentials.get({
+          publicKey: {
+            challenge,
+            timeout: 20000,
+            userVerification: "required"
+          }
+        });
+        return true;
+      } catch (_) {
+        alert("Biometric verification cancelled or not enrolled on this device. Use Pattern or PIN.");
+        return false;
+      }
+    }
+
+    triggerBiometricBtn.addEventListener("click", async () => {
+      const ok = await verifyBiometricPrompt();
+      if (!ok) return;
+      if (lockModalMode === "unlock" && pendingLockPeer) {
+        const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target);
+      } else if (lockModalMode === "set" && selectedPeer) {
+        setChatLockConfig(selectedPeer.uid, { method: "fingerprint" });
+        chatLockModal.classList.remove("active"); renderUsersList();
+      }
+    });
+
     function handleSelectPeer(peer) {
-      const pin = getChatLockPin(peer.uid);
-      if (pin) {
+      const cfg = getChatLockConfig(peer.uid);
+      if (cfg) {
         pendingLockPeer = peer; lockModalMode = "unlock";
-        chatLockModalTitle.textContent = "Locked chat"; chatLockModalDesc.textContent = "Enter passcode";
-        chatLockPinInput.value = ""; chatLockModal.classList.add("active"); pushNavState(); return;
+        chatLockModalTitle.textContent = "Locked chat";
+        chatLockModalDesc.textContent = `Unlock (${cfg.method.toUpperCase()})`;
+        lockMethodSelect.value = cfg.method || "pattern";
+        updateLockMethodSections(); resetPatternUi(); chatLockPinInput.value = "";
+        chatLockModal.classList.add("active"); pushNavState();
+        if (cfg.method === "fingerprint") {
+          verifyBiometricPrompt().then((ok) => {
+            if (ok && pendingLockPeer) { const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target); }
+          });
+        }
+        return;
       }
       openChatWith(peer);
     }
 
-    confirmChatLockBtn.addEventListener("click", () => {
-      const pin = chatLockPinInput.value.trim(); if (!pin) return;
+    confirmChatLockBtn.addEventListener("click", async () => {
+      const method = lockMethodSelect.value;
       if (lockModalMode === "unlock" && pendingLockPeer) {
-        if (pin === getChatLockPin(pendingLockPeer.uid)) { const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target); }
-        else alert("Wrong passcode");
-      } else if (lockModalMode === "set" && selectedPeer) { setChatLockPin(selectedPeer.uid, pin); chatLockModal.classList.remove("active"); renderUsersList(); }
+        const cfg = getChatLockConfig(pendingLockPeer.uid);
+        if (!cfg) return;
+        let matched = false;
+        if (method === "pattern") {
+          const seqStr = patternSequence.join("-");
+          matched = (cfg.method === "pattern" && cfg.secret === seqStr);
+        } else if (method === "pin") {
+          matched = (cfg.method === "pin" && cfg.secret === chatLockPinInput.value.trim());
+        } else if (method === "fingerprint") {
+          matched = await verifyBiometricPrompt();
+        }
+        if (matched) {
+          const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target);
+        } else {
+          alert("Lock did not match!"); resetPatternUi();
+        }
+      } else if (lockModalMode === "set" && selectedPeer) {
+        if (method === "pattern") {
+          if (patternSequence.length < 4) { alert("Select at least 4 nodes for pattern."); return; }
+          setChatLockConfig(selectedPeer.uid, { method: "pattern", secret: patternSequence.join("-") });
+        } else if (method === "pin") {
+          const pin = chatLockPinInput.value.trim();
+          if (!pin) { alert("Enter a PIN."); return; }
+          setChatLockConfig(selectedPeer.uid, { method: "pin", secret: pin });
+        } else if (method === "fingerprint") {
+          const ok = await verifyBiometricPrompt();
+          if (!ok) return;
+          setChatLockConfig(selectedPeer.uid, { method: "fingerprint" });
+        }
+        chatLockModal.classList.remove("active"); renderUsersList();
+      }
     });
 
     cancelChatLockBtn.addEventListener("click", () => { pendingLockPeer = null; chatLockModal.classList.remove("active"); });
@@ -2970,7 +3052,7 @@
         if (!aiMsgs.length) {
           aiMsgs = [{
             id: "ai_welcome_1", senderId: "na_ai_assistant", receiverId: currentUser.uid,
-            text: "ආයුබෝවන්! මම **NA Ai** ✨. සිංහලෙන් හෝ ඕනෑම භාෂාවකින් ප්‍රශ්න අහන්න; පින්තූරයක් අවශ්‍ය නම් `photo: ...` කියා ලියන්න.",
+            text: "ආයුබෝවන්! මම **NA Ai** ✨. සිංහලෙන් හෝ ඕනෑම භාෂාවකින් ඕනෑම දෙයක් අහන්න — මම ඒ මොහොතේම live reply කරනවා! (Photo සඳහා `photo: ...` ලියන්න).",
             status: "seen", timestamp: Date.now()
           }];
           localStorage.setItem(aiHistoryKey, JSON.stringify(aiMsgs));
@@ -3035,8 +3117,8 @@
 
     menuLockChatBtn.addEventListener("click", () => {
       chatMoreMenu.classList.remove("open"); if (!selectedPeer || selectedPeer.isAI) return;
-      if (getChatLockPin(selectedPeer.uid)) { setChatLockPin(selectedPeer.uid, null); renderUsersList(); }
-      else { lockModalMode = "set"; chatLockModalTitle.textContent = "Lock chat"; chatLockModalDesc.textContent = "Enter passcode"; chatLockPinInput.value = ""; chatLockModal.classList.add("active"); pushNavState(); }
+      if (getChatLockConfig(selectedPeer.uid)) { setChatLockConfig(selectedPeer.uid, null); renderUsersList(); alert("Chat lock removed."); }
+      else { lockModalMode = "set"; chatLockModalTitle.textContent = "Set chat lock"; chatLockModalDesc.textContent = "Choose Pattern, Fingerprint or PIN"; updateLockMethodSections(); resetPatternUi(); chatLockPinInput.value = ""; chatLockModal.classList.add("active"); pushNavState(); }
     });
 
     menuClearChatBtn.addEventListener("click", async () => {
@@ -3055,7 +3137,7 @@
         await db.ref(`chats/${chatId}`).remove().catch(() => {}); await db.ref(`typing/${chatId}`).remove().catch(() => {});
         await db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).remove().catch(() => {}); activeChatIds[peer.uid] = false;
       }
-      setChatLockPin(peer.uid, null); unreadCounts[peer.uid] = 0;
+      setChatLockConfig(peer.uid, null); unreadCounts[peer.uid] = 0;
       if (selectedPeer && selectedPeer.uid === peer.uid) closeActiveChatToList();
       renderUsersList();
     }
@@ -3075,7 +3157,7 @@
       if (!peer) return; const p = getPresenceDisplay(peer);
       infoAvatar.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
       infoName.textContent = getVisibleName(peer); infoStatus.textContent = p.plain; infoAbout.textContent = getVisibleAbout(peer);
-      toggleChatLockBtn.textContent = getChatLockPin(peer.uid) ? "Unlock" : "Lock";
+      toggleChatLockBtn.textContent = getChatLockConfig(peer.uid) ? "Unlock" : "Lock";
       infoBlockBtn.textContent = isUserBlockedByMe(peer.uid) ? "Unblock" : "Block";
       contactInfoModal.classList.add("active"); pushNavState();
     }
@@ -3084,8 +3166,8 @@
 
     toggleChatLockBtn.addEventListener("click", () => {
       if (!selectedPeer) return;
-      if (getChatLockPin(selectedPeer.uid)) { setChatLockPin(selectedPeer.uid, null); renderUsersList(); openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); }
-      else { contactInfoModal.classList.remove("active"); lockModalMode = "set"; chatLockModalTitle.textContent = "Lock chat"; chatLockModalDesc.textContent = "Enter passcode"; chatLockPinInput.value = ""; chatLockModal.classList.add("active"); }
+      if (getChatLockConfig(selectedPeer.uid)) { setChatLockConfig(selectedPeer.uid, null); renderUsersList(); openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); }
+      else { contactInfoModal.classList.remove("active"); lockModalMode = "set"; chatLockModalTitle.textContent = "Set chat lock"; chatLockModalDesc.textContent = "Choose Pattern, Fingerprint or PIN"; updateLockMethodSections(); resetPatternUi(); chatLockPinInput.value = ""; chatLockModal.classList.add("active"); }
     });
 
     infoBlockBtn.addEventListener("click", async () => {
@@ -3143,7 +3225,11 @@
 
       const isMine = msg.senderId === currentUser.uid; const isDeletedEveryone = !!msg.deletedForEveryone;
       const isSticker = !isDeletedEveryone && !!msg.sticker;
-      const isMediaOnly = !isDeletedEveryone && !isSticker && !msg.text && !msg.replyTo && (msg.mediaType === "image" || msg.mediaType === "video");
+      const isMediaOnly = !isDeletedEveryone && !isSticker && !msg.text && !msg.replyTo && !msg.forwardedFrom && (msg.mediaType === "image" || msg.mediaType === "video");
+
+      const fwdChipHtml = (!isDeletedEveryone && msg.forwardedFrom)
+        ? `<div class="fwd-sender-chip"><img src="${escapeAttr(msg.forwardedDp || DEFAULT_DP)}" alt="" /><span>Forwarded • ${escapeHtml(msg.forwardedFrom)}</span></div>`
+        : "";
 
       let bodyHtml = "";
       if (isDeletedEveryone) {
@@ -3154,7 +3240,7 @@
         const shapeCls = msg.stickerShape ? ` ${escapeAttr(msg.stickerShape)}` : " shape-none";
         const customCol = msg.stickerColor || "#42a5f5";
         const frameStyle = msg.stickerShape && msg.stickerShape !== "shape-none" ? `border-color:${escapeAttr(customCol)}; color:${escapeAttr(customCol)};` : `color:${escapeAttr(customCol)};`;
-        bodyHtml = `<span class="sticker-frame${shapeCls}" style="${frameStyle}"><span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span></span>`;
+        bodyHtml = `${fwdChipHtml}<span class="sticker-frame${shapeCls}" style="${frameStyle}"><span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span></span>`;
       } else {
         const quoteHtml = msg.replyTo ? `<div class="reply-quote" data-quote-jump="${escapeAttr(msg.replyTo)}">${formatRichText(msg.replyTo)}</div>` : "";
         let mediaHtml = "";
@@ -3166,7 +3252,7 @@
         const editedHtml = msg.edited ? `<span class="edited-tag">Edited</span>` : "";
         const textHtml = msg.text ? `<div>${formatRichText(msg.text)}${editedHtml}</div>` : "";
         const reactHtml = msg.reaction ? `<div class="reaction-badge">${escapeHtml(msg.reaction)}</div>` : "";
-        bodyHtml = `${quoteHtml}${textHtml}${mediaHtml}${reactHtml}`;
+        bodyHtml = `${fwdChipHtml}${quoteHtml}${textHtml}${mediaHtml}${reactHtml}`;
       }
 
       const timeStr = formatClock(msg.timestamp); const tickHtml = isDeletedEveryone ? "" : renderTickSvg(msg);
@@ -3195,9 +3281,7 @@
       if (vidCard && msg.mediaUrl) vidCard.addEventListener("click", (ev) => { ev.stopPropagation(); if (isMsgMultiSelectMode) toggleMsgSelection(msgId); else openFullVideo(msg.mediaUrl); });
 
       attachSwipeToReply(wrap, msg);
-      attachLongPress(bubbleEl, () => {
-        if (!isMsgMultiSelectMode) enterMsgMultiSelectWith(msgId);
-      });
+      attachLongPress(bubbleEl, () => { if (!isMsgMultiSelectMode) enterMsgMultiSelectWith(msgId); });
 
       let lastTap = 0;
       bubbleEl.addEventListener("click", (ev) => {
@@ -3216,20 +3300,15 @@
       activeMsgTarget = { msgId, msg };
       customReactionInput.value = getCustomReactionEmoji();
       const isMine = msg.senderId === currentUser.uid;
-      msgForwardBtn.style.display = "inline-flex";
-      msgPinBtn.style.display = "inline-flex";
-      msgStarBtn.style.display = "inline-flex";
-      msgCopyBtn.style.display = "inline-flex";
-      msgDeleteMeBtn.style.display = "inline-flex";
+      msgForwardBtn.style.display = "inline-flex"; msgPinBtn.style.display = "inline-flex";
+      msgStarBtn.style.display = "inline-flex"; msgCopyBtn.style.display = "inline-flex"; msgDeleteMeBtn.style.display = "inline-flex";
 
       if (isMine) {
         msgSeenInfoText.textContent = msg.seenAt ? `Seen: ${formatClock(msg.seenAt)}` : (msg.status === "seen" ? "Seen" : "Sent");
-        msgEditBtn.style.display = msg.text ? "inline-flex" : "none";
-        msgDeleteEveryoneBtn.style.display = "inline-flex";
+        msgEditBtn.style.display = msg.text ? "inline-flex" : "none"; msgDeleteEveryoneBtn.style.display = "inline-flex";
       } else {
         msgSeenInfoText.textContent = `Sent: ${formatClock(msg.timestamp)}`;
-        msgEditBtn.style.display = "none";
-        msgDeleteEveryoneBtn.style.display = "none";
+        msgEditBtn.style.display = "none"; msgDeleteEveryoneBtn.style.display = "none";
       }
       msgActionModal.classList.add("active"); pushNavState();
     }
@@ -3248,8 +3327,7 @@
         if (!activeMsgTarget) return;
         const chosen = btn.dataset.react; setCustomReactionEmoji(chosen);
         const nextVal = activeMsgTarget.msg.reaction === chosen ? null : chosen;
-        activeMsgTarget.msg.reaction = nextVal;
-        renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
+        activeMsgTarget.msg.reaction = nextVal; renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
         if (selectedPeer && !selectedPeer.isAI) {
           const ref = db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}/reaction`);
           if (nextVal) await ref.set(nextVal); else await ref.remove();
@@ -3258,19 +3336,27 @@
       });
     });
 
+    // Forward with Sender Name + DP!
     msgForwardBtn.addEventListener("click", () => {
-      if (!activeMsgTarget) return;
+      if (!activeMsgTarget || !currentUser) return;
+      const m = activeMsgTarget.msg;
+      const originSender = (m.senderId === "na_ai_assistant") ? NA_AI_USER : (allUsers[m.senderId] || { name: "User", dp: DEFAULT_DP });
+      const originName = originSender.isAI ? "NA Ai" : getVisibleName(originSender);
+      const originDp = canSeeDp(originSender) ? (originSender.dp || DEFAULT_DP) : DEFAULT_DP;
+
+      fwdOriginDp.src = originDp;
+      fwdOriginName.textContent = originName;
       forwardUsersList.innerHTML = "";
 
       const aiBtn = document.createElement("button");
       aiBtn.type = "button"; aiBtn.className = "btn secondary full"; aiBtn.textContent = "NA Ai ✨";
       aiBtn.addEventListener("click", () => {
-        const m = activeMsgTarget.msg;
         const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
         const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
         arr.push({
           id: "fwd_" + Date.now(), senderId: currentUser.uid, receiverId: "na_ai_assistant",
-          text: m.text ? `↪ ${m.text}` : "", sticker: m.sticker || "", mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null,
+          forwardedFrom: originName, forwardedDp: originDp,
+          text: m.text || "", sticker: m.sticker || "", mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null,
           status: "seen", timestamp: Date.now()
         });
         localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
@@ -3282,11 +3368,11 @@
         if (u.uid === currentUser.uid) return;
         const b = document.createElement("button"); b.type = "button"; b.className = "btn secondary full"; b.textContent = getVisibleName(u);
         b.addEventListener("click", async () => {
-          const m = activeMsgTarget.msg;
           await db.ref(`chats/${getChatId(currentUser.uid, u.uid)}/messages`).push({
-            senderId: currentUser.uid, receiverId: u.uid, text: m.text ? `↪ ${m.text}` : "",
-            sticker: m.sticker || "", stickerAnim: m.stickerAnim || "", stickerTone: m.stickerTone || "",
-            stickerColor: m.stickerColor || "", stickerShape: m.stickerShape || "",
+            senderId: currentUser.uid, receiverId: u.uid,
+            forwardedFrom: originName, forwardedDp: originDp,
+            text: m.text || "", sticker: m.sticker || "", stickerAnim: m.stickerAnim || "",
+            stickerTone: m.stickerTone || "", stickerColor: m.stickerColor || "", stickerShape: m.stickerShape || "",
             mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null, thumbUrl: m.thumbUrl || null,
             sentOnline: !!navigator.onLine, status: isActuallyOnline(u) ? "delivered" : "sent",
             timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -3304,16 +3390,11 @@
       if (!activeMsgTarget) return;
       const pinText = activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "[Media]";
       pinnedBannerText.textContent = pinText; pinnedBanner.classList.add("active");
-      if (selectedPeer && !selectedPeer.isAI) {
-        await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/pinned`).set({ text: pinText, ts: Date.now() });
-      }
+      if (selectedPeer && !selectedPeer.isAI) await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/pinned`).set({ text: pinText, ts: Date.now() });
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
     });
 
-    msgStarBtn.addEventListener("click", () => {
-      if (!activeMsgTarget) return;
-      toggleStarMessage(activeMsgTarget.msg); msgActionModal.classList.remove("active"); activeMsgTarget = null;
-    });
+    msgStarBtn.addEventListener("click", () => { if (!activeMsgTarget) return; toggleStarMessage(activeMsgTarget.msg); msgActionModal.classList.remove("active"); activeMsgTarget = null; });
 
     msgCopyBtn.addEventListener("click", () => {
       if (!activeMsgTarget) return;
@@ -3330,8 +3411,7 @@
     closeMsgModalBtn.addEventListener("click", () => { msgActionModal.classList.remove("active"); activeMsgTarget = null; });
 
     msgEditBtn.addEventListener("click", () => {
-      if (!activeMsgTarget) return;
-      editMsgTextarea.value = activeMsgTarget.msg.text || "";
+      if (!activeMsgTarget) return; editMsgTextarea.value = activeMsgTarget.msg.text || "";
       msgActionModal.classList.remove("active"); editMsgModal.classList.add("active");
     });
     cancelEditMsgBtn.addEventListener("click", () => editMsgModal.classList.remove("active"));
@@ -3339,8 +3419,7 @@
     saveEditedMsgBtn.addEventListener("click", async () => {
       if (!activeMsgTarget) return;
       const updated = editMsgTextarea.value.trim(); if (!updated) return;
-      activeMsgTarget.msg.text = updated; activeMsgTarget.msg.edited = true;
-      renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
+      activeMsgTarget.msg.text = updated; activeMsgTarget.msg.edited = true; renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
       if (selectedPeer && selectedPeer.isAI) {
         const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
         const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").map((m) => m.id === activeMsgTarget.msgId ? { ...m, text: updated, edited: true } : m);
@@ -3353,9 +3432,7 @@
 
     msgDeleteMeBtn.addEventListener("click", async () => {
       if (!activeMsgTarget) return;
-      const targetId = activeMsgTarget.msgId;
-      const wrap = messagesContainer.querySelector(`[data-msg-wrap-id="${targetId}"]`);
-      if (wrap) wrap.remove();
+      const targetId = activeMsgTarget.msgId; const wrap = messagesContainer.querySelector(`[data-msg-wrap-id="${targetId}"]`); if (wrap) wrap.remove();
       if (selectedPeer && selectedPeer.isAI) {
         const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
         const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").filter((m) => m.id !== targetId);
@@ -3369,12 +3446,8 @@
     msgDeleteEveryoneBtn.addEventListener("click", async () => {
       if (!activeMsgTarget) return;
       const targetId = activeMsgTarget.msgId;
-      const delPatch = {
-        deletedForEveryone: true, text: "", sticker: "", stickerAnim: "", stickerTone: "",
-        stickerColor: "", stickerShape: "", mediaUrl: null, mediaType: null, thumbUrl: null
-      };
-      activeMsgTarget.msg = { ...activeMsgTarget.msg, ...delPatch };
-      renderOrUpdateMessage(targetId, activeMsgTarget.msg);
+      const delPatch = { deletedForEveryone: true, text: "", sticker: "", stickerAnim: "", stickerTone: "", stickerColor: "", stickerShape: "", mediaUrl: null, mediaType: null, thumbUrl: null };
+      activeMsgTarget.msg = { ...activeMsgTarget.msg, ...delPatch }; renderOrUpdateMessage(targetId, activeMsgTarget.msg);
       if (selectedPeer && selectedPeer.isAI) {
         const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
         const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").map((m) => m.id === targetId ? { ...m, ...delPatch } : m);
@@ -3398,8 +3471,7 @@
           const id = "ai_" + Date.now();
           const m = { id, senderId: currentUser.uid, receiverId: "na_ai_assistant", sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape, status: "seen", timestamp: Date.now() };
           renderOrUpdateMessage(id, m);
-          const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
-          const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); arr.push(m);
+          const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`; const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); arr.push(m);
           localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60))); return;
         }
 
@@ -3517,8 +3589,10 @@
     saveAccountBtn.addEventListener("click", async () => {
       if (!currentUser) return;
       const newName = accountNameInput.value.trim(); const newAbout = aboutInput.value.trim();
+      localStorage.setItem("geminiApiKey", geminiApiKeyInput.value.trim());
       const upd = { about: newAbout }; if (newName) upd.name = newName;
       await db.ref(`users/${currentUser.uid}`).update(upd);
+      alert("Saved!");
     });
 
     fontSizeSelect.addEventListener("change", () => {
@@ -3601,16 +3675,20 @@
       } catch (err) { alert("Status post error: " + err.message); }
     });
 
+    function getAllVisibleStatusesSorted() {
+      return Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
+        .filter((st) => st && !isStatusExpired(st) && canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+
     function renderStatusFeed() {
       if (!currentUser) return; pruneExpiredStatuses(); statusFeedList.innerHTML = "";
       const seenMap = getSeenStatusCounts();
-      const entries = Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
-        .filter((st) => st && !isStatusExpired(st) && canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      const entries = getAllVisibleStatusesSorted();
 
       if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No active status updates</div>`; return; }
 
-      entries.forEach((st) => {
+      entries.forEach((st, idx) => {
         const isMine = st.ownerUid === currentUser.uid; const isUnseen = !isMine && !seenMap[st.id];
         const ringClass = isMine ? "" : (isUnseen ? "status-unseen" : "status-seen");
         const bg = st.bgColor || "#0d47a1"; const fg = st.textColor || "#ffffff";
@@ -3631,61 +3709,126 @@
             <div class="row-sub">⏳ ${escapeHtml(remLabel)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
           </div>
         `;
-        row.addEventListener("click", () => openStatusViewer(st.id)); statusFeedList.appendChild(row);
+        row.addEventListener("click", () => openStatusQueue(entries, idx)); statusFeedList.appendChild(row);
       });
     }
 
-    function openStatusViewer(statusId) {
-      activeStatusId = statusId; const st = allStatuses[statusId];
-      if (!st || isStatusExpired(st) || !currentUser) return;
-      if (st.ownerUid !== currentUser.uid) { recordStatusView(statusId); renderStatusFeed(); refreshPresenceAndTypingUI(); }
-      renderStatusViewerContent(statusId); statusViewerModal.classList.add("active"); pushNavState();
+    function clearStatusAutoTimer() {
+      if (statusAutoAdvanceTimer) { clearTimeout(statusAutoAdvanceTimer); statusAutoAdvanceTimer = null; }
+      if (statusProgressRaf) { cancelAnimationFrame(statusProgressRaf); statusProgressRaf = null; }
+      statusProgressFill.style.width = "0%";
+    }
+
+    function closeStatusViewer() {
+      clearStatusAutoTimer();
+      statusViewerModal.classList.remove("active");
+      activeStatusId = null;
+      activeStatusQueue = [];
+      activeStatusIndex = 0;
+    }
+
+    function advanceOrExitStatusViewer() {
+      clearStatusAutoTimer();
+      activeStatusIndex += 1;
+      while (activeStatusIndex < activeStatusQueue.length) {
+        const cand = activeStatusQueue[activeStatusIndex];
+        if (cand && allStatuses[cand.id] && !isStatusExpired(allStatuses[cand.id])) {
+          showStatusAtIndex(activeStatusIndex);
+          return;
+        }
+        activeStatusIndex += 1;
+      }
+      // No more statuses -> exit back to current screen/list
+      closeStatusViewer();
+    }
+
+    function startTenSecondStatusTimer() {
+      clearStatusAutoTimer();
+      const startedAt = performance.now();
+      const step = (now) => {
+        if (!statusViewerModal.classList.contains("active")) return;
+        const pct = Math.min(100, ((now - startedAt) / STATUS_AUTO_NEXT_MS) * 100);
+        statusProgressFill.style.width = `${pct}%`;
+        if (pct < 100) statusProgressRaf = requestAnimationFrame(step);
+      };
+      statusProgressRaf = requestAnimationFrame(step);
+      statusAutoAdvanceTimer = setTimeout(() => {
+        advanceOrExitStatusViewer();
+      }, STATUS_AUTO_NEXT_MS);
+    }
+
+    function openStatusQueue(list, startIdx) {
+      if (!list || !list.length) return;
+      activeStatusQueue = list.slice();
+      activeStatusIndex = Math.max(0, Math.min(startIdx || 0, activeStatusQueue.length - 1));
+      statusViewerModal.classList.add("active");
+      pushNavState();
+      showStatusAtIndex(activeStatusIndex);
+    }
+
+    function showStatusAtIndex(idx) {
+      const item = activeStatusQueue[idx];
+      if (!item || !allStatuses[item.id] || isStatusExpired(allStatuses[item.id])) {
+        advanceOrExitStatusViewer();
+        return;
+      }
+      activeStatusId = item.id;
+      recordStatusView(item.id);
+      renderStatusViewerContent(item.id);
+      startTenSecondStatusTimer();
     }
 
     function renderStatusViewerContent(statusId) {
-      const st = allStatuses[statusId]; if (!st || isStatusExpired(st) || !currentUser) return;
-      const owner = allUsers[st.ownerUid] || {}; const isOwner = st.ownerUid === currentUser.uid;
+      const st = allStatuses[statusId];
+      if (!st || isStatusExpired(st)) { advanceOrExitStatusViewer(); return; }
+      const owner = allUsers[st.ownerUid] || {};
       viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
-      viewerOwnerName.textContent = st.ownerName || getVisibleName(owner);
-      viewerTimeText.textContent = `${formatClock(st.createdAt)} • ${formatRemainingTime(st)}`;
+      viewerOwnerName.textContent = st.ownerName || getVisibleName(owner) || "User";
+      viewerTimeText.textContent = `${formatRemainingTime(st)} • ${formatClock(st.createdAt)}`;
 
-      const bg = st.bgColor || "#0d47a1"; const fg = st.textColor || "#ffffff"; const ff = st.fontFamily || "'Segoe UI', Roboto, sans-serif";
-      let bodyHtml = "";
-      if (st.text && !st.photoUrl && !st.videoUrl) bodyHtml += `<div class="status-text-banner fullscreen-fit" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(ff)};">${escapeHtml(st.text)}</div>`;
-      else if (st.text) bodyHtml += `<div class="status-text-banner" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(ff)};">${escapeHtml(st.text)}</div>`;
-      if (st.photoUrl) bodyHtml += `<img class="full-st-img" src="${escapeAttr(st.photoUrl)}" alt="" />`;
-      if (st.videoUrl) bodyHtml += `<video class="full-st-vid" controls autoplay playsinline src="${escapeAttr(st.videoUrl)}"></video>`;
-      statusViewerBody.innerHTML = bodyHtml;
+      let mediaHtml = "";
+      if (st.photoUrl) mediaHtml = `<img class="full-st-img" src="${escapeAttr(st.photoUrl)}" alt="" />`;
+      else if (st.videoUrl) mediaHtml = `<video class="full-st-vid" controls autoplay playsinline src="${escapeAttr(st.videoUrl)}"></video>`;
 
-      const likesObj = st.likes || {};
-      statusLikeBtn.textContent = `${likesObj[currentUser.uid] ? "❤️" : "🤍"} Like (${Object.keys(likesObj).length})`;
-      statusDeleteBtn.style.display = isOwner ? "inline-flex" : "none";
+      const hasMedia = !!(st.photoUrl || st.videoUrl);
+      const textBannerHtml = st.text
+        ? `<div class="status-text-banner${!hasMedia ? " fullscreen-fit" : ""}" style="background:${escapeAttr(st.bgColor || "#0d47a1")}; color:${escapeAttr(st.textColor || "#ffffff")}; font-family:${escapeAttr(st.fontFamily || "inherit")};">${formatRichText(st.text)}</div>`
+        : "";
+
+      statusViewerBody.innerHTML = mediaHtml + textBannerHtml;
+      const fullImg = statusViewerBody.querySelector("img.full-st-img");
+      if (fullImg) fullImg.addEventListener("click", () => openFullPhoto(st.photoUrl));
+
+      const likesObj = st.likes || {}; const likesCount = Object.keys(likesObj).length; const iLiked = !!(currentUser && likesObj[currentUser.uid]);
+      statusLikeBtn.textContent = `${iLiked ? "❤️" : "🤍"} Like (${likesCount})`;
+      statusDeleteBtn.style.display = (currentUser && st.ownerUid === currentUser.uid) ? "inline-flex" : "none";
 
       const viewEntries = st.views ? Object.values(st.views) : [];
-      const totalViews = viewEntries.reduce((sum, v) => sum + ((v && v.count) || 1), 0);
-
-      if (!viewEntries.length) statusViewersList.textContent = "Viewed by: None yet";
-      else if (isOwner) {
-        statusViewersList.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">Views: ${totalViews} (${viewEntries.length} people)</div>` +
-          viewEntries.map((v) => `<div>• ${escapeHtml(v.name || "User")} — <strong>${(v.count || 1)}x</strong> (${formatClock(v.seenAt)})</div>`).join("");
-      } else { statusViewersList.textContent = `Viewed by ${viewEntries.length} (${totalViews} views)`; }
+      if (!viewEntries.length) statusViewersList.textContent = "Viewed by: No views yet";
+      else statusViewersList.innerHTML = "<strong>Viewed by:</strong><br>" + viewEntries.map((v) => `${escapeHtml(v.name || "User")} (${v.count || 1})`).join("<br>");
     }
 
+    nextStatusManualBtn.addEventListener("click", advanceOrExitStatusViewer);
+    closeStatusViewerBtn.addEventListener("click", closeStatusViewer);
+
     statusLikeBtn.addEventListener("click", async () => {
-      if (!activeStatusId || !currentUser) return; const st = allStatuses[activeStatusId]; if (!st) return;
-      const ref = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
-      if (st.likes && st.likes[currentUser.uid]) await ref.remove(); else await ref.set(true);
+      if (!currentUser || !activeStatusId) return;
+      const likeRef = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
+      const snap = await likeRef.once("value");
+      if (snap.exists()) await likeRef.remove(); else await likeRef.set(true);
     });
 
     statusDeleteBtn.addEventListener("click", async () => {
-      if (!activeStatusId) return; const idToDel = activeStatusId; statusViewerModal.classList.remove("active"); activeStatusId = null;
-      await db.ref(`statuses/${idToDel}`).remove();
+      if (!currentUser || !activeStatusId) return;
+      const st = allStatuses[activeStatusId]; if (!st || st.ownerUid !== currentUser.uid) return;
+      const delId = activeStatusId;
+      await db.ref(`statuses/${delId}`).remove();
+      delete allStatuses[delId];
+      advanceOrExitStatusViewer();
     });
 
-    closeStatusViewerBtn.addEventListener("click", () => { statusViewerModal.classList.remove("active"); activeStatusId = null; });
-
-    function escapeHtml(str) { return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
-    function escapeAttr(str) { return String(str).replace(/"/g, "&quot;"); }
+    function escapeHtml(s) { return String(s || "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
+    function escapeAttr(s) { return escapeHtml(s).replace(/`/g, "&#96;"); }
   </script>
 </body>
 </html>
