@@ -15,7 +15,7 @@
       --accent-glow: rgba(30, 136, 229, 0.35);
       --unread-badge-bg: #0d47a1;
       --unread-badge-text: #ffffff;
-      --online-blue: #4fc3f7;
+      --online-blue: #80d8ff;
       --typing-yellow: #ffd600;
       --status-unseen: #4fc3f7;
       --status-seen: #6b7c85;
@@ -37,7 +37,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Sinhala", Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
@@ -79,21 +79,9 @@
          0px    0px   4px #000000 !important;
     }
 
-    .typing-anim-wrap {
-      display: inline-flex;
-      align-items: baseline;
-    }
-
-    .typing-dots-anim {
-      display: inline-block;
-      min-width: 18px;
-      text-align: left;
-    }
-
-    .typing-dots-anim::after {
-      content: "";
-      animation: typingDotsCycle 1.2s steps(1, end) infinite;
-    }
+    .typing-anim-wrap { display: inline-flex; align-items: baseline; }
+    .typing-dots-anim { display: inline-block; min-width: 18px; text-align: left; }
+    .typing-dots-anim::after { content: ""; animation: typingDotsCycle 1.2s steps(1, end) infinite; }
 
     @keyframes typingDotsCycle {
       0%, 24% { content: "."; }
@@ -108,50 +96,60 @@
       50% { background-color: rgba(30, 136, 229, 0.35); box-shadow: 0 0 0 3px var(--accent-bright); }
       100% { background-color: rgba(255, 214, 0, 0.28); box-shadow: 0 0 0 2px var(--typing-yellow); }
     }
-    .msg.msg-highlight-2s {
-      animation: msgHighlightTwoSec 0.65s ease-in-out 3;
+    .msg.msg-highlight-2s { animation: msgHighlightTwoSec 0.65s ease-in-out 3; }
+
+    /* Topbar Waterfall Flow Animation */
+    @keyframes waterfallFlow {
+      0% { background-position: 50% 0%; }
+      50% { background-position: 50% 100%; }
+      100% { background-position: 50% 0%; }
     }
 
-    /* Lightweight Hardware-Accelerated Live Wallpapers */
+    /* Card Live Wallpaper Animations */
+    @keyframes cardAuroraMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes cardWaveMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 48px 0; }
+    }
+    @keyframes cardGridMove {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 20px 20px, 20px 20px; }
+    }
+    @keyframes cardPulseAnim {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.18); }
+    }
+
+    /* App / Chat Live Wallpapers */
     .live-anim-layer {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0;
-      z-index: 0;
-      will-change: transform, opacity;
-      transform: translateZ(0);
+      position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
+      will-change: transform, opacity; transform: translateZ(0);
     }
     .live-anim-layer.active { opacity: 0.52; }
     .live-anim-layer.live-aurora {
       background: radial-gradient(circle at 22% 28%, rgba(30, 136, 229, 0.55), transparent 55%),
-                  radial-gradient(circle at 78% 72%, rgba(0, 229, 255, 0.42), transparent 55%),
-                  #0b141a;
+                  radial-gradient(circle at 78% 72%, rgba(0, 229, 255, 0.42), transparent 55%), #0b141a;
       animation: auroraFloat 6s infinite alternate ease-in-out;
     }
     .live-anim-layer.live-grid {
       background-image: linear-gradient(rgba(79, 195, 247, 0.22) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(79, 195, 247, 0.22) 1px, transparent 1px);
-      background-size: 28px 28px;
-      animation: gridSlide 4.5s infinite linear;
+      background-size: 28px 28px; animation: gridSlide 4.5s infinite linear;
     }
     .live-anim-layer.live-waves {
-      background: repeating-linear-gradient(
-        -45deg,
-        rgba(30, 136, 229, 0.2) 0px,
-        rgba(30, 136, 229, 0.2) 14px,
-        rgba(0, 188, 212, 0.22) 14px,
-        rgba(0, 188, 212, 0.22) 28px
-      );
-      background-size: 56px 56px;
-      animation: waveSlide 3.8s infinite linear;
+      background: repeating-linear-gradient(-45deg, rgba(30, 136, 229, 0.2) 0px, rgba(30, 136, 229, 0.2) 14px,
+                  rgba(0, 188, 212, 0.22) 14px, rgba(0, 188, 212, 0.22) 28px);
+      background-size: 56px 56px; animation: waveSlide 3.8s infinite linear;
     }
     .live-anim-layer.live-stars {
       background-image: radial-gradient(2px 2px at 24px 32px, rgba(255,255,255,0.7), transparent),
                         radial-gradient(2.5px 2.5px at 95px 72px, rgba(79,195,247,0.75), transparent),
                         radial-gradient(2px 2px at 150px 42px, rgba(255,235,59,0.6), transparent);
-      background-size: 170px 110px;
-      animation: gridSlide 9s infinite linear;
+      background-size: 170px 110px; animation: gridSlide 9s infinite linear;
     }
     .live-anim-layer.live-pulse {
       background: radial-gradient(circle at center, rgba(66, 165, 245, 0.34), rgba(11, 20, 26, 0.92) 72%);
@@ -164,33 +162,16 @@
     @keyframes pulseScale { 0% { opacity: 0.35; } 100% { opacity: 0.68; } }
 
     .screen {
-      display: none;
-      position: fixed;
-      top: var(--vtop);
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: var(--vh);
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 1;
+      display: none; position: fixed; top: var(--vtop); left: 0; right: 0;
+      width: 100%; height: var(--vh); flex-direction: column; overflow: hidden; z-index: 1;
     }
     .screen.active { display: flex; }
 
     /* Auth */
     .auth-box {
-      width: min(390px, 92%);
-      margin: auto;
-      background: var(--panel);
-      padding: 24px 20px;
-      border-radius: 16px;
-      border: 1px solid var(--panel-3);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-      z-index: 2;
+      width: min(390px, 92%); margin: auto; background: var(--panel); padding: 24px 20px;
+      border-radius: 16px; border: 1px solid var(--panel-3); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+      display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;
     }
     .auth-box h2 { text-align: center; color: var(--accent-bright); font-size: 22px; font-weight: 700; }
     .auth-box input {
@@ -202,25 +183,11 @@
 
     /* Fitted Animated Buttons */
     .btn {
-      position: relative;
-      overflow: hidden;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      background: linear-gradient(135deg, var(--accent-bright), var(--accent));
-      color: #ffffff;
-      font-size: 13px;
-      width: fit-content;
-      max-width: 100%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      box-shadow: 0 3px 10px var(--accent-glow);
+      position: relative; overflow: hidden; padding: 8px 12px; border: none; border-radius: 10px;
+      cursor: pointer; font-weight: 600; background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+      color: #ffffff; font-size: 13px; width: fit-content; max-width: 100%;
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      white-space: nowrap; flex-shrink: 0; box-shadow: 0 3px 10px var(--accent-glow);
       transition: transform 0.14s ease, filter 0.14s ease;
     }
     .btn:active { transform: scale(0.9); }
@@ -231,89 +198,73 @@
     .btn.full { width: 100%; }
 
     .icon-btn {
-      background: transparent;
-      color: var(--text);
-      border: none;
-      border-radius: 50%;
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      font-size: 17px;
-      transition: transform 0.14s ease, background 0.12s ease;
+      background: transparent; color: #ffffff; border: none; border-radius: 50%;
+      width: 34px; height: 34px; display: grid; place-items: center; cursor: pointer;
+      flex-shrink: 0; font-size: 17px; transition: transform 0.14s ease, background 0.12s ease;
     }
-    .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
+    .icon-btn:active { background: rgba(255, 255, 255, 0.18); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Permanently Locked Topbar */
+    /* Permanently Locked Topbar with Flowing Blue Waterfall */
     .topbar {
-      position: fixed;
-      top: var(--vtop);
-      left: 0;
-      right: 0;
-      height: var(--topbar-h);
-      min-height: var(--topbar-h);
-      max-height: var(--topbar-h);
-      background: var(--panel);
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      gap: 6px;
-      width: 100%;
-      z-index: 45;
-      touch-action: none;
-      transform: translate3d(0, 0, 0);
-      backface-visibility: hidden;
+      position: fixed; top: var(--vtop); left: 0; right: 0;
+      height: var(--topbar-h); min-height: var(--topbar-h); max-height: var(--topbar-h);
+      background: linear-gradient(180deg, #051d36 0%, #0d47a1 28%, #1976d2 58%, #29b6f6 82%, #81d4fa 100%);
+      background-size: 100% 260%; animation: waterfallFlow 5.5s ease-in-out infinite;
+      padding: 8px 10px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(129, 212, 250, 0.45); box-shadow: 0 4px 16px rgba(2, 136, 209, 0.32);
+      gap: 6px; width: 100%; z-index: 45; touch-action: none;
+      transform: translate3d(0, 0, 0); backface-visibility: hidden; will-change: background-position;
     }
+    .topbar .btn.secondary {
+      background: rgba(5, 29, 54, 0.58); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.28);
+    }
+
     .peer-trigger { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1; }
     .avatar-wrap {
       position: relative; flex-shrink: 0; padding: 2px;
       border-radius: 50%; border: 2.5px solid transparent; cursor: pointer;
     }
-    .avatar-wrap.status-unseen { border-color: var(--status-unseen); }
-    .avatar-wrap.status-seen { border-color: var(--status-seen); }
-    .avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: var(--panel-2); display: block; }
+    .avatar-wrap.status-unseen { border-color: #ffffff; }
+    .avatar-wrap.status-seen { border-color: rgba(255, 255, 255, 0.52); }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+      background: var(--panel-2); display: block; border: 1.5px solid rgba(255, 255, 255, 0.65);
+    }
     .online-disc {
       width: 11px; height: 11px; border-radius: 50%;
-      background: var(--online-blue); box-shadow: 0 0 6px rgba(79, 195, 247, 0.85);
-      border: 2px solid var(--panel); position: absolute; right: 0; bottom: 0; display: none;
+      background: #e1f5fe; box-shadow: 0 0 8px rgba(255, 255, 255, 0.95);
+      border: 2px solid #0d47a1; position: absolute; right: 0; bottom: 0; display: none;
     }
     .online-disc.active { display: block; }
 
     .title-wrap { min-width: 0; flex: 1; cursor: pointer; }
-    .title-wrap h4 { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .title-wrap h4 {
+      font-size: 15px; font-weight: 700; color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .status-line {
-      display: flex; align-items: center; gap: 5px;
-      color: var(--muted); font-size: 11.5px; margin-top: 2px;
+      display: flex; align-items: center; gap: 5px; color: rgba(255, 255, 255, 0.88);
+      font-size: 11.5px; margin-top: 2px; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 17px;
     }
-    .status-line.is-online { color: var(--online-blue); font-weight: 600; }
+    .status-line.is-online { color: #ffffff; font-weight: 700; }
     .mini-disc {
       width: 8px; height: 8px; border-radius: 50%;
-      background: var(--online-blue); display: inline-block; flex-shrink: 0;
+      background: #e1f5fe; box-shadow: 0 0 6px #ffffff; display: inline-block; flex-shrink: 0;
     }
 
     /* Main Grid */
     .main-grid {
-      display: flex;
-      position: fixed;
-      top: calc(var(--vtop) + var(--topbar-h));
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: calc(var(--vh) - var(--topbar-h));
-      min-height: 0;
-      overflow: hidden;
-      z-index: 2;
+      display: flex; position: fixed; top: calc(var(--vtop) + var(--topbar-h));
+      left: 0; right: 0; width: 100%; height: calc(var(--vh) - var(--topbar-h));
+      min-height: 0; overflow: hidden; z-index: 2;
     }
 
     .sidebar {
-      width: 350px; max-width: 100%; height: 100%;
-      background: rgba(17, 27, 33, 0.92); border-right: 1px solid var(--border);
+      width: 360px; max-width: 100%; height: 100%;
+      background: rgba(17, 27, 33, 0.94); border-right: 1px solid var(--border);
       display: flex; flex-direction: column; min-height: 0; position: relative; z-index: 3;
     }
     .nav-tabs {
@@ -329,36 +280,136 @@
     .tab-pane { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
     .tab-pane.active { display: flex; }
 
-    .search-bar { padding: 8px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    /* Multi-select Bulk Action Bar */
+    .bulk-select-bar {
+      display: none; align-items: center; justify-content: space-between; gap: 6px;
+      padding: 8px 10px; background: linear-gradient(90deg, #0d47a1, #1565c0);
+      border-bottom: 1px solid rgba(129, 212, 250, 0.45); flex-shrink: 0; flex-wrap: wrap;
+    }
+    .bulk-select-bar.active { display: flex; }
+    .bulk-count-label { font-size: 12.5px; font-weight: 700; color: #ffffff; }
+
+    .search-bar { padding: 8px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .search-bar input {
-      width: 100%; padding: 8px 12px; border-radius: 9px;
+      width: 100%; padding: 8px 12px; border-radius: 10px;
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
 
-    .scroll-list { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-    .list-row {
-      display: flex; align-items: center; gap: 11px; padding: 10px 14px;
-      cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03);
+    /* Card View Chat List */
+    .scroll-list {
+      flex: 1; overflow-y: auto; min-height: 0; padding: 8px 10px 16px 10px;
+      display: flex; flex-direction: column; gap: 8px;
+      -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
     }
-    .list-row:hover, .list-row.active { background: var(--panel-2); }
-    .row-meta { flex: 1; min-width: 0; }
-    .row-name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
+
+    .chat-card {
+      display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+      border-radius: 14px; cursor: pointer;
+      background: linear-gradient(135deg, rgba(28, 43, 54, 0.92), rgba(18, 29, 37, 0.95));
+      border: 1px solid rgba(79, 195, 247, 0.16);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+      transition: transform 0.14s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      position: relative; overflow: hidden;
+    }
+    .chat-card:hover { transform: translateY(-1px); border-color: rgba(79, 195, 247, 0.36); }
+    .chat-card:active { transform: scale(0.985); }
+    .chat-card.active {
+      border-color: var(--accent-bright);
+      box-shadow: 0 4px 16px rgba(30, 136, 229, 0.28);
+    }
+    .chat-card.selected-multi {
+      border-color: var(--typing-yellow) !important;
+      background: linear-gradient(135deg, rgba(255, 214, 0, 0.18), rgba(13, 71, 161, 0.38)) !important;
+      box-shadow: 0 0 0 2px rgba(255, 214, 0, 0.55);
+    }
+
+    /* Card Live Wallpapers */
+    .chat-card.card-live-aurora {
+      background: linear-gradient(125deg, #07284a, #0e4d8c, #006978, #0b2545);
+      background-size: 280% 280%;
+      animation: cardAuroraMove 6s ease infinite;
+    }
+    .chat-card.card-live-waves {
+      background-color: #0d2b45;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(66, 165, 245, 0.16) 0px,
+        rgba(66, 165, 245, 0.16) 10px,
+        rgba(0, 188, 212, 0.12) 10px,
+        rgba(0, 188, 212, 0.12) 24px
+      );
+      background-size: 48px 48px;
+      animation: cardWaveMove 3.2s linear infinite;
+    }
+    .chat-card.card-live-grid {
+      background-color: #0c2233;
+      background-image: linear-gradient(rgba(79, 195, 247, 0.16) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(79, 195, 247, 0.16) 1px, transparent 1px);
+      background-size: 20px 20px;
+      animation: cardGridMove 4s linear infinite;
+    }
+    .chat-card.card-live-pulse {
+      background: radial-gradient(circle at 85% 20%, rgba(66, 165, 245, 0.28), rgba(16, 29, 40, 0.96) 75%);
+      animation: cardPulseAnim 3.2s ease-in-out infinite;
+    }
+    .chat-card.card-live-stars {
+      background: linear-gradient(135deg, #0b192c, #132c4a, #091524);
+      background-image: radial-gradient(1.5px 1.5px at 18px 18px, rgba(255,255,255,0.55), transparent),
+                        radial-gradient(2px 2px at 78% 45%, rgba(79,195,247,0.6), transparent);
+      background-size: 90px 60px;
+      animation: cardGridMove 8s linear infinite;
+    }
+
+    .chat-card .avatar-wrap.status-unseen { border-color: var(--status-unseen); }
+    .chat-card .avatar-wrap.status-seen { border-color: var(--status-seen); }
+    .chat-card .online-disc { background: #4fc3f7; border-color: var(--panel); box-shadow: 0 0 6px rgba(79, 195, 247, 0.85); }
+    .chat-card .status-line { color: var(--muted); text-shadow: none; }
+    .chat-card .status-line.is-online { color: #4fc3f7; }
+    .chat-card .mini-disc { background: #4fc3f7; box-shadow: none; }
+
+    .select-check-circle {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      display: none; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; flex-shrink: 0; background: rgba(0, 0, 0, 0.25);
+    }
+    .multi-select-active .select-check-circle { display: inline-flex; }
+    .chat-card.selected-multi .select-check-circle {
+      background: var(--typing-yellow); color: #000000; border-color: var(--typing-yellow);
+    }
+
+    .row-meta { flex: 1; min-width: 0; z-index: 1; }
+    .row-name { font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-sub { font-size: 12px; color: #b0bec5; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
 
     .unread-badge {
       min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
       background: var(--unread-badge-bg); color: var(--unread-badge-text);
-      font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;
     }
+
+    /* Quick AI Prompt Chips */
+    .ai-quick-bar {
+      display: none; gap: 6px; padding: 6px 10px; background: rgba(17, 27, 33, 0.92);
+      border-top: 1px solid var(--border); overflow-x: auto; flex-shrink: 0;
+    }
+    .ai-quick-bar.active { display: flex; }
+    .ai-chip {
+      padding: 5px 10px; border-radius: 999px; background: var(--panel-2);
+      border: 1px solid rgba(66, 165, 245, 0.35); color: var(--accent-bright);
+      font-size: 11.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
+    }
+    .ai-chip:active { transform: scale(0.93); }
 
     /* Status & Settings */
     .status-pad { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
     .status-circle-row {
-      display: flex; align-items: center; gap: 12px; padding: 9px 10px;
-      background: var(--panel-2); border: 1px solid var(--panel-3); border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+      background: linear-gradient(135deg, var(--panel-2), #16222a);
+      border: 1px solid var(--panel-3); border-radius: 14px; cursor: pointer;
     }
     .status-thumb-circle {
-      width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+      width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
       display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; text-align: center; padding: 3px; flex-shrink: 0;
     }
     .status-thumb-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -470,9 +521,8 @@
 
     .msg {
       width: 100%; padding: 8px 11px 6px 11px; border-radius: 10px;
-      word-wrap: break-word; position: relative; font-size: var(--msg-font-size); line-height: 1.38;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.35);
-      transition: background-color 0.25s ease;
+      word-wrap: break-word; position: relative; font-size: var(--msg-font-size); line-height: 1.42;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.35); transition: background-color 0.25s ease;
     }
     .msg.sent { background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { background: var(--recv); border-top-left-radius: 2px; }
@@ -523,7 +573,7 @@
     .reply-quote:active { background: rgba(255, 214, 0, 0.22); }
 
     .reaction-badge { display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); font-size: 12px; }
-    .msg img.chat-photo { width: 220px; max-width: 72vw; max-height: 260px; object-fit: cover; border-radius: 10px; display: block; cursor: pointer; }
+    .msg img.chat-photo { width: 230px; max-width: 74vw; max-height: 270px; object-fit: cover; border-radius: 10px; display: block; cursor: pointer; margin-top: 4px; }
     .video-thumb-card { position: relative; width: 220px; max-width: 72vw; height: 155px; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; }
     .video-thumb-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .video-play-badge { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.28); font-size: 32px; color: #ffffff; }
@@ -692,15 +742,24 @@
     </div>
 
     <div class="main-grid" id="mainGrid">
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebarPane">
         <div class="nav-tabs">
           <div class="nav-tab active" data-tab="chatsTab">Chats</div>
-          <div class="nav-tab" data-tab="statusTab">Status</div>
+          <div class="nav-tab" data-tab="statusTab">Status (24h)</div>
           <div class="nav-tab" data-tab="settingsTab">Settings</div>
         </div>
 
         <!-- Chats -->
         <div class="tab-pane active" id="chatsTab">
+          <div class="bulk-select-bar" id="bulkSelectBar">
+            <span class="bulk-count-label" id="bulkCountLabel">0 selected</span>
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn secondary small" id="bulkMarkReadBtn">✓ Read</button>
+              <button type="button" class="btn danger small" id="bulkDeleteBtn">🗑 Delete</button>
+              <button type="button" class="btn secondary small" id="bulkCancelBtn">✕</button>
+            </div>
+          </div>
+
           <div class="search-bar">
             <input type="text" id="searchUsersInput" placeholder="Search to start new chat..." />
           </div>
@@ -710,7 +769,7 @@
         <!-- Status -->
         <div class="tab-pane" id="statusTab">
           <div class="status-pad">
-            <button class="btn full" id="openAddStatusBtn">Add status</button>
+            <button class="btn full" id="openAddStatusBtn">Add status (Auto-deletes in 24h)</button>
           </div>
           <div class="scroll-list status-pad" id="statusFeedList" style="padding-top:0;"></div>
         </div>
@@ -755,8 +814,8 @@
               <div class="wa-cat-row" data-panel="panelChats">
                 <div class="wa-cat-icon">💬</div>
                 <div>
-                  <div class="wa-cat-title">Chats</div>
-                  <div class="wa-cat-desc">Font size, chat wallpaper, chat live wallpaper</div>
+                  <div class="wa-cat-title">Chats & Card Live Wallpapers</div>
+                  <div class="wa-cat-desc">Chat card live wallpaper, font size, chat wallpaper</div>
                 </div>
               </div>
 
@@ -764,7 +823,7 @@
                 <div class="wa-cat-icon">🎨</div>
                 <div>
                   <div class="wa-cat-title">Appearance</div>
-                  <div class="wa-cat-desc">Live wallpaper, vibration, reaction</div>
+                  <div class="wa-cat-desc">Live wallpaper, vibration</div>
                 </div>
               </div>
 
@@ -836,8 +895,18 @@
               <button class="btn secondary small" id="clearStarredBtn">Clear</button>
             </div>
 
-            <!-- Chats -->
+            <!-- Chats & Card Live Wallpapers -->
             <div class="setting-panel-detail setting-card" id="panelChats">
+              <label>Chat Card Live Wallpaper (Select Your Style)</label>
+              <select id="chatCardLiveSelect">
+                <option value="none">Default Dark Card</option>
+                <option value="card-live-aurora">Live Aurora Cards</option>
+                <option value="card-live-waves">Live Flowing Waves Cards</option>
+                <option value="card-live-grid">Live Tech Grid Cards</option>
+                <option value="card-live-pulse">Live Blue Pulse Cards</option>
+                <option value="card-live-stars">Live Starfield Cards</option>
+              </select>
+
               <label>Font size</label>
               <select id="fontSizeSelect">
                 <option value="13px">Small</option>
@@ -918,7 +987,14 @@
           </div>
 
           <div class="messages" id="messagesContainer">
-            <div class="empty-chat">Select a chat or search a contact to start messaging</div>
+            <div class="empty-chat">Select a chat card or search a contact to start messaging</div>
+          </div>
+
+          <div class="ai-quick-bar" id="aiQuickBar">
+            <button type="button" class="ai-chip" data-ai-prompt="සිංහලෙන් කෙටි අදහසක් කියන්න">💡 සිංහල අදහසක්</button>
+            <button type="button" class="ai-chip" data-ai-prompt="photo: futuristic blue city glowing at night">🖼 AI Photo</button>
+            <button type="button" class="ai-chip" data-ai-prompt="photo: tropical waterfall in Sri Lanka nature">🌊 Waterfall Photo</button>
+            <button type="button" class="ai-chip" data-ai-prompt="Explain how an electric motor works in simple Sinhala">⚙️ Motor Explain</button>
           </div>
 
           <div class="live-format-bar" id="liveFormatBar"></div>
@@ -1155,7 +1231,7 @@
   <!-- Add Status Modal -->
   <div class="modal" id="addStatusModal">
     <div class="sheet">
-      <h3>New status</h3>
+      <h3>New status (24h auto-expire)</h3>
       <div class="status-text-banner" id="statusPreviewBanner" style="background:#0d47a1; color:#ffffff;">
         <span id="statusPreviewText">Type status text</span>
       </div>
@@ -1218,6 +1294,8 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    const STATUS_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours auto-expiration
+
     function syncViewportVars() {
       const vv = window.visualViewport;
       if (vv) {
@@ -1262,7 +1340,7 @@
       uid: "na_ai_assistant",
       name: "NA Ai",
       email: "ai@na-assistant.local",
-      about: "Chat • Translate • Photo • Video AI",
+      about: "Smart AI • Sinhala & All Languages • Photo Gen",
       dp: NA_AI_DP,
       online: true,
       isAI: true
@@ -1285,6 +1363,8 @@
     let typingMap = {};
     let activeChatIds = {};
     let unreadCounts = {};
+    let selectedChatUids = new Set();
+    let isMultiSelectMode = false;
     let isInitialLoad = true;
     let audioCtx = null;
     let activeMsgTarget = null;
@@ -1363,9 +1443,16 @@
     const unpinMsgBtn = document.getElementById("unpinMsgBtn");
 
     const mainGrid = document.getElementById("mainGrid");
+    const sidebarPane = document.getElementById("sidebarPane");
+    const bulkSelectBar = document.getElementById("bulkSelectBar");
+    const bulkCountLabel = document.getElementById("bulkCountLabel");
+    const bulkMarkReadBtn = document.getElementById("bulkMarkReadBtn");
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
+    const bulkCancelBtn = document.getElementById("bulkCancelBtn");
     const usersList = document.getElementById("usersList");
     const searchUsersInput = document.getElementById("searchUsersInput");
     const statusFeedList = document.getElementById("statusFeedList");
+    const aiQuickBar = document.getElementById("aiQuickBar");
 
     const heroNoteBubble = document.getElementById("heroNoteBubble");
     const heroAvatar = document.getElementById("heroAvatar");
@@ -1378,6 +1465,7 @@
     const blockedUsersListBox = document.getElementById("blockedUsersListBox");
     const starredMessagesBox = document.getElementById("starredMessagesBox");
     const clearStarredBtn = document.getElementById("clearStarredBtn");
+    const chatCardLiveSelect = document.getElementById("chatCardLiveSelect");
     const homeLiveWallpaperSelect = document.getElementById("homeLiveWallpaperSelect");
     const chatLiveWallpaperSelect = document.getElementById("chatLiveWallpaperSelect");
     const vibrateToggleAppearance = document.getElementById("vibrateToggleAppearance");
@@ -1504,6 +1592,190 @@
       });
     });
 
+    function getCardLiveStyle() {
+      return localStorage.getItem("chatCardLiveStyle") || "none";
+    }
+    function setCardLiveStyle(val) {
+      localStorage.setItem("chatCardLiveStyle", val || "none");
+      chatCardLiveSelect.value = val || "none";
+      renderUsersList();
+    }
+    chatCardLiveSelect.addEventListener("change", () => setCardLiveStyle(chatCardLiveSelect.value));
+
+    // Multi-Select Controls
+    function enterMultiSelectWith(uid) {
+      if (!uid) return;
+      isMultiSelectMode = true;
+      selectedChatUids.clear();
+      selectedChatUids.add(uid);
+      sidebarPane.classList.add("multi-select-active");
+      bulkSelectBar.classList.add("active");
+      bulkCountLabel.textContent = `${selectedChatUids.size} selected`;
+      renderUsersList();
+    }
+
+    function exitMultiSelectMode() {
+      isMultiSelectMode = false;
+      selectedChatUids.clear();
+      sidebarPane.classList.remove("multi-select-active");
+      bulkSelectBar.classList.remove("active");
+      renderUsersList();
+    }
+
+    function toggleChatSelection(uid) {
+      if (!uid) return;
+      if (selectedChatUids.has(uid)) selectedChatUids.delete(uid);
+      else selectedChatUids.add(uid);
+      if (selectedChatUids.size === 0) { exitMultiSelectMode(); return; }
+      bulkCountLabel.textContent = `${selectedChatUids.size} selected`;
+      renderUsersList();
+    }
+
+    bulkCancelBtn.addEventListener("click", exitMultiSelectMode);
+
+    bulkMarkReadBtn.addEventListener("click", async () => {
+      if (!currentUser || !selectedChatUids.size) return;
+      for (const uid of Array.from(selectedChatUids)) {
+        unreadCounts[uid] = 0;
+        if (uid !== "na_ai_assistant") {
+          const chatId = getChatId(currentUser.uid, uid);
+          const snap = await db.ref(`chats/${chatId}/messages`).once("value");
+          const msgs = snap.val() || {};
+          for (const [mId, m] of Object.entries(msgs)) {
+            if (m && m.senderId === uid && m.status !== "seen") {
+              await db.ref(`chats/${chatId}/messages/${mId}`).update({ status: "seen", seenAt: Date.now() }).catch(() => {});
+            }
+          }
+        }
+      }
+      exitMultiSelectMode();
+    });
+
+    bulkDeleteBtn.addEventListener("click", async () => {
+      if (!currentUser || !selectedChatUids.size) return;
+      const targets = Array.from(selectedChatUids);
+      for (const uid of targets) {
+        if (uid === "na_ai_assistant") {
+          localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
+        } else {
+          const uObj = allUsers[uid] || { uid };
+          await deleteEntireChat(uObj);
+        }
+      }
+      exitMultiSelectMode();
+    });
+
+    // Status 24h Expiration Helpers
+    function isStatusExpired(st) {
+      if (!st) return true;
+      const now = Date.now();
+      if (st.expiresAt && now >= Number(st.expiresAt)) return true;
+      if (st.createdAt && (now - Number(st.createdAt)) >= STATUS_TTL_MS) return true;
+      return false;
+    }
+
+    function formatRemainingTime(st) {
+      const exp = st.expiresAt ? Number(st.expiresAt) : (Number(st.createdAt || Date.now()) + STATUS_TTL_MS);
+      const remMs = Math.max(0, exp - Date.now());
+      const mins = Math.floor(remMs / 60000);
+      if (mins < 60) return `${Math.max(1, mins)}m left`;
+      const hrs = Math.floor(mins / 60);
+      return `${hrs}h ${mins % 60}m left`;
+    }
+
+    async function pruneExpiredStatuses() {
+      if (!allStatuses || typeof allStatuses !== "object") return;
+      for (const [id, st] of Object.entries(allStatuses)) {
+        if (isStatusExpired(st)) {
+          delete allStatuses[id];
+          db.ref(`statuses/${id}`).remove().catch(() => {});
+        }
+      }
+    }
+
+    setInterval(() => {
+      pruneExpiredStatuses();
+      renderStatusFeed();
+      renderUsersList();
+      updateTopHeader();
+    }, 30000);
+
+    // Live AI Text & Photo Generator (Sinhala + Any Language)
+    async function askLiveAI(promptText) {
+      const trimmed = promptText.trim();
+      const low = trimmed.toLowerCase();
+
+      const isPhotoReq =
+        low.startsWith("photo:") ||
+        low.startsWith("image:") ||
+        low.startsWith("img:") ||
+        trimmed.startsWith("ෆොටෝ:") ||
+        trimmed.startsWith("පින්තූරය:") ||
+        trimmed.startsWith("පින්තූරයක්:");
+
+      if (isPhotoReq) {
+        const subject = trimmed
+          .replace(/^(photo:|image:|img:|ෆොටෝ:|පින්තූරය:|පින්තූරයක්:)/i, "")
+          .trim() || "scenic landscape";
+
+        const encodedPrompt = encodeURIComponent(subject + ", high detail, crisp lighting");
+        const remoteUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=640&height=420&nologo=true&seed=${Date.now()}`;
+
+        const loadedUrl = await new Promise((resolve) => {
+          const testImg = new Image();
+          testImg.crossOrigin = "anonymous";
+          const t = setTimeout(() => resolve(null), 9000);
+          testImg.onload = () => { clearTimeout(t); resolve(remoteUrl); };
+          testImg.onerror = () => { clearTimeout(t); resolve(null); };
+          testImg.src = remoteUrl;
+        });
+
+        return {
+          text: `**NA Ai Photo:** *${subject}*`,
+          mediaType: "image",
+          mediaUrl: loadedUrl || generateAiPhotoDataUrl(subject)
+        };
+      }
+
+      // Live text answer via Pollinations AI endpoint with smart Sinhala/English fallback
+      try {
+        const systemPrompt = "You are NA Ai, a helpful assistant similar to Gemini and Meta AI. Understand any language including Sinhala and English, and reply naturally in the same language the user used.";
+        const url = `https://text.pollinations.ai/${encodeURIComponent(trimmed)}?system=${encodeURIComponent(systemPrompt)}`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8500);
+        const resp = await fetch(url, { signal: controller.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const answer = (await resp.text()).trim();
+          if (answer && answer.length > 1 && !answer.toLowerCase().includes("error")) {
+            return { text: answer };
+          }
+        }
+      } catch (_) {}
+
+      const hasSinhala = /[\u0D80-\u0DFF]/.test(trimmed);
+      if (hasSinhala) {
+        return {
+          text: `ඔබ ඇසූ **"${trimmed}"** ගැන කෙටි පිළිතුර:\nමෙය සජීවී AI සහායකයායි. ඔබට ඕනෑම ප්‍රශ්නයක් අසන්න හෝ \`photo: <විස්තරය>\` ලෙස ලබා දී පින්තූරයක් නිර්මාණය කරගන්න.`
+        };
+      }
+      return {
+        text: `Regarding **"${trimmed}"**: Ask any question or type \`photo: <description>\` to generate an AI image.`
+      };
+    }
+
+    function generateAiPhotoDataUrl(promptText) {
+      const c = document.createElement("canvas"); c.width = 480; c.height = 340;
+      const ctx = c.getContext("2d");
+      const grad = ctx.createLinearGradient(0, 0, 480, 340);
+      grad.addColorStop(0, "#0d47a1"); grad.addColorStop(0.55, "#1976d2"); grad.addColorStop(1, "#00acc1");
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 480, 340);
+      ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.beginPath(); ctx.arc(370, 105, 80, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffffff"; ctx.font = "bold 22px sans-serif"; ctx.fillText("NA Ai Photo", 24, 42);
+      ctx.font = "15px sans-serif"; ctx.fillText(promptText.slice(0, 42), 24, 300);
+      return c.toDataURL("image/jpeg", 0.82);
+    }
+
     function renderAnimatedTypingHtml() {
       return `<span class="typing-anim-wrap">Typing<span class="typing-dots-anim"></span></span>`;
     }
@@ -1559,7 +1831,7 @@
       s = s.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
       s = s.replace(/~([^~\n]+)~/g, "<del>$1</del>");
       s = s.replace(/`([^`\n]+)`/g, "<code style='background:rgba(0,0,0,0.35);padding:1px 4px;border-radius:4px;'>$1</code>");
-      return s;
+      return s.replace(/\n/g, "<br>");
     }
 
     function refreshPresenceAndTypingUI() {
@@ -1567,7 +1839,6 @@
       updateTopHeader();
     }
 
-    // Write typing state to Firebase so ONLY the OTHER user sees "Typing..."
     function sendRemoteTypingState(isTyping) {
       if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
@@ -1596,27 +1867,19 @@
           sendRemoteTypingState(true);
         }
         if (typingStopTimer) clearTimeout(typingStopTimer);
-        typingStopTimer = setTimeout(() => {
-          sendRemoteTypingState(false);
-        }, 2200);
+        typingStopTimer = setTimeout(() => { sendRemoteTypingState(false); }, 2200);
       } else {
         if (typingStopTimer) clearTimeout(typingStopTimer);
         sendRemoteTypingState(false);
       }
 
-      if (!hasText) {
-        liveFormatBar.classList.remove("active");
-        liveFormatBar.innerHTML = "";
-      } else {
-        liveFormatBar.classList.add("active");
-        liveFormatBar.innerHTML = `Preview: ${formatRichText(val)}`;
-      }
+      if (!hasText) { liveFormatBar.classList.remove("active"); liveFormatBar.innerHTML = ""; }
+      else { liveFormatBar.classList.add("active"); liveFormatBar.innerHTML = `Preview: ${formatRichText(val)}`; }
     }
 
     messageInput.addEventListener("input", handleComposerTypingEvent);
     messageInput.addEventListener("keyup", handleComposerTypingEvent);
 
-    // Direct per-peer typing listener so UI updates immediately whenever peer types
     function attachPeerTypingListener(peerUid) {
       if (!currentUser || !peerUid || peerUid === currentUser.uid || peerUid === "na_ai_assistant") return;
       const chatId = getChatId(currentUser.uid, peerUid);
@@ -1646,7 +1909,6 @@
       return true;
     }
 
-    // Highlight and scroll to the original message when user taps a reply quote
     function jumpAndHighlightQuotedMessage(quotedText) {
       if (!quotedText) return;
       const cleanQ = quotedText.replace(/^↪\s*/, "").trim().toLowerCase();
@@ -1668,9 +1930,7 @@
           bubble.classList.remove("msg-highlight-2s");
           void bubble.offsetWidth;
           bubble.classList.add("msg-highlight-2s");
-          setTimeout(() => {
-            bubble.classList.remove("msg-highlight-2s");
-          }, 2000);
+          setTimeout(() => { bubble.classList.remove("msg-highlight-2s"); }, 2000);
         }
       }
     }
@@ -1782,6 +2042,7 @@
       if (chatLockModal.classList.contains("active")) { chatLockModal.classList.remove("active"); return; }
       if (callModal.classList.contains("active")) { hangupCall(); return; }
       if (chatMoreMenu.classList.contains("open")) { chatMoreMenu.classList.remove("open"); return; }
+      if (isMultiSelectMode) { exitMultiSelectMode(); return; }
       if (selectedPeer) { closeActiveChatToList(); return; }
       const activeTab = document.querySelector(".nav-tab.active");
       if (activeTab && activeTab.dataset.tab !== "chatsTab") switchToTab("chatsTab");
@@ -1960,7 +2221,7 @@
     function getUserStatuses(ownerUid) {
       return Object.entries(allStatuses)
         .map(([id, st]) => ({ id, ...st }))
-        .filter((st) => st && st.ownerUid === ownerUid && canSeeStatus(allUsers[ownerUid] || { uid: ownerUid }))
+        .filter((st) => st && !isStatusExpired(st) && st.ownerUid === ownerUid && canSeeStatus(allUsers[ownerUid] || { uid: ownerUid }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     }
 
@@ -2077,11 +2338,11 @@
         chatMoreBtn.style.display = "grid";
         voiceCallBtn.style.display = peer.isAI ? "none" : "grid";
         videoCallBtn.style.display = peer.isAI ? "none" : "grid";
+        aiQuickBar.classList.toggle("active", !!peer.isAI);
 
         const blockedMe = isUserBlockedByMe(peer.uid);
         menuBlockBtn.textContent = blockedMe ? "Unblock" : "Block";
 
-        // Show Typing... ONLY when the OTHER peer is typing
         const remoteTypingNow = isPeerTypingNow(peer.uid);
 
         if (blockedMe || isMeBlockedByPeer(peer.uid)) {
@@ -2109,6 +2370,7 @@
         headerStatus.textContent = me.about || "";
         voiceCallBtn.style.display = "none";
         videoCallBtn.style.display = "none";
+        aiQuickBar.classList.remove("active");
         logoutBtn.style.display = "inline-flex";
         chatMoreBtn.style.display = "none";
         chatMoreMenu.classList.remove("open");
@@ -2122,7 +2384,14 @@
       }
     }
 
-    // Real WebRTC Signaling & Call Logic
+    document.querySelectorAll("[data-ai-prompt]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        if (!selectedPeer || !selectedPeer.isAI) return;
+        messageInput.value = chip.dataset.aiPrompt || "";
+        messageForm.dispatchEvent(new Event("submit"));
+      });
+    });
+
     function listenIncomingCalls(myUid) {
       db.ref(`calls/${myUid}`).on("value", async (snap) => {
         const data = snap.val();
@@ -2284,7 +2553,6 @@
       }, 20000);
     }
 
-    // Track which peers have actual chat messages with currentUser and listen for unread counts
     function listenActiveChatsAndUnread(myUid) {
       db.ref("users").once("value", (snap) => {
         const usersObj = snap.val() || {};
@@ -2403,6 +2671,7 @@
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
         fontSizeSelect.value = savedFont;
         document.documentElement.style.setProperty("--msg-font-size", savedFont);
+        setCardLiveStyle(getCardLiveStyle());
         setVibrateEnabled(isVibrateEnabled());
         setSelectedEmojiTone(getSelectedEmojiTone());
         setCustomEmojiColor(getCustomEmojiColor());
@@ -2428,10 +2697,18 @@
 
         db.ref("statuses").on("value", (snap) => {
           allStatuses = snap.val() || {};
+          pruneExpiredStatuses();
           renderUsersList();
           renderStatusFeed();
           updateTopHeader();
-          if (activeStatusId && statusViewerModal.classList.contains("active")) renderStatusViewerContent(activeStatusId);
+          if (activeStatusId && statusViewerModal.classList.contains("active")) {
+            if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) {
+              statusViewerModal.classList.remove("active");
+              activeStatusId = null;
+            } else {
+              renderStatusViewerContent(activeStatusId);
+            }
+          }
         });
       } else {
         localStorage.removeItem("hasActiveSession");
@@ -2461,20 +2738,47 @@
       if (document.activeElement !== privacyProfileFieldsSelect) privacyProfileFieldsSelect.value = priv.profileFields || "everyone";
     }
 
-    // Show ONLY users with active chat messages unless searching
+    function attachCardLongPress(cardEl, uid) {
+      let timer = null;
+      const trigger = () => {
+        timer = null;
+        enterMultiSelectWith(uid);
+      };
+      const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+      cardEl.addEventListener("touchstart", () => { timer = setTimeout(trigger, 460); }, { passive: true });
+      cardEl.addEventListener("touchend", cancel);
+      cardEl.addEventListener("touchmove", cancel);
+      cardEl.addEventListener("mousedown", (e) => {
+        if (e.button === 0) timer = setTimeout(trigger, 520);
+      });
+      cardEl.addEventListener("mouseup", cancel);
+      cardEl.addEventListener("mouseleave", cancel);
+      cardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); enterMultiSelectWith(uid); });
+    }
+
+    // Card View Chat List (Only active chats unless searching)
     function renderUsersList() {
       if (!currentUser) return;
       const q = searchUsersInput.value.trim().toLowerCase();
+      const cardLiveCls = getCardLiveStyle() !== "none" ? ` ${getCardLiveStyle()}` : "";
       usersList.innerHTML = "";
 
       if (!q || "na ai".includes(q)) {
+        const aiSelected = selectedChatUids.has("na_ai_assistant");
         const aiRow = document.createElement("div");
-        aiRow.className = "list-row" + (selectedPeer && selectedPeer.isAI ? " active" : "");
+        aiRow.className = "chat-card" + cardLiveCls +
+          (selectedPeer && selectedPeer.isAI ? " active" : "") +
+          (aiSelected ? " selected-multi" : "");
         aiRow.innerHTML = `
+          <span class="select-check-circle">${aiSelected ? "✓" : ""}</span>
           <div class="avatar-wrap"><img class="avatar" src="${NA_AI_DP}" alt="" /><span class="online-disc active"></span></div>
-          <div class="row-meta"><div class="row-name">NA Ai ✨</div><div class="row-sub status-line is-online">Chat • Translate • Photo • Video</div></div>
+          <div class="row-meta"><div class="row-name">NA Ai ✨</div><div class="row-sub status-line is-online">Live AI • Sinhala & All Lang • Photo Gen</div></div>
         `;
-        aiRow.addEventListener("click", () => openChatWith(NA_AI_USER));
+        aiRow.addEventListener("click", () => {
+          if (isMultiSelectMode) toggleChatSelection("na_ai_assistant");
+          else openChatWith(NA_AI_USER);
+        });
+        attachCardLongPress(aiRow, "na_ai_assistant");
         usersList.appendChild(aiRow);
       }
 
@@ -2487,13 +2791,12 @@
         const visAbout = getVisibleAbout(u);
         const rawMatch = `${visName} ${u.name || ""} ${u.email || ""} ${visAbout}`.toLowerCase();
 
-        // When NOT searching, show ONLY peers who have an active chat
         if (!q && !hasChat) return;
-        // When searching, show matching peers (existing chat or new contact to chat with)
         if (q && !rawMatch.includes(q)) return;
 
         const isBlocked = isUserBlockedByMe(u.uid);
         const isLocked = !!getChatLockPin(u.uid);
+        const isSelected = selectedChatUids.has(u.uid);
         const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
         const ringClass = getUserStatusRingClass(u.uid);
         const remoteTypingNow = isPeerTypingNow(u.uid);
@@ -2505,9 +2808,12 @@
           : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout));
         const subClass = "row-sub" + (remoteTypingNow ? " typing-yellow-bordered" : (p.isOnline ? " status-line is-online" : ""));
 
-        const row = document.createElement("div");
-        row.className = "list-row" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
-        row.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "chat-card" + cardLiveCls +
+          (selectedPeer && selectedPeer.uid === u.uid ? " active" : "") +
+          (isSelected ? " selected-multi" : "");
+        card.innerHTML = `
+          <span class="select-check-circle">${isSelected ? "✓" : ""}</span>
           <div class="avatar-wrap ${ringClass}" data-dp-uid="${escapeAttr(u.uid)}">
             <img class="avatar" src="${dpSrc}" alt="" />
             <span class="online-disc ${p.isOnline ? "active" : ""}"></span>
@@ -2519,15 +2825,21 @@
           ${badgeNum > 0 ? `<span class="unread-badge">${badgeNum}</span>` : ""}
         `;
 
-        row.querySelector("[data-dp-uid]").addEventListener("click", (ev) => {
+        card.querySelector("[data-dp-uid]").addEventListener("click", (ev) => {
           ev.stopPropagation();
+          if (isMultiSelectMode) { toggleChatSelection(u.uid); return; }
           const stList = getUserStatuses(u.uid);
           if (stList.length) openStatusViewer(stList[0].id);
           else openContactInfoModal(u);
         });
 
-        row.addEventListener("click", () => handleSelectPeer(u));
-        usersList.appendChild(row);
+        card.addEventListener("click", () => {
+          if (isMultiSelectMode) toggleChatSelection(u.uid);
+          else handleSelectPeer(u);
+        });
+
+        attachCardLongPress(card, u.uid);
+        usersList.appendChild(card);
       });
     }
 
@@ -2569,44 +2881,6 @@
     });
 
     cancelChatLockBtn.addEventListener("click", () => { pendingLockPeer = null; chatLockModal.classList.remove("active"); });
-
-    function generateAiPhotoDataUrl(promptText) {
-      const c = document.createElement("canvas"); c.width = 480; c.height = 340;
-      const ctx = c.getContext("2d");
-      const grad = ctx.createLinearGradient(0, 0, 480, 340);
-      grad.addColorStop(0, "#0d47a1"); grad.addColorStop(0.55, "#1976d2"); grad.addColorStop(1, "#00acc1");
-      ctx.fillStyle = grad; ctx.fillRect(0, 0, 480, 340);
-      ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.beginPath(); ctx.arc(370, 105, 80, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#ffffff"; ctx.font = "bold 22px sans-serif"; ctx.fillText("NA Ai Photo", 24, 42);
-      ctx.font = "15px sans-serif"; ctx.fillText(promptText.slice(0, 42), 24, 300);
-      return c.toDataURL("image/jpeg", 0.82);
-    }
-
-    function generateAiVideoPreviewDataUrl(promptText) {
-      const c = document.createElement("canvas"); c.width = 460; c.height = 300;
-      const ctx = c.getContext("2d");
-      ctx.fillStyle = "#0b141a"; ctx.fillRect(0, 0, 460, 300);
-      ctx.fillStyle = "#42a5f5"; ctx.font = "bold 22px sans-serif"; ctx.fillText("NA Ai Video Clip", 24, 42);
-      ctx.fillStyle = "#e9edef"; ctx.font = "15px sans-serif"; ctx.fillText(promptText.slice(0, 44), 24, 265);
-      return c.toDataURL("image/jpeg", 0.8);
-    }
-
-    function buildNaAiResponse(promptText) {
-      const trimmed = promptText.trim(); const low = trimmed.toLowerCase();
-      if (low.startsWith("photo:") || low.startsWith("image:")) {
-        const q = trimmed.replace(/^(photo:|image:)/i, "").trim() || "Blue horizon";
-        return { text: `**NA Ai Photo:** *${q}*`, mediaType: "image", mediaUrl: generateAiPhotoDataUrl(q) };
-      }
-      if (low.startsWith("video:")) {
-        const q = trimmed.replace(/^video:/i, "").trim() || "Motion scene";
-        return { text: `**NA Ai Video:** *${q}*`, mediaType: "image", mediaUrl: generateAiVideoPreviewDataUrl(q) };
-      }
-      if (low.startsWith("translate:")) {
-        const body = trimmed.replace(/^translate:/i, "").trim();
-        return { text: `**NA Ai Translate:** "${body}" → **${body}**` };
-      }
-      return { text: `**NA Ai:** *"${trimmed}"*\nTry \`photo: ...\`, \`video: ...\`, or \`translate: ...\`.` };
-    }
 
     function openChatWith(peer) {
       unlockAudio();
@@ -2660,7 +2934,11 @@
         let aiMsgs = [];
         try { aiMsgs = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
         if (!aiMsgs.length) {
-          aiMsgs = [{ id: "ai_welcome_1", senderId: "na_ai_assistant", receiverId: currentUser.uid, text: "Hi! I'm **NA Ai** ✨. Chat, \`translate: ...\`, \`photo: ...\`, or \`video: ...\`!", status: "seen", timestamp: Date.now() }];
+          aiMsgs = [{
+            id: "ai_welcome_1", senderId: "na_ai_assistant", receiverId: currentUser.uid,
+            text: "ආයුබෝවන්! මම **NA Ai** ✨. සිංහලෙන් හෝ ඕනෑම භාෂාවකින් ප්‍රශ්න අහන්න; පින්තූරයක් අවශ්‍ය නම් `photo: ...` කියා ලියන්න.",
+            status: "seen", timestamp: Date.now()
+          }];
           localStorage.setItem(aiHistoryKey, JSON.stringify(aiMsgs));
         }
         aiMsgs.forEach((m) => renderOrUpdateMessage(m.id, m));
@@ -2693,8 +2971,9 @@
       selectedPeer = null; replyToMsg = null;
       replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
       liveFormatBar.classList.remove("active"); inChatSearchBar.classList.remove("active");
-      pinnedBanner.classList.remove("active"); mainGrid.classList.remove("chat-open");
-      backToUsersBtn.style.display = "none"; updateTopHeader(); applyWallpaper(); renderUsersList();
+      pinnedBanner.classList.remove("active"); aiQuickBar.classList.remove("active");
+      mainGrid.classList.remove("chat-open"); backToUsersBtn.style.display = "none";
+      updateTopHeader(); applyWallpaper(); renderUsersList();
     }
 
     backToUsersBtn.addEventListener("click", closeActiveChatToList);
@@ -3093,12 +3372,23 @@
         const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
         const uMsg = { id: "u_" + Date.now(), senderId: currentUser.uid, receiverId: "na_ai_assistant", text, replyTo: quoteText, status: "seen", timestamp: Date.now() };
         renderOrUpdateMessage(uMsg.id, uMsg); arr.push(uMsg);
-        setTimeout(() => {
-          const aiRes = buildNaAiResponse(text);
-          const bMsg = { id: "b_" + Date.now(), senderId: "na_ai_assistant", receiverId: currentUser.uid, text: aiRes.text, mediaType: aiRes.mediaType || null, mediaUrl: aiRes.mediaUrl || null, status: "seen", timestamp: Date.now() };
-          renderOrUpdateMessage(bMsg.id, bMsg); arr.push(bMsg);
-          localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
-        }, 280);
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+
+        const thinkId = "think_" + Date.now();
+        renderOrUpdateMessage(thinkId, { id: thinkId, senderId: "na_ai_assistant", receiverId: currentUser.uid, text: "🤔 ...", status: "seen", timestamp: Date.now() });
+
+        const aiRes = await askLiveAI(text);
+        const thinkEl = messagesContainer.querySelector(`[data-msg-wrap-id="${thinkId}"]`);
+        if (thinkEl) thinkEl.remove();
+
+        const bMsg = {
+          id: "b_" + Date.now(), senderId: "na_ai_assistant", receiverId: currentUser.uid,
+          text: aiRes.text, mediaType: aiRes.mediaType || null, mediaUrl: aiRes.mediaUrl || null,
+          status: "seen", timestamp: Date.now()
+        };
+        renderOrUpdateMessage(bMsg.id, bMsg);
+        arr.push(bMsg);
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
         return;
       }
 
@@ -3274,10 +3564,12 @@
       if (!txt && !pendingStatusPhoto && !pendingStatusVideo) { alert("Enter status text or choose photo/video."); return; }
       try {
         const me = allUsers[currentUser.uid] || {};
+        const now = Date.now();
         await db.ref("statuses").push({
           ownerUid: currentUser.uid, ownerName: me.name || currentUser.email,
           text: txt, fontFamily: selectedStatusFont, bgColor: selectedStatusBg, textColor: selectedStatusTextColor,
-          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "", createdAt: Date.now()
+          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "",
+          createdAt: now, expiresAt: now + STATUS_TTL_MS
         });
         addStatusModal.classList.remove("active");
       } catch (err) { alert("Status post error: " + err.message); }
@@ -3285,14 +3577,15 @@
 
     function renderStatusFeed() {
       if (!currentUser) return;
+      pruneExpiredStatuses();
       statusFeedList.innerHTML = "";
       const seenMap = getSeenStatusCounts();
       const entries = Object.entries(allStatuses)
         .map(([id, st]) => ({ id, ...st }))
-        .filter((st) => canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
+        .filter((st) => st && !isStatusExpired(st) && canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-      if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No status updates</div>`; return; }
+      if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No active status updates</div>`; return; }
 
       entries.forEach((st) => {
         const isMine = st.ownerUid === currentUser.uid;
@@ -3302,6 +3595,7 @@
         const likesCount = st.likes ? Object.keys(st.likes).length : 0;
         const viewEntries = st.views ? Object.values(st.views) : [];
         const totalViews = viewEntries.reduce((sum, v) => sum + ((v && v.count) || 1), 0);
+        const remLabel = formatRemainingTime(st);
 
         const row = document.createElement("div");
         row.className = "status-circle-row";
@@ -3313,7 +3607,7 @@
           </div>
           <div class="row-meta">
             <div class="row-name">${escapeHtml(st.ownerName || "")}</div>
-            <div class="row-sub">${formatClock(st.createdAt)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
+            <div class="row-sub">⏳ ${escapeHtml(remLabel)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
           </div>
         `;
         row.addEventListener("click", () => openStatusViewer(st.id));
@@ -3324,7 +3618,7 @@
     function openStatusViewer(statusId) {
       activeStatusId = statusId;
       const st = allStatuses[statusId];
-      if (!st || !currentUser) return;
+      if (!st || isStatusExpired(st) || !currentUser) return;
       if (st.ownerUid !== currentUser.uid) { recordStatusView(statusId); renderStatusFeed(); refreshPresenceAndTypingUI(); }
       renderStatusViewerContent(statusId);
       statusViewerModal.classList.add("active"); pushNavState();
@@ -3332,11 +3626,11 @@
 
     function renderStatusViewerContent(statusId) {
       const st = allStatuses[statusId];
-      if (!st || !currentUser) return;
+      if (!st || isStatusExpired(st) || !currentUser) return;
       const owner = allUsers[st.ownerUid] || {}; const isOwner = st.ownerUid === currentUser.uid;
       viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
       viewerOwnerName.textContent = st.ownerName || getVisibleName(owner);
-      viewerTimeText.textContent = formatClock(st.createdAt);
+      viewerTimeText.textContent = `${formatClock(st.createdAt)} • ${formatRemainingTime(st)}`;
 
       const bg = st.bgColor || "#0d47a1"; const fg = st.textColor || "#ffffff"; const ff = st.fontFamily || "'Segoe UI', Roboto, sans-serif";
       let bodyHtml = "";
