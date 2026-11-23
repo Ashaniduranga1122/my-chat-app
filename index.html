@@ -1,402 +1,636 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Chat App</title>
-<style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Chat App</title>
+  <style>
+    :root {
+      --bg-main: #0b141a;
+      --panel: #111b21;
+      --panel-2: #202c33;
+      --accent: #00a884;
+      --text: #e9edef;
+      --muted: #8696a0;
+      --sent: #005c4b;
+      --recv: #202c33;
+      --border: #2a3942;
+      --chat-wallpaper: none;
+    }
 
-  body {
-    background-color: #0b141a;
-    color: #e9edef;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg-main); color: var(--text); height: 100vh; overflow: hidden; }
 
-  /* Login Screen */
-  #login-screen {
-    width: 90%;
-    max-width: 400px;
-    padding: 30px;
-    background: #111b21;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-    text-align: center;
-  }
+    .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; }
+    .screen.active { display: flex; }
 
-  #login-screen h2 {
-    color: #00a884;
-    margin-bottom: 10px;
-    font-size: 24px;
-  }
+    /* Auth Screen */
+    .auth-box {
+      max-width: 400px; width: 92%; margin: auto; background: var(--panel);
+      padding: 24px; border-radius: 14px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .auth-box h2 { text-align: center; color: var(--accent); }
+    .auth-box input {
+      width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--text); outline: none;
+    }
+    .btn {
+      padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer;
+      font-weight: 600; background: var(--accent); color: #06211a;
+    }
+    .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+    .err { color: #ff6b6b; font-size: 13px; min-height: 18px; text-align: center; }
 
-  #login-screen p {
-    color: #8696a0;
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
+    /* App Layout */
+    .topbar {
+      background: var(--panel); padding: 10px 14px; display: flex;
+      align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+    .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+      background: var(--panel-2); border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .title-wrap { overflow: hidden; }
+    .title-wrap h4 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .title-wrap small { color: var(--muted); font-size: 12px; display: block; }
 
-  #username-input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1px solid #2a3942;
-    background: #202c33;
-    color: #fff;
-    font-size: 16px;
-    outline: none;
-    margin-bottom: 15px;
-  }
+    .main-grid { display: flex; flex: 1; height: calc(100vh - 62px); overflow: hidden; }
 
-  #login-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background: #00a884;
-    color: #111b21;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+    /* Contacts Sidebar */
+    .sidebar {
+      width: 320px; max-width: 100%; background: var(--panel);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+    }
+    .sidebar-head { padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+    .sidebar-head input {
+      flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--text); outline: none;
+    }
+    .user-list { flex: 1; overflow-y: auto; }
+    .user-item {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+      cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .user-item:hover, .user-item.active { background: var(--panel-2); }
 
-  #login-btn:hover {
-    background: #06cf9c;
-  }
+    /* Chat Area */
+    .chat-panel {
+      flex: 1; display: flex; flex-direction: column; position: relative;
+      background-color: var(--bg-main);
+      background-image: var(--chat-wallpaper);
+      background-size: cover; background-position: center;
+    }
+    .chat-overlay {
+      flex: 1; display: flex; flex-direction: column;
+      background: rgba(11, 20, 26, 0.72); height: 100%;
+    }
+    .messages {
+      flex: 1; overflow-y: auto; padding: 16px; display: flex;
+      flex-direction: column; gap: 10px;
+    }
+    .empty-chat { margin: auto; color: var(--muted); text-align: center; padding: 20px; }
+    .msg {
+      max-width: 75%; padding: 9px 12px; border-radius: 10px;
+      word-wrap: break-word; position: relative; font-size: 14px;
+    }
+    .msg.sent { align-self: flex-end; background: var(--sent); }
+    .msg.recv { align-self: flex-start; background: var(--recv); }
+    .msg img, .msg video {
+      max-width: 240px; max-height: 260px; border-radius: 8px;
+      display: block; margin-top: 6px;
+    }
+    .msg time { display: block; font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 4px; text-align: right; }
 
-  /* Chat Container */
-  #chat-screen {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    max-width: 500px;
-    height: 100vh;
-    background-color: #0b141a;
-    border-left: 1px solid #222e35;
-    border-right: 1px solid #222e35;
-  }
+    .composer {
+      background: var(--panel); padding: 10px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .composer input[type="text"] {
+      flex: 1; padding: 10px 12px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--text); outline: none;
+    }
+    .icon-btn {
+      background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+      border-radius: 50%; width: 38px; height: 38px; display: grid; place-items: center;
+      cursor: pointer; flex-shrink: 0;
+    }
 
-  /* Header */
-  .chat-header {
-    background-color: #202c33;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #2a3942;
-  }
+    /* Settings Modal */
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      z-index: 50; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal.active { display: flex; }
+    .modal-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+      width: 100%; max-width: 420px; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+      max-height: 88vh; overflow-y: auto;
+    }
+    .modal-card label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
+    .modal-card select, .modal-card input[type="text"] {
+      width: 100%; padding: 9px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--text);
+    }
+    .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
 
-  .header-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #00a884;
-    color: #111b21;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .header-text h3 {
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .header-text span {
-    font-size: 12px;
-    color: #00a884;
-  }
-
-  .logout-btn {
-    background: transparent;
-    border: 1px solid #374045;
-    color: #aebac1;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
-  /* Messages Area */
-  #messages {
-    flex: 1;
-    padding: 16px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background-image: radial-gradient(#182229 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .message {
-    max-width: 78%;
-    padding: 8px 12px;
-    border-radius: 10px;
-    position: relative;
-    word-wrap: break-word;
-    font-size: 15px;
-    line-height: 1.4;
-  }
-
-  .message.sent {
-    align-self: flex-end;
-    background-color: #005c4b;
-    color: #e9edef;
-    border-top-right-radius: 2px;
-  }
-
-  .message.received {
-    align-self: flex-start;
-    background-color: #202c33;
-    color: #e9edef;
-    border-top-left-radius: 2px;
-  }
-
-  .sender-name {
-    font-size: 12px;
-    font-weight: bold;
-    color: #53bdeb;
-    margin-bottom: 3px;
-  }
-
-  .msg-time {
-    font-size: 11px;
-    color: rgba(233, 237, 239, 0.65);
-    text-align: right;
-    margin-top: 4px;
-  }
-
-  /* Input Area */
-  .input-area {
-    background-color: #202c33;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  #message-input {
-    flex: 1;
-    padding: 12px 16px;
-    border-radius: 24px;
-    border: none;
-    background-color: #2a3942;
-    color: #e9edef;
-    font-size: 15px;
-    outline: none;
-  }
-
-  #send-btn {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    border: none;
-    background-color: #00a884;
-    color: #111b21;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #send-btn:hover {
-    background-color: #06cf9c;
-  }
-</style>
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; display: flex; }
+      .chat-panel { display: none; width: 100%; }
+      .main-grid.chat-open .sidebar { display: none; }
+      .main-grid.chat-open .chat-panel { display: flex; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Login Screen -->
-  <div id="login-screen">
-    <h2>ChatConnect</h2>
-    <p>චැට් කිරීමට ඔබගේ නම ඇතුළත් කරන්න</p>
-    <input type="text" id="username-input" placeholder="ඔබගේ නම (උදා: Ashan)" maxlength="20">
-    <button id="login-btn">ඇතුළු වන්න</button>
-  </div>
+  <!-- Login / Register Screen -->
+  <section id="authScreen" class="screen active">
+    <div class="auth-box">
+      <h2 id="authTitle">Log In</h2>
+      <input type="text" id="nameInput" placeholder="ඔබේ නම (Register වන විට)" style="display:none;" />
+      <input type="email" id="emailInput" placeholder="Email ලිපිනය" />
+      <input type="password" id="passwordInput" placeholder="Password (අවම අකුරු 6ක්)" />
+      <button class="btn" id="authSubmitBtn">ඇතුළු වන්න</button>
+      <button class="btn secondary" id="toggleAuthModeBtn">අලුත් ගිණුමක් සාදන්න (Register)</button>
+      <div class="err" id="authError"></div>
+    </div>
+  </section>
 
-  <!-- Chat Screen -->
-  <div id="chat-screen">
-    <div class="chat-header">
-      <div class="header-info">
-        <div class="avatar" id="user-avatar">A</div>
-        <div class="header-text">
-          <h3 id="display-username">User</h3>
-          <span>● Online</span>
+  <!-- Main Chat Screen -->
+  <section id="chatScreen" class="screen">
+    <header class="topbar">
+      <div class="user-info">
+        <button class="icon-btn" id="backToUsersBtn" style="display:none;">←</button>
+        <img id="myAvatar" class="avatar" src="" alt="DP" />
+        <div class="title-wrap">
+          <h4 id="myDisplayName">User</h4>
+          <small id="activePeerLabel">කතා කිරීමට කෙනෙකු තෝරන්න</small>
         </div>
       </div>
-      <button class="logout-btn" id="logout-btn">Logout</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn secondary" id="openSettingsBtn">Settings</button>
+        <button class="btn secondary" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <div class="main-grid" id="mainGrid">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <input type="text" id="searchUsersInput" placeholder="පරිශීලකයන් සොයන්න..." />
+        </div>
+        <div class="user-list" id="usersList"></div>
+      </aside>
+
+      <main class="chat-panel">
+        <div class="chat-overlay">
+          <div class="messages" id="messagesContainer">
+            <div class="empty-chat">වම් පසින් පරිශීලකයෙකු තෝරා පෞද්ගලිකව කතා කරන්න.</div>
+          </div>
+
+          <form class="composer" id="messageForm">
+            <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none;" />
+            <button type="button" class="icon-btn" id="attachBtn" title="Photo / Video">📎</button>
+            <input type="text" id="messageInput" placeholder="මැසේජ් එකක් ලියන්න..." autocomplete="off" />
+            <button type="submit" class="btn">Send</button>
+          </form>
+        </div>
+      </main>
     </div>
+  </section>
 
-    <div id="messages"></div>
+  <!-- Settings Modal (DP, Wallpaper, Notification Sound) -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <h3>Profile & Chat Settings</h3>
 
-    <div class="input-area">
-      <input type="text" id="message-input" placeholder="මැසේජ් එකක් ලියන්න...">
-      <button id="send-btn">➤</button>
+      <div>
+        <label>Display Picture (DP) වෙනස් කරන්න</label>
+        <input type="file" id="dpFileInput" accept="image/*" />
+      </div>
+
+      <div>
+        <label>මෙම Chat එකේ Wallpaper එක (ඔබට පමණක් පෙනේ)</label>
+        <input type="file" id="wallpaperFileInput" accept="image/*" />
+        <button type="button" class="btn secondary" id="clearWallpaperBtn" style="margin-top:6px; width:100%;">Wallpaper ඉවත් කරන්න</button>
+      </div>
+
+      <div>
+        <label>Notification Sound තෝරන්න</label>
+        <select id="soundSelect">
+          <option value="chime">Soft Chime</option>
+          <option value="pop">Classic Pop</option>
+          <option value="mute">Mute (Sound Off)</option>
+        </select>
+        <button type="button" class="btn secondary" id="testSoundBtn" style="margin-top:6px; width:100%;">Sound Test කරන්න</button>
+      </div>
+
+      <div class="row">
+        <button type="button" class="btn secondary" id="closeSettingsBtn">වසන්න</button>
+      </div>
     </div>
   </div>
 
-<script>
-  const DB_URL = "https://my-chat-2026-27a0b-default-rtdb.asia-southeast1.firebasedatabase.app/messages.json";
+  <!-- Firebase SDKs (Compat for simple single-file usage) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-  const loginScreen = document.getElementById("login-screen");
-  const chatScreen = document.getElementById("chat-screen");
-  const usernameInput = document.getElementById("username-input");
-  const loginBtn = document.getElementById("login-btn");
-  const logoutBtn = document.getElementById("logout-btn");
-  const displayUsername = document.getElementById("display-username");
-  const userAvatar = document.getElementById("user-avatar");
-  const messagesBox = document.getElementById("messages");
-  const messageInput = document.getElementById("message-input");
-  const sendBtn = document.getElementById("send-btn");
-
-  let currentUser = localStorage.getItem("chat_username") || "";
-  let lastRenderedIds = new Set();
-
-  function startChat(name) {
-    currentUser = name.trim();
-    if (!currentUser) return;
-    localStorage.setItem("chat_username", currentUser);
-    displayUsername.textContent = currentUser;
-    userAvatar.textContent = currentUser.charAt(0).toUpperCase();
-    loginScreen.style.display = "none";
-    chatScreen.style.display = "flex";
-    fetchMessages();
-  }
-
-  if (currentUser) {
-    startChat(currentUser);
-  }
-
-  loginBtn.addEventListener("click", () => {
-    startChat(usernameInput.value);
-  });
-
-  usernameInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") startChat(usernameInput.value);
-  });
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("chat_username");
-    currentUser = "";
-    lastRenderedIds.clear();
-    messagesBox.innerHTML = "";
-    chatScreen.style.display = "none";
-    loginScreen.style.display = "block";
-    usernameInput.value = "";
-  });
-
-  function formatTime(timestamp) {
-    const date = new Date(timestamp);
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    return `${hours}:${minutes} ${ampm}`;
-  }
-
-  async function sendMessage() {
-    const text = messageInput.value.trim();
-    if (!text || !currentUser) return;
-
-    const payload = {
-      sender: currentUser,
-      text: text,
-      time: Date.now()
+  <script>
+    // 1. ඔබේ Firebase Project Configuration මෙහි ඇතුළත් කරන්න
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
-    messageInput.value = "";
+    // 2. Media Upload Endpoint (උදා: Cloudinary unsigned upload URL හෝ ඔබේ server endpoint)
+    // සටහන: Firebase Storage Blanks / Blaze plan නැති නම්, unsigned media upload URL එකක් යොදන්න.
+    const MEDIA_UPLOAD_URL = ""; // උදා: "https://api.cloudinary.com/v1_1/<cloud_name>/auto/upload"
+    const MEDIA_UPLOAD_PRESET = ""; // උදා: "your_unsigned_preset"
 
-    try {
-      await fetch(DB_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      fetchMessages();
-    } catch (err) {
-      console.error("Error sending message:", err);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    const DEFAULT_DP = "data:image/svg+xml;utf8," + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+        <rect width="80" height="80" fill="#202c33"/>
+        <circle cx="40" cy="30" r="14" fill="#8696a0"/>
+        <path d="M16 70c2-14 12-22 24-22s22 8 24 22" fill="#8696a0"/>
+      </svg>`
+    );
+
+    let isRegisterMode = false;
+    let currentUser = null;
+    let selectedPeer = null;
+    let messagesRef = null;
+    let allUsers = {};
+    let isInitialLoad = true;
+
+    const authScreen = document.getElementById("authScreen");
+    const chatScreen = document.getElementById("chatScreen");
+    const authTitle = document.getElementById("authTitle");
+    const nameInput = document.getElementById("nameInput");
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const authSubmitBtn = document.getElementById("authSubmitBtn");
+    const toggleAuthModeBtn = document.getElementById("toggleAuthModeBtn");
+    const authError = document.getElementById("authError");
+
+    const myAvatar = document.getElementById("myAvatar");
+    const myDisplayName = document.getElementById("myDisplayName");
+    const activePeerLabel = document.getElementById("activePeerLabel");
+    const usersList = document.getElementById("usersList");
+    const searchUsersInput = document.getElementById("searchUsersInput");
+    const messagesContainer = document.getElementById("messagesContainer");
+    const messageForm = document.getElementById("messageForm");
+    const messageInput = document.getElementById("messageInput");
+    const attachBtn = document.getElementById("attachBtn");
+    const mediaInput = document.getElementById("mediaInput");
+    const mainGrid = document.getElementById("mainGrid");
+    const backToUsersBtn = document.getElementById("backToUsersBtn");
+
+    const settingsModal = document.getElementById("settingsModal");
+    const openSettingsBtn = document.getElementById("openSettingsBtn");
+    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+    const dpFileInput = document.getElementById("dpFileInput");
+    const wallpaperFileInput = document.getElementById("wallpaperFileInput");
+    const clearWallpaperBtn = document.getElementById("clearWallpaperBtn");
+    const soundSelect = document.getElementById("soundSelect");
+    const testSoundBtn = document.getElementById("testSoundBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function getChatId(uid1, uid2) {
+      return [uid1, uid2].sort().join("_");
     }
-  }
 
-  sendBtn.addEventListener("click", sendMessage);
-
-  messageInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-
-  async function fetchMessages() {
-    try {
-      const res = await fetch(DB_URL);
-      const data = await res.json();
-
-      if (!data) return;
-
-      const entries = Object.entries(data).sort((a, b) => a[1].time - b[1].time);
-      let hasNew = false;
-
-      for (const [id, msg] of entries) {
-        if (!lastRenderedIds.has(id)) {
-          lastRenderedIds.add(id);
-          hasNew = true;
-
-          const msgDiv = document.createElement("div");
-          const isSent = msg.sender === currentUser;
-          msgDiv.className = `message ${isSent ? "sent" : "received"}`;
-
-          if (!isSent) {
-            const senderDiv = document.createElement("div");
-            senderDiv.className = "sender-name";
-            senderDiv.textContent = msg.sender;
-            msgDiv.appendChild(senderDiv);
-          }
-
-          const textDiv = document.createElement("div");
-          textDiv.textContent = msg.text;
-          msgDiv.appendChild(textDiv);
-
-          const timeDiv = document.createElement("div");
-          timeDiv.className = "msg-time";
-          timeDiv.textContent = formatTime(msg.time);
-          msgDiv.appendChild(timeDiv);
-
-          messagesBox.appendChild(msgDiv);
+    function playNotificationSound() {
+      const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime";
+      if (mode === "mute") return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = mode === "chime" ? "sine" : "triangle";
+        osc.frequency.setValueAtTime(mode === "chime" ? 660 : 440, ctx.currentTime);
+        if (mode === "chime") {
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
         }
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (_) {}
+    }
+
+    function applyLocalWallpaper() {
+      if (!currentUser || !selectedPeer) {
+        document.documentElement.style.setProperty("--chat-wallpaper", "none");
+        return;
+      }
+      const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
+      const savedWp = localStorage.getItem(key);
+      if (savedWp) {
+        document.documentElement.style.setProperty("--chat-wallpaper", `url("${savedWp}")`);
+      } else {
+        document.documentElement.style.setProperty("--chat-wallpaper", "none");
+      }
+    }
+
+    toggleAuthModeBtn.addEventListener("click", () => {
+      isRegisterMode = !isRegisterMode;
+      authError.textContent = "";
+      if (isRegisterMode) {
+        authTitle.textContent = "Create Account";
+        nameInput.style.display = "block";
+        authSubmitBtn.textContent = "Register";
+        toggleAuthModeBtn.textContent = "දැනටමත් ගිණුමක් තිබේද? Login වන්න";
+      } else {
+        authTitle.textContent = "Log In";
+        nameInput.style.display = "none";
+        authSubmitBtn.textContent = "ඇතුළු වන්න";
+        toggleAuthModeBtn.textContent = "අලුත් ගිණුමක් සාදන්න (Register)";
+      }
+    });
+
+    authSubmitBtn.addEventListener("click", async () => {
+      authError.textContent = "";
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const displayName = nameInput.value.trim();
+
+      if (!email || !password) {
+        authError.textContent = "Email සහ Password ඇතුළත් කරන්න.";
+        return;
       }
 
-      if (hasNew) {
-        messagesBox.scrollTop = messagesBox.scrollHeight;
+      try {
+        if (isRegisterMode) {
+          if (!displayName) {
+            authError.textContent = "කරුණාකර ඔබේ නම ඇතුළත් කරන්න.";
+            return;
+          }
+          const cred = await auth.createUserWithEmailAndPassword(email, password);
+          await db.ref(`users/${cred.user.uid}`).set({
+            uid: cred.user.uid,
+            name: displayName,
+            email: email,
+            dp: DEFAULT_DP,
+            updatedAt: Date.now()
+          });
+        } else {
+          await auth.signInWithEmailAndPassword(email, password);
+        }
+      } catch (err) {
+        authError.textContent = err.message;
       }
-    } catch (err) {
-      console.error("Error fetching messages:", err);
-    }
-  }
+    });
 
-  setInterval(() => {
-    if (currentUser) {
-      fetchMessages();
+    logoutBtn.addEventListener("click", () => {
+      if (messagesRef) messagesRef.off();
+      auth.signOut();
+    });
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        authScreen.classList.remove("active");
+        chatScreen.classList.add("active");
+
+        const savedSound = localStorage.getItem("chatSound") || "chime";
+        soundSelect.value = savedSound;
+
+        db.ref(`users/${user.uid}`).on("value", (snap) => {
+          const data = snap.val() || {};
+          myDisplayName.textContent = data.name || user.email;
+          myAvatar.src = data.dp || DEFAULT_DP;
+        });
+
+        db.ref("users").on("value", (snap) => {
+          allUsers = snap.val() || {};
+          renderUsersList();
+        });
+      } else {
+        currentUser = null;
+        selectedPeer = null;
+        chatScreen.classList.remove("active");
+        authScreen.classList.add("active");
+      }
+    });
+
+    function renderUsersList() {
+      const q = searchUsersInput.value.trim().toLowerCase();
+      usersList.innerHTML = "";
+
+      Object.values(allUsers).forEach((u) => {
+        if (!currentUser || u.uid === currentUser.uid) return;
+        const label = `${u.name || ""} ${u.email || ""}`.toLowerCase();
+        if (q && !label.includes(q)) return;
+
+        const item = document.createElement("div");
+        item.className = "user-item" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
+        item.innerHTML = `
+          <img class="avatar" src="${u.dp || DEFAULT_DP}" alt="DP" />
+          <div class="title-wrap">
+            <h4>${escapeHtml(u.name || u.email)}</h4>
+            <small>Private Chat</small>
+          </div>
+        `;
+        item.addEventListener("click", () => openChatWith(u));
+        usersList.appendChild(item);
+      });
     }
-  }, 1500);
-</script>
+
+    searchUsersInput.addEventListener("input", renderUsersList);
+
+    function openChatWith(peer) {
+      selectedPeer = peer;
+      activePeerLabel.textContent = peer.name || peer.email;
+      mainGrid.classList.add("chat-open");
+      if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
+      renderUsersList();
+      applyLocalWallpaper();
+
+      if (messagesRef) messagesRef.off();
+      messagesContainer.innerHTML = "";
+      isInitialLoad = true;
+
+      const chatId = getChatId(currentUser.uid, peer.uid);
+      messagesRef = db.ref(`chats/${chatId}/messages`).limitToLast(100);
+
+      messagesRef.once("value", () => {
+        isInitialLoad = false;
+      });
+
+      messagesRef.on("child_added", (snap) => {
+        const msg = snap.val();
+        if (!msg) return;
+        appendMessage(msg);
+        if (!isInitialLoad && msg.senderId !== currentUser.uid) {
+          playNotificationSound();
+        }
+      });
+    }
+
+    backToUsersBtn.addEventListener("click", () => {
+      mainGrid.classList.remove("chat-open");
+      backToUsersBtn.style.display = "none";
+    });
+
+    function appendMessage(msg) {
+      const emptyEl = messagesContainer.querySelector(".empty-chat");
+      if (emptyEl) emptyEl.remove();
+
+      const div = document.createElement("div");
+      const isMine = msg.senderId === currentUser.uid;
+      div.className = "msg " + (isMine ? "sent" : "recv");
+
+      let mediaHtml = "";
+      if (msg.mediaType === "image" && msg.mediaUrl) {
+        mediaHtml = `<img src="${escapeAttr(msg.mediaUrl)}" alt="Photo" />`;
+      } else if (msg.mediaType === "video" && msg.mediaUrl) {
+        mediaHtml = `<video controls src="${escapeAttr(msg.mediaUrl)}"></video>`;
+      }
+
+      const textHtml = msg.text ? `<div>${escapeHtml(msg.text)}</div>` : "";
+      const timeStr = msg.timestamp
+        ? new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        : "";
+
+      div.innerHTML = `${textHtml}${mediaHtml}<time>${timeStr}</time>`;
+      messagesContainer.appendChild(div);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    messageForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser || !selectedPeer) {
+        alert("කරුණාකර මුලින්ම කතා කිරීමට කෙනෙකු තෝරන්න.");
+        return;
+      }
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      await db.ref(`chats/${chatId}/messages`).push({
+        senderId: currentUser.uid,
+        receiverId: selectedPeer.uid,
+        text,
+        mediaType: null,
+        mediaUrl: null,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+      messageInput.value = "";
+    });
+
+    attachBtn.addEventListener("click", () => {
+      if (!selectedPeer) {
+        alert("කරුණාකර මුලින්ම Chat එකක් විවෘත කරන්න.");
+        return;
+      }
+      mediaInput.click();
+    });
+
+    mediaInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentUser || !selectedPeer) return;
+
+      if (!MEDIA_UPLOAD_URL || !MEDIA_UPLOAD_PRESET) {
+        alert("Photo/Video Upload කිරීමට MEDIA_UPLOAD_URL සහ MEDIA_UPLOAD_PRESET සකසන්න.");
+        mediaInput.value = "";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", MEDIA_UPLOAD_PRESET);
+
+      try {
+        attachBtn.textContent = "⏳";
+        const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: formData });
+        const data = await res.json();
+        if (!data.secure_url) throw new Error("Upload failed");
+
+        const mediaType = file.type.startsWith("video/") ? "video" : "image";
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        await db.ref(`chats/${chatId}/messages`).push({
+          senderId: currentUser.uid,
+          receiverId: selectedPeer.uid,
+          text: "",
+          mediaType,
+          mediaUrl: data.secure_url,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+      } catch (err) {
+        alert("Media Upload දෝෂයක්: " + err.message);
+      } finally {
+        attachBtn.textContent = "📎";
+        mediaInput.value = "";
+      }
+    });
+
+    // Settings Modal Handlers
+    openSettingsBtn.addEventListener("click", () => settingsModal.classList.add("active"));
+    closeSettingsBtn.addEventListener("click", () => settingsModal.classList.remove("active"));
+
+    dpFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentUser) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        await db.ref(`users/${currentUser.uid}/dp`).set(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    wallpaperFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentUser || !selectedPeer) {
+        alert("Wallpaper දැමීමට Chat එකක් විවෘත කර තිබිය යුතුය.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
+        localStorage.setItem(key, reader.result);
+        applyLocalWallpaper();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    clearWallpaperBtn.addEventListener("click", () => {
+      if (!currentUser || !selectedPeer) return;
+      const key = `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
+      localStorage.removeItem(key);
+      applyLocalWallpaper();
+    });
+
+    soundSelect.addEventListener("change", () => {
+      localStorage.setItem("chatSound", soundSelect.value);
+    });
+
+    testSoundBtn.addEventListener("click", playNotificationSound);
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(str) {
+      return String(str).replace(/"/g, "&quot;");
+    }
+  </script>
 </body>
 </html>
