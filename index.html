@@ -16,6 +16,7 @@
       --unread-badge-bg: #0d47a1;
       --unread-badge-text: #000000;
       --online-blue: #4fc3f7;
+      --typing-yellow: #fff176;
       --status-unseen: #4fc3f7;
       --status-seen: #6b7c85;
       --seen-blue: #53bdeb;
@@ -35,6 +36,15 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+      -webkit-touch-callout: default;
     }
 
     html, body {
@@ -45,7 +55,7 @@
       color: var(--text);
     }
 
-    /* App Live Wallpaper Layer */
+    /* Live Home Wallpapers */
     .app-live-bg {
       position: fixed;
       inset: 0;
@@ -54,26 +64,48 @@
       opacity: 0;
       transition: opacity 0.25s ease;
     }
-    .app-live-bg.active { opacity: 0.42; }
+    .app-live-bg.active { opacity: 0.45; }
     .app-live-bg.live-aurora {
-      background: radial-gradient(circle at 20% 25%, rgba(30, 136, 229, 0.45), transparent 55%),
-                  radial-gradient(circle at 80% 75%, rgba(0, 188, 212, 0.35), transparent 55%),
+      background: radial-gradient(circle at 20% 25%, rgba(30, 136, 229, 0.5), transparent 55%),
+                  radial-gradient(circle at 80% 75%, rgba(0, 188, 212, 0.38), transparent 55%),
                   #0b141a;
-      animation: auroraShift 9s infinite alternate ease-in-out;
+      animation: auroraShift 8s infinite alternate ease-in-out;
     }
     .app-live-bg.live-grid {
-      background-image: linear-gradient(rgba(66, 165, 245, 0.14) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(66, 165, 245, 0.14) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(66, 165, 245, 0.16) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(66, 165, 245, 0.16) 1px, transparent 1px);
       background-size: 28px 28px;
-      animation: gridDrift 7s infinite linear;
+      animation: gridDrift 6s infinite linear;
+    }
+    .app-live-bg.live-waves {
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(30, 136, 229, 0.12) 0px,
+        rgba(30, 136, 229, 0.12) 14px,
+        rgba(13, 71, 161, 0.18) 14px,
+        rgba(13, 71, 161, 0.18) 28px
+      );
+      background-size: 56px 56px;
+      animation: waveMove 5s infinite linear;
+    }
+    .app-live-bg.live-stars {
+      background-image: radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.45), transparent),
+                        radial-gradient(2px 2px at 90px 70px, rgba(79,195,247,0.5), transparent),
+                        radial-gradient(1.5px 1.5px at 150px 40px, rgba(255,255,255,0.35), transparent);
+      background-size: 180px 120px;
+      animation: gridDrift 12s infinite linear;
     }
     @keyframes auroraShift {
       0% { filter: hue-rotate(0deg) scale(1); }
-      100% { filter: hue-rotate(35deg) scale(1.06); }
+      100% { filter: hue-rotate(36deg) scale(1.06); }
     }
     @keyframes gridDrift {
       0% { background-position: 0 0, 0 0; }
       100% { background-position: 28px 28px, 28px 28px; }
+    }
+    @keyframes waveMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 56px 56px; }
     }
 
     .screen {
@@ -114,7 +146,7 @@
     .auth-box input:focus { border-color: var(--accent-bright); }
     .err { color: #ff7675; font-size: 12.5px; min-height: 16px; text-align: center; }
 
-    /* Fitted Animated Blue Buttons */
+    /* Fitted Animated Buttons */
     .btn {
       position: relative;
       overflow: hidden;
@@ -139,22 +171,22 @@
     }
     .btn:hover { filter: brightness(1.07); }
     .btn:active {
-      transform: scale(0.9) translateY(1px);
+      transform: scale(0.88) translateY(1px);
       box-shadow: 0 1px 5px var(--accent-glow);
     }
     .btn::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, transparent 65%);
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.55) 0%, transparent 65%);
       opacity: 0;
-      transform: scale(0.25);
+      transform: scale(0.2);
       transition: opacity 0.35s ease, transform 0.35s ease;
       pointer-events: none;
     }
     .btn:active::after {
       opacity: 1;
-      transform: scale(1.45);
+      transform: scale(1.5);
       transition: 0s;
     }
 
@@ -164,13 +196,18 @@
       border: 1px solid var(--panel-3);
       box-shadow: none;
     }
-    .btn.secondary:active { background: var(--panel-3); transform: scale(0.92); }
+    .btn.secondary:active { background: var(--panel-3); transform: scale(0.91); }
 
     .btn.danger {
-      background: rgba(239, 83, 80, 0.16);
+      background: rgba(239, 83, 80, 0.18);
       color: #ff8a80;
-      border: 1px solid rgba(239, 83, 80, 0.35);
+      border: 1px solid rgba(239, 83, 80, 0.38);
       box-shadow: none;
+    }
+    .btn.success {
+      background: #2e7d32;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.35);
     }
     .btn.small { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
     .btn.full { width: 100%; }
@@ -189,7 +226,7 @@
       font-size: 17px;
       transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.14s ease;
     }
-    .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
+    .icon-btn:active { background: var(--panel-2); transform: scale(0.84); }
     .icon-btn.recording {
       background: #d32f2f;
       color: #fff;
@@ -275,6 +312,7 @@
       text-overflow: ellipsis;
     }
     .status-line.is-online { color: var(--online-blue); font-weight: 600; }
+    .status-line.is-typing { color: var(--typing-yellow); font-weight: 700; }
     .mini-disc {
       width: 8px;
       height: 8px;
@@ -299,7 +337,7 @@
       width: 350px;
       max-width: 100%;
       height: 100%;
-      background: rgba(17, 27, 33, 0.9);
+      background: rgba(17, 27, 33, 0.88);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -353,6 +391,7 @@
     .row-meta { flex: 1; min-width: 0; }
     .row-name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-sub.is-typing { color: var(--typing-yellow); font-weight: 700; }
 
     .unread-badge {
       min-width: 22px;
@@ -455,24 +494,24 @@
       padding: 0;
     }
 
-    /* WhatsApp-style Settings Layout */
+    /* Settings */
     .settings-scroll { padding: 14px 12px 24px 12px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
     .profile-hero {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      padding: 12px 10px 6px 10px;
+      padding: 12px 10px 10px 10px;
       border-bottom: 1px solid var(--border);
     }
     .note-bubble {
       background: var(--panel-2);
       border: 1px solid var(--panel-3);
       border-radius: 14px;
-      padding: 6px 14px;
+      padding: 7px 14px;
       font-size: 12.5px;
       color: var(--text);
-      max-width: 260px;
+      max-width: 270px;
       text-align: center;
     }
     .hero-avatar {
@@ -530,22 +569,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       font-size: 13px;
-      padding: 4px 0;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
-    .custom-pick-list {
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 130px;
-      overflow-y: auto;
-      padding: 8px;
-      border-radius: 8px;
-      background: var(--panel);
-      border: 1px solid var(--panel-3);
+    .toggle-line input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-bright);
+      cursor: pointer;
     }
-    .custom-pick-list.open { display: flex; }
-    .pick-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
 
     /* Chat Area */
     .chat-panel {
@@ -649,7 +683,6 @@
       font-size: var(--msg-font-size);
       line-height: 1.38;
       box-shadow: 0 1px 2px rgba(0,0,0,0.35);
-      user-select: none;
     }
     .msg.sent { background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { background: var(--recv); border-top-left-radius: 2px; }
@@ -675,21 +708,35 @@
       box-shadow: none;
       padding: 2px;
     }
+
+    /* Emoji / Sticker Frame Shapes & Custom Color */
+    .sticker-frame {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border: 2px solid transparent;
+      transition: transform 0.16s ease;
+    }
+    .sticker-frame.shape-circle { border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .sticker-frame.shape-square { border-radius: 14px; background: rgba(255,255,255,0.06); }
+    .sticker-frame.shape-diamond { border-radius: 14px; transform: rotate(8deg); background: rgba(255,255,255,0.06); }
+    .sticker-frame.shape-diamond .sticker-glyph { transform: rotate(-8deg); }
+    .sticker-frame.shape-glow { border-radius: 50%; box-shadow: 0 0 16px currentColor; }
+
     .sticker-glyph {
-      font-size: 58px;
+      font-size: 56px;
       line-height: 1.05;
       display: inline-block;
       transform-origin: center center;
     }
 
-    /* Sticker Color Tones */
     .tone-gold { filter: sepia(0.55) saturate(1.6) hue-rotate(-10deg); }
     .tone-cyan { filter: hue-rotate(155deg) saturate(1.4); }
     .tone-rose { filter: hue-rotate(310deg) saturate(1.5); }
     .tone-emerald { filter: hue-rotate(95deg) saturate(1.4); }
     .tone-violet { filter: hue-rotate(245deg) saturate(1.45); }
 
-    /* Sticker Motion Actions */
     .sticker-anim-heart { animation: stickerPulse 1.15s infinite ease-in-out; }
     .sticker-anim-cry { animation: stickerCryShake 1.2s infinite ease-in-out; }
     .sticker-anim-laugh { animation: stickerLaughBounce 0.9s infinite ease-in-out; }
@@ -855,7 +902,8 @@
       padding: 5px 8px;
       background: var(--panel-2);
       border-radius: 8px;
-      font-size: 11.5px;
+      font-size: 11px;
+      flex-wrap: wrap;
     }
     .tone-chip {
       padding: 3px 7px;
@@ -948,7 +996,7 @@
     .dropdown-item:active, .dropdown-item:hover { background: var(--panel-3); }
     .dropdown-item.danger { color: #ff8a80; }
 
-    /* Modals (Backdrop dismiss on background click only) */
+    /* Modals */
     .modal {
       display: none;
       position: fixed;
@@ -965,7 +1013,7 @@
       border: 1px solid var(--panel-3);
       border-radius: 14px;
       width: 100%;
-      max-width: 375px;
+      max-width: 380px;
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -1141,7 +1189,8 @@
       <button class="dropdown-item" id="menuWallpaperBtn">Wallpaper</button>
       <button class="dropdown-item" id="menuFontSizeBtn">Font size</button>
       <button class="dropdown-item" id="menuLockChatBtn">Lock chat</button>
-      <button class="dropdown-item" id="menuClearChatBtn">Clear chat</button>
+      <button class="dropdown-item" id="menuClearChatBtn">Clear messages</button>
+      <button class="dropdown-item danger" id="menuDeleteChatBtn">Delete chat</button>
       <button class="dropdown-item danger" id="menuBlockBtn">Block</button>
     </div>
 
@@ -1169,7 +1218,7 @@
           <div class="scroll-list status-pad" id="statusFeedList" style="padding-top:0;"></div>
         </div>
 
-        <!-- Functional WhatsApp-Style Settings -->
+        <!-- Settings -->
         <div class="tab-pane" id="settingsTab">
           <div class="settings-scroll">
             <div class="profile-hero">
@@ -1244,37 +1293,40 @@
 
             <!-- Privacy -->
             <div class="setting-panel-detail setting-card" id="panelPrivacy">
-              <label>Profile Photo</label>
-              <select id="privacyDpSelect">
-                <option value="everyone">Everyone</option>
-                <option value="contacts">My contacts</option>
-                <option value="nobody">Nobody</option>
-              </select>
-
-              <label>Last Seen & Online</label>
+              <div class="toggle-line">
+                <span><strong>Last Seen & Online</strong> (On/Off)</span>
+                <input type="checkbox" id="toggleLastSeenEnabled" checked />
+              </div>
               <select id="privacyLastSeenSelect">
-                <option value="everyone">Everyone</option>
-                <option value="online_only">Online only</option>
-                <option value="last_seen_only">Last seen only</option>
-                <option value="contacts">My contacts</option>
-                <option value="nobody">Nobody</option>
+                <option value="everyone">Show to: Everyone</option>
+                <option value="contacts">Show to: My contacts</option>
+                <option value="nobody">Show to: Nobody</option>
               </select>
 
-              <label>Name & About Visibility</label>
+              <div class="toggle-line">
+                <span><strong>Profile Photo</strong> (On/Off)</span>
+                <input type="checkbox" id="toggleDpEnabled" checked />
+              </div>
+              <select id="privacyDpSelect">
+                <option value="everyone">Show to: Everyone</option>
+                <option value="contacts">Show to: My contacts</option>
+                <option value="nobody">Show to: Nobody</option>
+              </select>
+
+              <div class="toggle-line">
+                <span><strong>About & Name</strong> (On/Off)</span>
+                <input type="checkbox" id="toggleAboutEnabled" checked />
+              </div>
               <select id="privacyProfileFieldsSelect">
-                <option value="everyone">Everyone</option>
-                <option value="contacts">My contacts</option>
-                <option value="nobody">Nobody</option>
+                <option value="everyone">Show to: Everyone</option>
+                <option value="contacts">Show to: My contacts</option>
+                <option value="nobody">Show to: Nobody</option>
               </select>
 
-              <label>Status</label>
-              <select id="privacyStatusSelect">
-                <option value="everyone">Everyone</option>
-                <option value="contacts">My contacts</option>
-                <option value="selected">Only share with...</option>
-                <option value="nobody">Nobody</option>
-              </select>
-              <div class="custom-pick-list" id="statusSelectedUsersBox"></div>
+              <div class="toggle-line">
+                <span><strong>Status Updates</strong> (On/Off)</span>
+                <input type="checkbox" id="toggleStatusEnabled" checked />
+              </div>
 
               <label>Blocked users</label>
               <div id="blockedUsersListBox" style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:var(--muted);">No blocked users</div>
@@ -1311,6 +1363,8 @@
                 <option value="none">Off (Static)</option>
                 <option value="live-aurora">Live Aurora</option>
                 <option value="live-grid">Live Grid Pulse</option>
+                <option value="live-waves">Live Diagonal Waves</option>
+                <option value="live-stars">Live Starfield</option>
               </select>
 
               <div class="toggle-line">
@@ -1360,10 +1414,21 @@
 
           <div class="live-format-bar" id="liveFormatBar"></div>
 
-          <!-- Animated Stickers + Persistent Tone Picker -->
+          <!-- Emoji / Sticker Drawer with Custom Color & Shape Customization -->
           <div class="sticker-drawer" id="stickerDrawer">
             <div class="tone-picker-strip">
-              <span>Tone (hold emoji or pick):</span>
+              <span>Color:</span>
+              <input type="color" id="customEmojiColorPicker" value="#42a5f5" style="width:28px; height:22px; border:none; background:transparent; cursor:pointer;" />
+              <select id="emojiShapeSelect" style="width:auto; padding:3px 6px; font-size:11px; border-radius:6px; background:var(--panel); color:var(--text); border:1px solid var(--panel-3);">
+                <option value="shape-none">Shape: None</option>
+                <option value="shape-circle">Shape: Circle</option>
+                <option value="shape-square">Shape: Square</option>
+                <option value="shape-diamond">Shape: Diamond</option>
+                <option value="shape-glow">Shape: Glow</option>
+              </select>
+            </div>
+
+            <div class="tone-picker-strip">
               <div style="display:flex; gap:4px; flex-wrap:wrap;">
                 <button type="button" class="tone-chip active" data-tone="">Default</button>
                 <button type="button" class="tone-chip" data-tone="tone-gold">Warm</button>
@@ -1373,6 +1438,7 @@
                 <button type="button" class="tone-chip" data-tone="tone-violet">Violet</button>
               </div>
             </div>
+
             <div class="sticker-grid">
               <button type="button" class="sticker-pick-btn" data-sticker="❤️" data-anim="sticker-anim-heart">❤️</button>
               <button type="button" class="sticker-pick-btn" data-sticker="😢" data-anim="sticker-anim-cry">😢</button>
@@ -1415,13 +1481,20 @@
     </div>
   </section>
 
-  <!-- Call Modal -->
+  <!-- WebRTC Call Modal -->
   <div class="modal" id="callModal">
-    <div class="sheet" style="align-items:center; text-align:center; gap:14px; padding:24px 18px;">
+    <div class="sheet" style="align-items:center; text-align:center; gap:12px; padding:20px 16px;">
       <img id="callPeerDp" class="hero-avatar" src="" alt="" />
-      <h3 id="callPeerName">Calling...</h3>
-      <p id="callModeLabel">Voice Call • Ringing...</p>
-      <button class="btn danger" id="endCallBtn">End call</button>
+      <h3 id="callPeerName">Call</h3>
+      <p id="callStatusText">Connecting...</p>
+      <div style="display:flex; gap:8px; width:100%; justify-content:center; flex-wrap:wrap;">
+        <video id="remoteCallVideo" autoplay playsinline style="display:none; width:100%; max-height:170px; border-radius:10px; background:#000;"></video>
+        <audio id="remoteCallAudio" autoplay playsinline></audio>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:4px;">
+        <button class="btn success" id="acceptCallBtn" style="display:none;">Accept</button>
+        <button class="btn danger" id="endCallBtn">Hang up</button>
+      </div>
     </div>
   </div>
 
@@ -1443,8 +1516,9 @@
         <span>Chat lock</span>
         <button class="btn secondary small" id="toggleChatLockBtn">Lock</button>
       </div>
-      <button class="btn danger" id="infoBlockBtn">Block</button>
-      <button class="btn secondary" id="closeContactInfoBtn">Close</button>
+      <button class="btn danger small" id="infoDeleteChatBtn">Delete chat</button>
+      <button class="btn danger small" id="infoBlockBtn">Block</button>
+      <button class="btn secondary small" id="closeContactInfoBtn">Close</button>
     </div>
   </div>
 
@@ -1518,7 +1592,7 @@
     </div>
   </div>
 
-  <!-- Long-Press Message Action Modal -->
+  <!-- Message Action Modal (Only place Copy happens in app) -->
   <div class="modal" id="msgActionModal">
     <div class="sheet">
       <h3>Message</h3>
@@ -1577,6 +1651,14 @@
         <span id="statusPreviewText">Type status text</span>
       </div>
 
+      <select id="statusFontSelect">
+        <option value="'Segoe UI', Roboto, sans-serif">Font: Modern Sans</option>
+        <option value="Georgia, 'Times New Roman', serif">Font: Classic Serif</option>
+        <option value="'Courier New', monospace">Font: Typewriter Mono</option>
+        <option value="'Trebuchet MS', sans-serif">Font: Clean Bold</option>
+        <option value="cursive">Font: Script</option>
+      </select>
+
       <div class="color-palette" id="statusColorPalette">
         <button type="button" class="color-swatch selected" data-color="#0d47a1" style="background:#0d47a1;"></button>
         <button type="button" class="color-swatch" data-color="#1565c0" style="background:#1565c0;"></button>
@@ -1623,12 +1705,17 @@
       appId: "1:346627278467:web:3194f015fbcf7ba50cfdb6"
     };
 
-    const MEDIA_UPLOAD_URL = "";
-    const MEDIA_UPLOAD_PRESET = "";
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
+
+    // Block accidental/system copy outside the explicit chat Copy button
+    let allowExplicitChatCopy = false;
+    document.addEventListener("copy", (e) => {
+      if (!allowExplicitChatCopy) {
+        e.preventDefault();
+      }
+    });
 
     const DEFAULT_DP = "data:image/svg+xml;utf8," + encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
@@ -1668,6 +1755,7 @@
     let messagesRef = null;
     let allUsers = {};
     let allStatuses = {};
+    let typingMap = {};
     let unreadCounts = {};
     let isInitialLoad = true;
     let audioCtx = null;
@@ -1678,12 +1766,19 @@
     let pendingStatusVideo = "";
     let selectedStatusBg = "#0d47a1";
     let selectedStatusTextColor = "#ffffff";
+    let selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
     let lockModalMode = null;
     let pendingLockPeer = null;
+    let typingStopTimer = null;
 
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecordingVoice = false;
+
+    let pc = null;
+    let localStream = null;
+    let activeCallId = null;
+    let incomingCallData = null;
 
     const appLiveBg = document.getElementById("appLiveBg");
     const authScreen = document.getElementById("authScreen");
@@ -1712,7 +1807,10 @@
     const callModal = document.getElementById("callModal");
     const callPeerDp = document.getElementById("callPeerDp");
     const callPeerName = document.getElementById("callPeerName");
-    const callModeLabel = document.getElementById("callModeLabel");
+    const callStatusText = document.getElementById("callStatusText");
+    const remoteCallVideo = document.getElementById("remoteCallVideo");
+    const remoteCallAudio = document.getElementById("remoteCallAudio");
+    const acceptCallBtn = document.getElementById("acceptCallBtn");
     const endCallBtn = document.getElementById("endCallBtn");
 
     const menuSearchChatBtn = document.getElementById("menuSearchChatBtn");
@@ -1722,6 +1820,7 @@
     const menuFontSizeBtn = document.getElementById("menuFontSizeBtn");
     const menuLockChatBtn = document.getElementById("menuLockChatBtn");
     const menuClearChatBtn = document.getElementById("menuClearChatBtn");
+    const menuDeleteChatBtn = document.getElementById("menuDeleteChatBtn");
     const menuBlockBtn = document.getElementById("menuBlockBtn");
 
     const inChatSearchBar = document.getElementById("inChatSearchBar");
@@ -1756,11 +1855,14 @@
     const enableNotifBtn = document.getElementById("enableNotifBtn");
     const aboutInput = document.getElementById("aboutInput");
     const fontSizeSelect = document.getElementById("fontSizeSelect");
+
+    const toggleLastSeenEnabled = document.getElementById("toggleLastSeenEnabled");
+    const toggleDpEnabled = document.getElementById("toggleDpEnabled");
+    const toggleAboutEnabled = document.getElementById("toggleAboutEnabled");
+    const toggleStatusEnabled = document.getElementById("toggleStatusEnabled");
     const privacyLastSeenSelect = document.getElementById("privacyLastSeenSelect");
     const privacyDpSelect = document.getElementById("privacyDpSelect");
     const privacyProfileFieldsSelect = document.getElementById("privacyProfileFieldsSelect");
-    const privacyStatusSelect = document.getElementById("privacyStatusSelect");
-    const statusSelectedUsersBox = document.getElementById("statusSelectedUsersBox");
 
     const dpFileInput = document.getElementById("dpFileInput");
     const chooseDpBtn = document.getElementById("chooseDpBtn");
@@ -1773,6 +1875,8 @@
     const messagesContainer = document.getElementById("messagesContainer");
     const liveFormatBar = document.getElementById("liveFormatBar");
     const stickerDrawer = document.getElementById("stickerDrawer");
+    const customEmojiColorPicker = document.getElementById("customEmojiColorPicker");
+    const emojiShapeSelect = document.getElementById("emojiShapeSelect");
     const stickerToggleBtn = document.getElementById("stickerToggleBtn");
     const replyPreviewBar = document.getElementById("replyPreviewBar");
     const replyPreviewText = document.getElementById("replyPreviewText");
@@ -1792,6 +1896,7 @@
     const infoStatus = document.getElementById("infoStatus");
     const infoAbout = document.getElementById("infoAbout");
     const toggleChatLockBtn = document.getElementById("toggleChatLockBtn");
+    const infoDeleteChatBtn = document.getElementById("infoDeleteChatBtn");
     const infoBlockBtn = document.getElementById("infoBlockBtn");
     const closeContactInfoBtn = document.getElementById("closeContactInfoBtn");
 
@@ -1850,6 +1955,7 @@
     const openAddStatusBtn = document.getElementById("openAddStatusBtn");
     const statusPreviewBanner = document.getElementById("statusPreviewBanner");
     const statusPreviewText = document.getElementById("statusPreviewText");
+    const statusFontSelect = document.getElementById("statusFontSelect");
     const statusColorPalette = document.getElementById("statusColorPalette");
     const customStatusColorPicker = document.getElementById("customStatusColorPicker");
     const statusTextColorSelect = document.getElementById("statusTextColorSelect");
@@ -1860,35 +1966,40 @@
     const publishStatusBtn = document.getElementById("publishStatusBtn");
     const closeAddStatusBtn = document.getElementById("closeAddStatusBtn");
 
-    // Touching modal backdrop dismisses only that modal; clicking inside sheet only triggers its own actions
     document.querySelectorAll(".modal").forEach((m) => {
       m.addEventListener("click", (e) => {
-        if (e.target === m) m.classList.remove("active");
+        if (e.target === m && m.id !== "callModal") m.classList.remove("active");
       });
     });
 
-    function getCustomReactionEmoji() {
-      return localStorage.getItem("customQuickReaction") || "❤️";
-    }
+    function getCustomReactionEmoji() { return localStorage.getItem("customQuickReaction") || "❤️"; }
+    function setCustomReactionEmoji(em) { if (em && em.trim()) localStorage.setItem("customQuickReaction", em.trim()); }
 
-    function setCustomReactionEmoji(em) {
-      if (em && em.trim()) localStorage.setItem("customQuickReaction", em.trim());
-    }
-
-    function getSelectedEmojiTone() {
-      return localStorage.getItem("selectedEmojiTone") || "";
-    }
-
+    function getSelectedEmojiTone() { return localStorage.getItem("selectedEmojiTone") || ""; }
     function setSelectedEmojiTone(tone) {
       localStorage.setItem("selectedEmojiTone", tone || "");
       document.querySelectorAll(".tone-chip").forEach((c) => c.classList.toggle("active", (c.dataset.tone || "") === (tone || "")));
     }
 
+    function getCustomEmojiColor() { return localStorage.getItem("customEmojiColor") || "#42a5f5"; }
+    function setCustomEmojiColor(col) {
+      localStorage.setItem("customEmojiColor", col || "#42a5f5");
+      customEmojiColorPicker.value = col || "#42a5f5";
+    }
+
+    function getEmojiShape() { return localStorage.getItem("customEmojiShape") || "shape-none"; }
+    function setEmojiShape(sh) {
+      localStorage.setItem("customEmojiShape", sh || "shape-none");
+      emojiShapeSelect.value = sh || "shape-none";
+    }
+
+    customEmojiColorPicker.addEventListener("input", () => setCustomEmojiColor(customEmojiColorPicker.value));
+    emojiShapeSelect.addEventListener("change", () => setEmojiShape(emojiShapeSelect.value));
+
     document.querySelectorAll(".tone-chip").forEach((chip) => {
       chip.addEventListener("click", () => setSelectedEmojiTone(chip.dataset.tone || ""));
     });
 
-    // Long-press on sticker button cycles tone before sending
     stickerDrawer.querySelectorAll(".sticker-pick-btn").forEach((btn) => {
       let holdTimer = null;
       const tones = ["", "tone-gold", "tone-cyan", "tone-rose", "tone-emerald", "tone-violet"];
@@ -1899,7 +2010,7 @@
           const next = tones[(tones.indexOf(cur) + 1) % tones.length];
           setSelectedEmojiTone(next);
           btn.className = "sticker-pick-btn " + next;
-        }, 420);
+        }, 400);
       };
       const clearHold = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
       btn.addEventListener("touchstart", startHold, { passive: true });
@@ -1912,9 +2023,7 @@
       localStorage.setItem("homeLiveWallpaper", mode || "none");
       homeLiveWallpaperSelect.value = mode || "none";
       appLiveBg.className = "app-live-bg";
-      if (mode && mode !== "none") {
-        appLiveBg.classList.add("active", mode);
-      }
+      if (mode && mode !== "none") appLiveBg.classList.add("active", mode);
     }
 
     homeLiveWallpaperSelect.addEventListener("change", () => applyHomeLiveWallpaper(homeLiveWallpaperSelect.value));
@@ -1928,12 +2037,33 @@
       return s;
     }
 
+    function setTypingState(isTyping) {
+      if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
+      if (isTyping) {
+        ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {});
+        ref.onDisconnect().remove().catch(() => {});
+      } else {
+        ref.remove().catch(() => {});
+      }
+    }
+
     messageInput.addEventListener("input", () => {
       const val = messageInput.value;
       if (currentUser && selectedPeer) {
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
         localStorage.setItem(`draft_${currentUser.uid}_${chatId}`, val);
       }
+
+      if (val.trim().length > 0) {
+        setTypingState(true);
+        if (typingStopTimer) clearTimeout(typingStopTimer);
+        typingStopTimer = setTimeout(() => setTypingState(false), 1600);
+      } else {
+        setTypingState(false);
+      }
+
       if (!val.trim()) {
         liveFormatBar.classList.remove("active");
         liveFormatBar.innerHTML = "";
@@ -1942,6 +2072,15 @@
         liveFormatBar.innerHTML = `Preview: ${formatRichText(val)}`;
       }
     });
+
+    function isPeerTypingNow(peerUid) {
+      if (!currentUser || !peerUid || peerUid === "na_ai_assistant") return false;
+      if (isUserBlockedByMe(peerUid) || isMeBlockedByPeer(peerUid)) return false;
+      const chatId = getChatId(currentUser.uid, peerUid);
+      const tEntry = (typingMap[chatId] && typingMap[chatId][peerUid]) || null;
+      if (!tEntry || !tEntry.typing) return false;
+      return (Date.now() - (tEntry.updatedAt || 0)) < 3200;
+    }
 
     function isVibrateEnabled() {
       const saved = localStorage.getItem("chatVibrate");
@@ -1962,7 +2101,6 @@
       try { if ("vibrate" in navigator) navigator.vibrate([85, 45, 85]); } catch (_) {}
     }
 
-    // Settings accordion
     document.querySelectorAll(".wa-cat-row").forEach((row) => {
       row.addEventListener("click", () => {
         const targetId = row.dataset.panel;
@@ -1971,10 +2109,7 @@
         document.querySelectorAll(".setting-panel-detail").forEach((p) => p.classList.remove("open"));
         if (panel && !alreadyOpen) {
           panel.classList.add("open");
-          if (targetId === "panelPrivacy") {
-            renderSelectedStatusUsersPicker();
-            renderBlockedUsersList();
-          }
+          if (targetId === "panelPrivacy") renderBlockedUsersList();
           if (targetId === "panelNotifications") refreshNotifStatusLabel();
           if (targetId === "panelLists") renderStarredMessagesList();
         }
@@ -2027,10 +2162,7 @@
 
     function renderStarredMessagesList() {
       const list = getStarredList();
-      if (!list.length) {
-        starredMessagesBox.textContent = "No starred messages";
-        return;
-      }
+      if (!list.length) { starredMessagesBox.textContent = "No starred messages"; return; }
       starredMessagesBox.innerHTML = list.map((item) =>
         `<div style="background:var(--panel); padding:8px 10px; border-radius:8px; border:1px solid var(--panel-3);">
           <div style="color:var(--text);">${formatRichText(item.text)}</div>
@@ -2059,7 +2191,7 @@
       if (editMsgModal.classList.contains("active")) { editMsgModal.classList.remove("active"); return; }
       if (fontSizeModal.classList.contains("active")) { fontSizeModal.classList.remove("active"); return; }
       if (chatLockModal.classList.contains("active")) { chatLockModal.classList.remove("active"); return; }
-      if (callModal.classList.contains("active")) { callModal.classList.remove("active"); return; }
+      if (callModal.classList.contains("active")) { hangupCall(); return; }
       if (chatMoreMenu.classList.contains("open")) { chatMoreMenu.classList.remove("open"); return; }
       if (selectedPeer) { closeActiveChatToList(); return; }
       const activeTab = document.querySelector(".nav-tab.active");
@@ -2105,11 +2237,7 @@
         const url = URL.createObjectURL(file);
         const vid = document.createElement("video");
         vid.preload = "metadata";
-        vid.onloadedmetadata = () => {
-          const dur = vid.duration || 0;
-          URL.revokeObjectURL(url);
-          resolve(dur);
-        };
+        vid.onloadedmetadata = () => { const dur = vid.duration || 0; URL.revokeObjectURL(url); resolve(dur); };
         vid.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
         vid.src = url;
       });
@@ -2122,23 +2250,17 @@
         vid.preload = "auto";
         vid.muted = true;
         vid.playsInline = true;
-
         const capture = () => {
           try {
             const canvas = document.createElement("canvas");
             canvas.width = vid.videoWidth || 320;
             canvas.height = vid.videoHeight || 200;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+            canvas.getContext("2d").drawImage(vid, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
             URL.revokeObjectURL(url);
             resolve(dataUrl);
-          } catch (_) {
-            URL.revokeObjectURL(url);
-            resolve("");
-          }
+          } catch (_) { URL.revokeObjectURL(url); resolve(""); }
         };
-
         vid.onloadeddata = () => { vid.currentTime = Math.min(0.2, (vid.duration || 1) / 4); };
         vid.onseeked = capture;
         vid.onerror = () => { URL.revokeObjectURL(url); resolve(""); };
@@ -2152,12 +2274,12 @@
     }
 
     enableNotifBtn.addEventListener("click", async () => {
-      if (!("Notification" in window)) { alert("Notifications not supported."); return; }
+      if (!("Notification" in window)) return;
       try {
         const perm = await Notification.requestPermission();
         refreshNotifStatusLabel();
         if (perm === "granted") new Notification("WhatsApp", { body: "Notifications enabled" });
-      } catch (err) { alert(err.message); }
+      } catch (_) {}
     });
 
     function triggerSystemNotification(title, body) {
@@ -2198,12 +2320,10 @@
     });
 
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join("_"); }
-
     function formatClock(ts) {
       if (!ts) return "";
       return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
-
     function formatLastSeen(ts) {
       if (!ts) return "Last seen recently";
       const diffSec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
@@ -2278,10 +2398,11 @@
 
     function canSeeDp(targetUser) {
       if (!targetUser || !currentUser) return true;
-      if (targetUser.isAI) return true;
-      if (targetUser.uid === currentUser.uid) return true;
+      if (targetUser.isAI || targetUser.uid === currentUser.uid) return true;
       if (isUserBlockedByMe(targetUser.uid) || isMeBlockedByPeer(targetUser.uid)) return false;
-      const mode = (targetUser.privacy && targetUser.privacy.dp) || "everyone";
+      const priv = targetUser.privacy || {};
+      if (priv.dpEnabled === false) return false;
+      const mode = priv.dp || "everyone";
       if (mode === "nobody") return false;
       if (mode === "contacts") return !!(targetUser.contacts && targetUser.contacts[currentUser.uid]);
       return true;
@@ -2291,7 +2412,9 @@
       if (!targetUser || !currentUser) return true;
       if (targetUser.isAI || targetUser.uid === currentUser.uid) return true;
       if (isUserBlockedByMe(targetUser.uid) || isMeBlockedByPeer(targetUser.uid)) return false;
-      const mode = (targetUser.privacy && targetUser.privacy.profileFields) || "everyone";
+      const priv = targetUser.privacy || {};
+      if (priv.aboutEnabled === false) return false;
+      const mode = priv.profileFields || "everyone";
       if (mode === "nobody") return false;
       if (mode === "contacts") return !!(targetUser.contacts && targetUser.contacts[currentUser.uid]);
       return true;
@@ -2322,24 +2445,15 @@
       if (userObj.isAI) return { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" };
       if (isUserBlockedByMe(userObj.uid) || isMeBlockedByPeer(userObj.uid)) return { html: "", isOnline: false, plain: "" };
 
-      const mode = (userObj.privacy && userObj.privacy.lastSeen) || "everyone";
+      const priv = userObj.privacy || {};
+      if (priv.lastSeenEnabled === false) return { html: "", isOnline: false, plain: "" };
+      const mode = priv.lastSeen || "everyone";
       if (mode === "nobody") return { html: "", isOnline: false, plain: "" };
       if (mode === "contacts" && !(userObj.contacts && userObj.contacts[currentUser.uid])) {
         return { html: "", isOnline: false, plain: "" };
       }
 
-      const onlineNow = isActuallyOnline(userObj);
-      if (mode === "online_only") {
-        return onlineNow
-          ? { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" }
-          : { html: "", isOnline: false, plain: "" };
-      }
-      if (mode === "last_seen_only") {
-        const ls = formatLastSeen(userObj.lastSeen || userObj.lastPing);
-        return { html: `<span>${escapeHtml(ls)}</span>`, isOnline: false, plain: ls };
-      }
-
-      if (onlineNow) {
+      if (isActuallyOnline(userObj)) {
         return { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" };
       }
       const ls = formatLastSeen(userObj.lastSeen || userObj.lastPing);
@@ -2351,10 +2465,7 @@
       if (ownerUser.uid === currentUser.uid) return true;
       if (isUserBlockedByMe(ownerUser.uid) || isMeBlockedByPeer(ownerUser.uid)) return false;
       const priv = ownerUser.privacy || {};
-      const mode = priv.status || "everyone";
-      if (mode === "nobody") return false;
-      if (mode === "contacts") return !!(ownerUser.contacts && ownerUser.contacts[currentUser.uid]);
-      if (mode === "selected") return !!(priv.statusSelected && priv.statusSelected[currentUser.uid]);
+      if (priv.statusEnabled === false) return false;
       return true;
     }
 
@@ -2377,9 +2488,15 @@
 
         if (blockedMe || isMeBlockedByPeer(peer.uid)) {
           peerOnlineDisc.classList.remove("active");
-          headerStatus.classList.remove("is-online");
+          headerStatus.classList.remove("is-online", "is-typing");
           headerStatus.textContent = "";
+        } else if (isPeerTypingNow(peer.uid)) {
+          peerOnlineDisc.classList.remove("active");
+          headerStatus.classList.remove("is-online");
+          headerStatus.classList.add("is-typing");
+          headerStatus.textContent = "Typing...";
         } else {
+          headerStatus.classList.remove("is-typing");
           const p = getPresenceDisplay(peer);
           peerOnlineDisc.classList.toggle("active", p.isOnline);
           headerStatus.classList.toggle("is-online", p.isOnline);
@@ -2391,7 +2508,7 @@
         headerAvatarWrap.className = "avatar-wrap";
         headerTitle.textContent = "WhatsApp";
         peerOnlineDisc.classList.remove("active");
-        headerStatus.classList.remove("is-online");
+        headerStatus.classList.remove("is-online", "is-typing");
         headerStatus.textContent = me.about || "";
         voiceCallBtn.style.display = "none";
         videoCallBtn.style.display = "none";
@@ -2408,31 +2525,157 @@
       }
     }
 
-    function openCallSheet(mode) {
-      if (!selectedPeer || selectedPeer.isAI) return;
-      const peer = allUsers[selectedPeer.uid] || selectedPeer;
-      callPeerDp.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
-      callPeerName.textContent = getVisibleName(peer);
-      callModeLabel.textContent = mode === "video" ? "Video Call • Ringing..." : "Voice Call • Ringing...";
-      callModal.classList.add("active");
-      triggerMessageVibration();
-      pushNavState();
+    // Real WebRTC Signaling & Call Logic
+    function listenIncomingCalls(myUid) {
+      db.ref(`calls/${myUid}`).on("value", async (snap) => {
+        const data = snap.val();
+        if (!data) {
+          if (callModal.classList.contains("active") && !activeCallId) {
+            cleanupCallMediaOnly();
+            callModal.classList.remove("active");
+          }
+          return;
+        }
+
+        if (data.status === "ended" || data.status === "rejected") {
+          cleanupCallMediaOnly();
+          callModal.classList.remove("active");
+          activeCallId = null;
+          incomingCallData = null;
+          return;
+        }
+
+        if (data.status === "ringing" && data.fromUid && data.fromUid !== myUid) {
+          incomingCallData = data;
+          const caller = allUsers[data.fromUid] || { uid: data.fromUid, name: "Caller" };
+          callPeerDp.src = canSeeDp(caller) ? (caller.dp || DEFAULT_DP) : DEFAULT_DP;
+          callPeerName.textContent = getVisibleName(caller);
+          callStatusText.textContent = data.mode === "video" ? "Incoming Video Call..." : "Incoming Voice Call...";
+          acceptCallBtn.style.display = "inline-flex";
+          callModal.classList.add("active");
+          triggerMessageVibration();
+          playNotificationSound();
+        } else if (data.status === "answered" && data.answer && pc && activeCallId === data.callId) {
+          if (!pc.currentRemoteDescription) {
+            await pc.setRemoteDescription(new RTCSessionDescription(data.answer)).catch(() => {});
+            callStatusText.textContent = "Connected";
+          }
+        }
+
+        if (data.candidates) {
+          const candList = Object.values(data.candidates);
+          for (const c of candList) {
+            if (c && c.senderUid !== myUid && c.candidate && pc && pc.remoteDescription) {
+              await pc.addIceCandidate(new RTCIceCandidate(c.candidate)).catch(() => {});
+            }
+          }
+        }
+      });
     }
 
-    voiceCallBtn.addEventListener("click", () => openCallSheet("voice"));
-    videoCallBtn.addEventListener("click", () => openCallSheet("video"));
-    endCallBtn.addEventListener("click", () => callModal.classList.remove("active"));
+    function createPeerConnection(targetUid, callId, isVideo) {
+      const rtcConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+      const conn = new RTCPeerConnection(rtcConfig);
+      conn.onicecandidate = (ev) => {
+        if (ev.candidate && currentUser) {
+          db.ref(`calls/${targetUid}/candidates`).push({
+            senderUid: currentUser.uid,
+            callId,
+            candidate: ev.candidate.toJSON()
+          }).catch(() => {});
+        }
+      };
+      conn.ontrack = (ev) => {
+        const stream = ev.streams && ev.streams[0];
+        if (!stream) return;
+        if (isVideo) { remoteCallVideo.style.display = "block"; remoteCallVideo.srcObject = stream; }
+        else { remoteCallAudio.srcObject = stream; }
+        callStatusText.textContent = "Connected";
+      };
+      return conn;
+    }
+
+    async function startOutgoingCall(mode) {
+      if (!selectedPeer || selectedPeer.isAI || !currentUser) return;
+      const peer = allUsers[selectedPeer.uid] || selectedPeer;
+      const isVideo = mode === "video";
+      const callId = "call_" + Date.now();
+      activeCallId = callId;
+      callPeerDp.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
+      callPeerName.textContent = getVisibleName(peer);
+      callStatusText.textContent = isVideo ? "Calling video..." : "Calling...";
+      acceptCallBtn.style.display = "none";
+      remoteCallVideo.style.display = "none";
+      callModal.classList.add("active");
+      pushNavState();
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
+        pc = createPeerConnection(peer.uid, callId, isVideo);
+        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        await db.ref(`calls/${peer.uid}`).set({
+          callId, fromUid: currentUser.uid, toUid: peer.uid, mode, status: "ringing",
+          offer: { type: offer.type, sdp: offer.sdp }, updatedAt: Date.now()
+        });
+      } catch (err) {
+        callStatusText.textContent = "Call failed: " + err.message;
+      }
+    }
+
+    acceptCallBtn.addEventListener("click", async () => {
+      if (!incomingCallData || !currentUser) return;
+      const data = incomingCallData;
+      const isVideo = data.mode === "video";
+      activeCallId = data.callId;
+      acceptCallBtn.style.display = "none";
+      callStatusText.textContent = "Connecting...";
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
+        pc = createPeerConnection(data.fromUid, data.callId, isVideo);
+        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        await db.ref(`calls/${currentUser.uid}`).update({
+          status: "answered", answer: { type: answer.type, sdp: answer.sdp }
+        });
+      } catch (err) {
+        callStatusText.textContent = "Mic/Camera error: " + err.message;
+      }
+    });
+
+    function cleanupCallMediaOnly() {
+      if (pc) { try { pc.close(); } catch (_) {} pc = null; }
+      if (localStream) { localStream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} }); localStream = null; }
+      remoteCallVideo.srcObject = null;
+      remoteCallAudio.srcObject = null;
+      remoteCallVideo.style.display = "none";
+    }
+
+    async function hangupCall() {
+      cleanupCallMediaOnly();
+      callModal.classList.remove("active");
+      if (currentUser) {
+        await db.ref(`calls/${currentUser.uid}`).remove().catch(() => {});
+        if (selectedPeer && !selectedPeer.isAI) await db.ref(`calls/${selectedPeer.uid}/status`).set("ended").catch(() => {});
+        if (incomingCallData && incomingCallData.fromUid) await db.ref(`calls/${incomingCallData.fromUid}/status`).set("ended").catch(() => {});
+      }
+      activeCallId = null;
+      incomingCallData = null;
+    }
+
+    voiceCallBtn.addEventListener("click", () => startOutgoingCall("voice"));
+    videoCallBtn.addEventListener("click", () => startOutgoingCall("video"));
+    endCallBtn.addEventListener("click", hangupCall);
 
     function updateBlockedComposerState() {
       if (!selectedPeer || !currentUser) return;
-      if (selectedPeer.isAI) {
-        blockedBanner.classList.remove("active");
-        messageForm.classList.remove("hidden");
-        return;
-      }
+      if (selectedPeer.isAI) { blockedBanner.classList.remove("active"); messageForm.classList.remove("hidden"); return; }
       const blockedMe = isUserBlockedByMe(selectedPeer.uid);
       const blockedByPeer = isMeBlockedByPeer(selectedPeer.uid);
-
       if (blockedMe) {
         blockedBanner.classList.add("active");
         blockedBannerText.textContent = "Contact blocked";
@@ -2452,27 +2695,14 @@
     function setupPresence(uid) {
       const userRef = db.ref(`users/${uid}`);
       const connectedRef = db.ref(".info/connected");
-
-      const markOfflineNow = () => {
-        const now = Date.now();
-        userRef.update({ online: false, lastSeen: now, lastPing: now }).catch(() => {});
-      };
-
-      const markOnlineNow = () => {
-        if (!navigator.onLine || document.hidden) return;
-        userRef.update({ online: true, lastPing: Date.now() }).catch(() => {});
-      };
+      const markOfflineNow = () => { const now = Date.now(); userRef.update({ online: false, lastSeen: now, lastPing: now }).catch(() => {}); };
+      const markOnlineNow = () => { if (!navigator.onLine || document.hidden) return; userRef.update({ online: true, lastPing: Date.now() }).catch(() => {}); };
 
       connectedRef.on("value", (snap) => {
         if (snap.val() === true && navigator.onLine) {
           markOnlineNow();
-          userRef.onDisconnect().update({
-            online: false,
-            lastSeen: firebase.database.ServerValue.TIMESTAMP
-          });
-        } else {
-          markOfflineNow();
-        }
+          userRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+        } else { markOfflineNow(); }
       });
 
       window.addEventListener("offline", markOfflineNow);
@@ -2505,15 +2735,11 @@
               if (!m) return;
               if (m.deletedFor && m.deletedFor[myUid]) return;
               if (m.deletedForEveryone) return;
-              if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") {
-                count++;
-              }
+              if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") count++;
             });
             const prev = unreadCounts[otherUid] || 0;
             unreadCounts[otherUid] = count;
-            if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) {
-              triggerMessageVibration();
-            }
+            if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) triggerMessageVibration();
             renderUsersList();
           });
         });
@@ -2556,20 +2782,8 @@
       const isSeen = msg.status === "seen";
       const isDouble = isSeen || msg.status === "delivered" || (navigator.onLine && msg.sentOnline === true);
       const seenClass = isSeen ? " seen" : "";
-
-      if (isDouble) {
-        return `
-          <svg class="tick-svg${seenClass}" viewBox="0 0 24 16">
-            <path d="M2 8.5L6.5 13L15.5 3" />
-            <path d="M8.5 8.5L13 13L22 3" />
-          </svg>
-        `;
-      }
-      return `
-        <svg class="tick-svg" viewBox="0 0 20 16">
-          <path d="M4 8.5L8.5 13L17.5 3" />
-        </svg>
-      `;
+      if (isDouble) return `<svg class="tick-svg${seenClass}" viewBox="0 0 24 16"><path d="M2 8.5L6.5 13L15.5 3" /><path d="M8.5 8.5L13 13L22 3" /></svg>`;
+      return `<svg class="tick-svg" viewBox="0 0 20 16"><path d="M4 8.5L8.5 13L17.5 3" /></svg>`;
     }
 
     toggleAuthModeBtn.addEventListener("click", () => {
@@ -2600,15 +2814,9 @@
           if (!displayName) { authError.textContent = "Enter your name."; return; }
           const cred = await auth.createUserWithEmailAndPassword(email, password);
           await db.ref(`users/${cred.user.uid}`).set({
-            uid: cred.user.uid,
-            name: displayName,
-            email,
-            about: "Hey there! I am using WhatsApp",
-            dp: DEFAULT_DP,
-            online: true,
-            lastSeen: Date.now(),
-            lastPing: Date.now(),
-            privacy: { lastSeen: "everyone", dp: "everyone", profileFields: "everyone", status: "everyone", statusSelected: {} }
+            uid: cred.user.uid, name: displayName, email, about: "Hey there! I am using WhatsApp",
+            dp: DEFAULT_DP, online: true, lastSeen: Date.now(), lastPing: Date.now(),
+            privacy: { lastSeenEnabled: true, dpEnabled: true, aboutEnabled: true, statusEnabled: true, lastSeen: "everyone", dp: "everyone", profileFields: "everyone" }
           });
         } else {
           await auth.signInWithEmailAndPassword(email, password);
@@ -2618,6 +2826,7 @@
 
     async function performLogout() {
       localStorage.removeItem("hasActiveSession");
+      setTypingState(false);
       if (currentUser) await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() }).catch(() => {});
       if (messagesRef) messagesRef.off();
       auth.signOut();
@@ -2639,11 +2848,20 @@
         document.documentElement.style.setProperty("--msg-font-size", savedFont);
         setVibrateEnabled(isVibrateEnabled());
         setSelectedEmojiTone(getSelectedEmojiTone());
+        setCustomEmojiColor(getCustomEmojiColor());
+        setEmojiShape(getEmojiShape());
         applyHomeLiveWallpaper(localStorage.getItem("homeLiveWallpaper") || "none");
         refreshNotifStatusLabel();
         renderStarredMessagesList();
         setupPresence(user.uid);
         listenUnreadCounters(user.uid);
+        listenIncomingCalls(user.uid);
+
+        db.ref("typing").on("value", (snap) => {
+          typingMap = snap.val() || {};
+          renderUsersList();
+          updateTopHeader();
+        });
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
@@ -2679,12 +2897,15 @@
       accountUidText.textContent = `ID: ${currentUser.uid}`;
       if (document.activeElement !== accountNameInput) accountNameInput.value = me.name || "";
       if (document.activeElement !== aboutInput) aboutInput.value = me.about || "";
+
       const priv = me.privacy || {};
+      toggleLastSeenEnabled.checked = priv.lastSeenEnabled !== false;
+      toggleDpEnabled.checked = priv.dpEnabled !== false;
+      toggleAboutEnabled.checked = priv.aboutEnabled !== false;
+      toggleStatusEnabled.checked = priv.statusEnabled !== false;
       privacyLastSeenSelect.value = priv.lastSeen || "everyone";
       privacyDpSelect.value = priv.dp || "everyone";
       privacyProfileFieldsSelect.value = priv.profileFields || "everyone";
-      privacyStatusSelect.value = priv.status || "everyone";
-      statusSelectedUsersBox.classList.toggle("open", (priv.status || "everyone") === "selected");
     }
 
     function renderUsersList() {
@@ -2720,8 +2941,12 @@
         const isLocked = !!getChatLockPin(u.uid);
         const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
         const ringClass = getUserStatusRingClass(u.uid);
+        const typingNow = isPeerTypingNow(u.uid);
         const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: "", isOnline: false, plain: "" };
         const badgeNum = (!selectedPeer || selectedPeer.uid !== u.uid) ? (unreadCounts[u.uid] || 0) : 0;
+
+        const subText = isBlocked ? "Blocked" : (typingNow ? "Typing..." : (p.plain || visAbout));
+        const subClass = "row-sub" + (typingNow ? " is-typing" : (p.isOnline ? " status-line is-online" : ""));
 
         const row = document.createElement("div");
         row.className = "list-row" + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "");
@@ -2732,7 +2957,7 @@
           </div>
           <div class="row-meta">
             <div class="row-name">${escapeHtml(visName)} ${isLocked ? "🔒" : ""}</div>
-            <div class="row-sub ${p.isOnline ? "status-line is-online" : ""}">${isBlocked ? "Blocked" : (p.plain || visAbout)}</div>
+            <div class="${subClass}">${escapeHtml(subText)}</div>
           </div>
           ${badgeNum > 0 ? `<span class="unread-badge">${badgeNum}</span>` : ""}
         `;
@@ -2802,86 +3027,51 @@
       chatLockModal.classList.remove("active");
     });
 
-    // NA Ai Photo & Video Generator helpers
     function generateAiPhotoDataUrl(promptText) {
       const c = document.createElement("canvas");
-      c.width = 512;
-      c.height = 360;
+      c.width = 512; c.height = 360;
       const ctx = c.getContext("2d");
       const grad = ctx.createLinearGradient(0, 0, 512, 360);
-      grad.addColorStop(0, "#0d47a1");
-      grad.addColorStop(0.55, "#1976d2");
-      grad.addColorStop(1, "#00acc1");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 512, 360);
-
+      grad.addColorStop(0, "#0d47a1"); grad.addColorStop(0.55, "#1976d2"); grad.addColorStop(1, "#00acc1");
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 512, 360);
       ctx.fillStyle = "rgba(255,255,255,0.12)";
-      ctx.beginPath();
-      ctx.arc(390, 110, 85, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 22px sans-serif";
-      ctx.fillText("NA Ai Studio", 26, 44);
-      ctx.font = "16px sans-serif";
-      ctx.fillStyle = "rgba(255,255,255,0.9)";
-      ctx.fillText(promptText.slice(0, 44), 26, 318);
+      ctx.beginPath(); ctx.arc(390, 110, 85, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffffff"; ctx.font = "bold 22px sans-serif"; ctx.fillText("NA Ai Photo", 26, 44);
+      ctx.font = "16px sans-serif"; ctx.fillText(promptText.slice(0, 44), 26, 318);
       return c.toDataURL("image/png");
     }
 
     function generateAiVideoPreviewDataUrl(promptText) {
-      // Generates a short animated WebM if supported, otherwise high-res frame card
       const c = document.createElement("canvas");
-      c.width = 480;
-      c.height = 320;
+      c.width = 480; c.height = 320;
       const ctx = c.getContext("2d");
-      ctx.fillStyle = "#0b141a";
-      ctx.fillRect(0, 0, 480, 320);
-      ctx.fillStyle = "#42a5f5";
-      ctx.font = "bold 22px sans-serif";
-      ctx.fillText("NA Ai Video Clip", 24, 42);
-      ctx.fillStyle = "#e9edef";
-      ctx.font = "15px sans-serif";
-      ctx.fillText(promptText.slice(0, 46), 24, 282);
+      ctx.fillStyle = "#0b141a"; ctx.fillRect(0, 0, 480, 320);
+      ctx.fillStyle = "#42a5f5"; ctx.font = "bold 22px sans-serif"; ctx.fillText("NA Ai Video Clip", 24, 42);
+      ctx.fillStyle = "#e9edef"; ctx.font = "15px sans-serif"; ctx.fillText(promptText.slice(0, 46), 24, 282);
       return c.toDataURL("image/jpeg", 0.85);
     }
 
     function buildNaAiResponse(promptText) {
       const trimmed = promptText.trim();
       const low = trimmed.toLowerCase();
-
       if (low.startsWith("photo:") || low.startsWith("image:")) {
-        const q = trimmed.replace(/^(photo:|image:)/i, "").trim() || "Abstract blue horizon";
-        return {
-          text: `**NA Ai Photo:** *${q}*`,
-          mediaType: "image",
-          mediaUrl: generateAiPhotoDataUrl(q)
-        };
+        const q = trimmed.replace(/^(photo:|image:)/i, "").trim() || "Blue horizon";
+        return { text: `**NA Ai Photo:** *${q}*`, mediaType: "image", mediaUrl: generateAiPhotoDataUrl(q) };
       }
-
       if (low.startsWith("video:")) {
         const q = trimmed.replace(/^video:/i, "").trim() || "Motion scene";
-        return {
-          text: `**NA Ai Video Preview:** *${q}*`,
-          mediaType: "image",
-          mediaUrl: generateAiVideoPreviewDataUrl(q)
-        };
+        return { text: `**NA Ai Video:** *${q}*`, mediaType: "image", mediaUrl: generateAiVideoPreviewDataUrl(q) };
       }
-
       if (low.startsWith("translate:")) {
         const body = trimmed.replace(/^translate:/i, "").trim();
-        return {
-          text: `**NA Ai Translate:** "${body}" → *(Translation ready: ${body})*`
-        };
+        return { text: `**NA Ai Translate:** "${body}" → **${body}**` };
       }
-
-      return {
-        text: `**NA Ai:** *"${trimmed}"*\nTry prefixes like \`photo: sunset beach\`, \`video: neon waves\`, or \`translate: Good morning\`!`
-      };
+      return { text: `**NA Ai:** *"${trimmed}"*\nTry \`photo: ...\`, \`video: ...\`, or \`translate: ...\`.` };
     }
 
     function openChatWith(peer) {
       unlockAudio();
+      setTypingState(false);
       selectedPeer = peer;
       unreadCounts[peer.uid] = 0;
       replyToMsg = null;
@@ -2902,21 +3092,16 @@
         liveFormatBar.innerHTML = `Preview: ${formatRichText(draft)}`;
       }
 
-      if (!peer.isAI) {
-        db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true).catch(() => {});
-      }
+      if (!peer.isAI) db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).set(true).catch(() => {});
 
       db.ref(`chats/${chatId}/pinned`).on("value", (snap) => {
         const pData = snap.val();
-        if (pData && pData.text) {
-          pinnedBannerText.textContent = pData.text;
-          pinnedBanner.classList.add("active");
-        } else {
-          pinnedBanner.classList.remove("active");
-        }
+        if (pData && pData.text) { pinnedBannerText.textContent = pData.text; pinnedBanner.classList.add("active"); }
+        else { pinnedBanner.classList.remove("active"); }
       });
 
       unpinMsgBtn.onclick = () => db.ref(`chats/${chatId}/pinned`).remove().catch(() => {});
+      cancelReplyBtn.onclick = () => { replyToMsg = null; replyPreviewBar.classList.remove("active"); };
 
       updateTopHeader();
       renderUsersList();
@@ -2932,12 +3117,9 @@
         try { aiMsgs = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
         if (!aiMsgs.length) {
           aiMsgs = [{
-            id: "ai_welcome_1",
-            senderId: "na_ai_assistant",
-            receiverId: currentUser.uid,
+            id: "ai_welcome_1", senderId: "na_ai_assistant", receiverId: currentUser.uid,
             text: "Hi! I'm **NA Ai** ✨. Chat, \`translate: ...\`, \`photo: ...\`, or \`video: ...\`!",
-            status: "seen",
-            timestamp: Date.now()
+            status: "seen", timestamp: Date.now()
           }];
           localStorage.setItem(aiHistoryKey, JSON.stringify(aiMsgs));
         }
@@ -2974,6 +3156,7 @@
     }
 
     function closeActiveChatToList() {
+      setTypingState(false);
       selectedPeer = null;
       replyToMsg = null;
       replyPreviewBar.classList.remove("active");
@@ -2989,11 +3172,7 @@
     }
 
     backToUsersBtn.addEventListener("click", closeActiveChatToList);
-
-    chatMoreBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      chatMoreMenu.classList.toggle("open");
-    });
+    chatMoreBtn.addEventListener("click", (e) => { e.stopPropagation(); chatMoreMenu.classList.toggle("open"); });
 
     menuSearchChatBtn.addEventListener("click", () => {
       chatMoreMenu.classList.remove("open");
@@ -3012,8 +3191,7 @@
     function filterMessagesInChat(q) {
       messagesContainer.querySelectorAll(".msg-swipe-wrap").forEach((wrap) => {
         if (!q) { wrap.style.display = ""; return; }
-        const txt = (wrap.textContent || "").toLowerCase();
-        wrap.style.display = txt.includes(q) ? "" : "none";
+        wrap.style.display = (wrap.textContent || "").toLowerCase().includes(q) ? "" : "none";
       });
     }
 
@@ -3055,10 +3233,8 @@
     menuLockChatBtn.addEventListener("click", () => {
       chatMoreMenu.classList.remove("open");
       if (!selectedPeer || selectedPeer.isAI) return;
-      if (getChatLockPin(selectedPeer.uid)) {
-        setChatLockPin(selectedPeer.uid, null);
-        renderUsersList();
-      } else {
+      if (getChatLockPin(selectedPeer.uid)) { setChatLockPin(selectedPeer.uid, null); renderUsersList(); }
+      else {
         lockModalMode = "set";
         chatLockModalTitle.textContent = "Lock chat";
         chatLockModalDesc.textContent = "Enter passcode";
@@ -3071,15 +3247,30 @@
     menuClearChatBtn.addEventListener("click", async () => {
       chatMoreMenu.classList.remove("open");
       if (!currentUser || !selectedPeer) return;
-      if (selectedPeer.isAI) {
-        localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
-        messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`;
-        return;
-      }
+      if (selectedPeer.isAI) { localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`); messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`; return; }
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       await db.ref(`chats/${chatId}/messages`).remove();
       messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`;
     });
+
+    async function deleteEntireChat(peer) {
+      if (!currentUser || !peer) return;
+      if (peer.isAI) {
+        localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
+      } else {
+        const chatId = getChatId(currentUser.uid, peer.uid);
+        await db.ref(`chats/${chatId}`).remove().catch(() => {});
+        await db.ref(`typing/${chatId}`).remove().catch(() => {});
+        await db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).remove().catch(() => {});
+      }
+      setChatLockPin(peer.uid, null);
+      unreadCounts[peer.uid] = 0;
+      if (selectedPeer && selectedPeer.uid === peer.uid) closeActiveChatToList();
+      renderUsersList();
+    }
+
+    menuDeleteChatBtn.addEventListener("click", async () => { chatMoreMenu.classList.remove("open"); if (selectedPeer) await deleteEntireChat(selectedPeer); });
+    infoDeleteChatBtn.addEventListener("click", async () => { contactInfoModal.classList.remove("active"); if (selectedPeer) await deleteEntireChat(selectedPeer); });
 
     menuBlockBtn.addEventListener("click", async () => {
       chatMoreMenu.classList.remove("open");
@@ -3098,7 +3289,6 @@
       infoName.textContent = getVisibleName(peer);
       infoStatus.textContent = p.plain;
       infoAbout.textContent = getVisibleAbout(peer);
-
       toggleChatLockBtn.textContent = getChatLockPin(peer.uid) ? "Unlock" : "Lock";
       infoBlockBtn.textContent = isUserBlockedByMe(peer.uid) ? "Unblock" : "Block";
       contactInfoModal.classList.add("active");
@@ -3140,33 +3330,18 @@
       renderUsersList();
     });
 
-    // Swipe right on message to reply
     function attachSwipeToReply(wrapEl, msg) {
-      let startX = 0;
-      let startY = 0;
-      let dx = 0;
-      let swiping = false;
-
+      let startX = 0, startY = 0, dx = 0, swiping = false;
       wrapEl.addEventListener("touchstart", (e) => {
         if (!e.touches || !e.touches[0]) return;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        dx = 0;
-        swiping = true;
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY; dx = 0; swiping = true;
       }, { passive: true });
-
       wrapEl.addEventListener("touchmove", (e) => {
         if (!swiping || !e.touches || !e.touches[0]) return;
-        const curX = e.touches[0].clientX;
-        const curY = e.touches[0].clientY;
-        const diffX = curX - startX;
-        const diffY = Math.abs(curY - startY);
-        if (diffX > 8 && diffX > diffY) {
-          dx = Math.min(72, diffX);
-          wrapEl.style.transform = `translateX(${dx}px)`;
-        }
+        const diffX = e.touches[0].clientX - startX;
+        const diffY = Math.abs(e.touches[0].clientY - startY);
+        if (diffX > 8 && diffX > diffY) { dx = Math.min(72, diffX); wrapEl.style.transform = `translateX(${dx}px)`; }
       }, { passive: true });
-
       const finishSwipe = () => {
         if (!swiping) return;
         swiping = false;
@@ -3179,7 +3354,6 @@
           messageInput.focus();
         }
       };
-
       wrapEl.addEventListener("touchend", finishSwipe);
       wrapEl.addEventListener("touchcancel", finishSwipe);
     }
@@ -3197,7 +3371,6 @@
       el.addEventListener("contextmenu", (e) => { e.preventDefault(); handler(); });
     }
 
-    // Double-tap on message toggles custom quick reaction
     async function handleDoubleTapReaction(msgId, msg) {
       if (!currentUser || !selectedPeer) return;
       const quickEmoji = getCustomReactionEmoji();
@@ -3236,7 +3409,12 @@
       } else if (isSticker) {
         const animCls = msg.stickerAnim ? ` ${escapeAttr(msg.stickerAnim)}` : "";
         const toneCls = msg.stickerTone ? ` ${escapeAttr(msg.stickerTone)}` : "";
-        bodyHtml = `<span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span>`;
+        const shapeCls = msg.stickerShape ? ` ${escapeAttr(msg.stickerShape)}` : " shape-none";
+        const customCol = msg.stickerColor || "#42a5f5";
+        const frameStyle = msg.stickerShape && msg.stickerShape !== "shape-none"
+          ? `border-color:${escapeAttr(customCol)}; color:${escapeAttr(customCol)};`
+          : `color:${escapeAttr(customCol)};`;
+        bodyHtml = `<span class="sticker-frame${shapeCls}" style="${frameStyle}"><span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span></span>`;
       } else {
         const quoteHtml = msg.replyTo ? `<div class="reply-quote">${formatRichText(msg.replyTo)}</div>` : "";
         let mediaHtml = "";
@@ -3280,20 +3458,10 @@
       const bubbleEl = wrap.firstElementChild;
 
       const photoEl = bubbleEl.querySelector("img.chat-photo");
-      if (photoEl && msg.mediaUrl) {
-        photoEl.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          openFullPhoto(msg.mediaUrl);
-        });
-      }
+      if (photoEl && msg.mediaUrl) photoEl.addEventListener("click", (ev) => { ev.stopPropagation(); openFullPhoto(msg.mediaUrl); });
 
       const vidCard = bubbleEl.querySelector(".video-thumb-card");
-      if (vidCard && msg.mediaUrl) {
-        vidCard.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          openFullVideo(msg.mediaUrl);
-        });
-      }
+      if (vidCard && msg.mediaUrl) vidCard.addEventListener("click", (ev) => { ev.stopPropagation(); openFullVideo(msg.mediaUrl); });
 
       if (!isDeletedEveryone) {
         attachSwipeToReply(wrap, msg);
@@ -3301,12 +3469,8 @@
         let lastTap = 0;
         bubbleEl.addEventListener("click", () => {
           const now = Date.now();
-          if (now - lastTap < 300) {
-            lastTap = 0;
-            handleDoubleTapReaction(msgId, msg);
-          } else {
-            lastTap = now;
-          }
+          if (now - lastTap < 300) { lastTap = 0; handleDoubleTapReaction(msgId, msg); }
+          else { lastTap = now; }
         });
       }
 
@@ -3317,11 +3481,8 @@
       activeMsgTarget = { msgId, msg };
       customReactionInput.value = getCustomReactionEmoji();
       const isMine = msg.senderId === currentUser.uid;
-
       if (isMine) {
-        msgSeenInfoText.textContent = msg.seenAt
-          ? `Seen: ${formatClock(msg.seenAt)}`
-          : (msg.status === "seen" ? "Seen" : "Sent");
+        msgSeenInfoText.textContent = msg.seenAt ? `Seen: ${formatClock(msg.seenAt)}` : (msg.status === "seen" ? "Seen" : "Sent");
         msgEditBtn.style.display = msg.text ? "inline-flex" : "none";
         msgDeleteEveryoneBtn.style.display = "inline-flex";
       } else {
@@ -3350,8 +3511,7 @@
         if (!activeMsgTarget) return;
         const chosen = btn.dataset.react;
         setCustomReactionEmoji(chosen);
-        const cur = activeMsgTarget.msg.reaction;
-        const nextVal = cur === chosen ? null : chosen;
+        const nextVal = activeMsgTarget.msg.reaction === chosen ? null : chosen;
         if (selectedPeer && !selectedPeer.isAI) {
           const chatId = getChatId(currentUser.uid, selectedPeer.uid);
           const ref = db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}/reaction`);
@@ -3375,17 +3535,12 @@
           const targetChatId = getChatId(currentUser.uid, u.uid);
           const m = activeMsgTarget.msg;
           await db.ref(`chats/${targetChatId}/messages`).push({
-            senderId: currentUser.uid,
-            receiverId: u.uid,
+            senderId: currentUser.uid, receiverId: u.uid,
             text: m.text ? `↪ ${m.text}` : "",
-            sticker: m.sticker || "",
-            stickerAnim: m.stickerAnim || "",
-            stickerTone: m.stickerTone || "",
-            mediaType: m.mediaType || null,
-            mediaUrl: m.mediaUrl || null,
-            thumbUrl: m.thumbUrl || null,
-            sentOnline: !!navigator.onLine,
-            status: isActuallyOnline(u) ? "delivered" : "sent",
+            sticker: m.sticker || "", stickerAnim: m.stickerAnim || "",
+            stickerTone: m.stickerTone || "", stickerColor: m.stickerColor || "", stickerShape: m.stickerShape || "",
+            mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null, thumbUrl: m.thumbUrl || null,
+            sentOnline: !!navigator.onLine, status: isActuallyOnline(u) ? "delivered" : "sent",
             timestamp: firebase.database.ServerValue.TIMESTAMP
           });
           forwardModal.classList.remove("active");
@@ -3403,10 +3558,7 @@
     msgPinBtn.addEventListener("click", async () => {
       if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-      await db.ref(`chats/${chatId}/pinned`).set({
-        text: activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "[Media]",
-        ts: Date.now()
-      });
+      await db.ref(`chats/${chatId}/pinned`).set({ text: activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "[Media]", ts: Date.now() });
       msgActionModal.classList.remove("active");
       activeMsgTarget = null;
     });
@@ -3418,18 +3570,29 @@
       activeMsgTarget = null;
     });
 
+    // Explicit Copy button inside Message Action Modal only
     msgCopyBtn.addEventListener("click", () => {
       if (!activeMsgTarget) return;
       const t = activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "";
-      if (t && navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
+      if (t) {
+        allowExplicitChatCopy = true;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(t).catch(() => {});
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = t;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        setTimeout(() => { allowExplicitChatCopy = false; }, 120);
+      }
       msgActionModal.classList.remove("active");
       activeMsgTarget = null;
     });
 
-    closeMsgModalBtn.addEventListener("click", () => {
-      msgActionModal.classList.remove("active");
-      activeMsgTarget = null;
-    });
+    closeMsgModalBtn.addEventListener("click", () => { msgActionModal.classList.remove("active"); activeMsgTarget = null; });
 
     msgEditBtn.addEventListener("click", () => {
       if (!activeMsgTarget) return;
@@ -3462,23 +3625,14 @@
       if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       await db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}`).update({
-        deletedForEveryone: true,
-        text: "",
-        sticker: "",
-        stickerAnim: "",
-        stickerTone: "",
-        mediaUrl: null,
-        mediaType: null,
-        thumbUrl: null
+        deletedForEveryone: true, text: "", sticker: "", stickerAnim: "", stickerTone: "",
+        stickerColor: "", stickerShape: "", mediaUrl: null, mediaType: null, thumbUrl: null
       });
       msgActionModal.classList.remove("active");
       activeMsgTarget = null;
     });
 
-    stickerToggleBtn.addEventListener("click", () => {
-      if (!selectedPeer) return;
-      stickerDrawer.classList.toggle("open");
-    });
+    stickerToggleBtn.addEventListener("click", () => { if (selectedPeer) stickerDrawer.classList.toggle("open"); });
 
     stickerDrawer.querySelectorAll("[data-sticker]").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -3486,11 +3640,13 @@
         const stGlyph = btn.dataset.sticker;
         const stAnim = btn.dataset.anim || "";
         const stTone = getSelectedEmojiTone();
+        const stColor = getCustomEmojiColor();
+        const stShape = getEmojiShape();
         stickerDrawer.classList.remove("open");
 
         if (selectedPeer.isAI) {
           const id = "ai_" + Date.now();
-          const m = { id, senderId: currentUser.uid, receiverId: "na_ai_assistant", sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, status: "seen", timestamp: Date.now() };
+          const m = { id, senderId: currentUser.uid, receiverId: "na_ai_assistant", sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape, status: "seen", timestamp: Date.now() };
           renderOrUpdateMessage(id, m);
           const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
           const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
@@ -3502,15 +3658,9 @@
         const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
         const chatId = getChatId(currentUser.uid, selectedPeer.uid);
         await db.ref(`chats/${chatId}/messages`).push({
-          senderId: currentUser.uid,
-          receiverId: selectedPeer.uid,
-          text: "",
-          sticker: stGlyph,
-          stickerAnim: stAnim,
-          stickerTone: stTone,
-          mediaType: null,
-          mediaUrl: null,
-          sentOnline: !!navigator.onLine,
+          senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+          sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape,
+          mediaType: null, mediaUrl: null, sentOnline: !!navigator.onLine,
           status: isActuallyOnline(peerLive) ? "delivered" : "sent",
           timestamp: firebase.database.ServerValue.TIMESTAMP
         });
@@ -3520,6 +3670,7 @@
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       unlockAudio();
+      setTypingState(false);
       if (!currentUser || !selectedPeer) return;
       if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
 
@@ -3544,16 +3695,7 @@
 
         setTimeout(() => {
           const aiRes = buildNaAiResponse(text);
-          const bMsg = {
-            id: "b_" + Date.now(),
-            senderId: "na_ai_assistant",
-            receiverId: currentUser.uid,
-            text: aiRes.text,
-            mediaType: aiRes.mediaType || null,
-            mediaUrl: aiRes.mediaUrl || null,
-            status: "seen",
-            timestamp: Date.now()
-          };
+          const bMsg = { id: "b_" + Date.now(), senderId: "na_ai_assistant", receiverId: currentUser.uid, text: aiRes.text, mediaType: aiRes.mediaType || null, mediaUrl: aiRes.mediaUrl || null, status: "seen", timestamp: Date.now() };
           renderOrUpdateMessage(bMsg.id, bMsg);
           arr.push(bMsg);
           localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
@@ -3562,46 +3704,22 @@
       }
 
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-      const onlineNow = !!navigator.onLine;
-      const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent";
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
 
       await db.ref(`chats/${chatId}/messages`).push({
-        senderId: currentUser.uid,
-        receiverId: selectedPeer.uid,
-        text,
-        replyTo: quoteText,
-        mediaType: null,
-        mediaUrl: null,
-        sentOnline: onlineNow,
-        status: initialStatus,
+        senderId: currentUser.uid, receiverId: selectedPeer.uid, text, replyTo: quoteText,
+        mediaType: null, mediaUrl: null, sentOnline: !!navigator.onLine,
+        status: isActuallyOnline(peerLive) ? "delivered" : "sent",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       });
     });
 
-    attachBtn.addEventListener("click", () => {
-      if (!selectedPeer) return;
-      mediaInput.click();
-    });
-
-    async function uploadMediaFile(file) {
-      if (MEDIA_UPLOAD_URL && MEDIA_UPLOAD_PRESET) {
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("upload_preset", MEDIA_UPLOAD_PRESET);
-        const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: fd });
-        const data = await res.json();
-        if (!data.secure_url) throw new Error("Upload failed");
-        return data.secure_url;
-      }
-      return await readOriginalDataUrl(file);
-    }
+    attachBtn.addEventListener("click", () => { if (selectedPeer) mediaInput.click(); });
 
     mediaInput.addEventListener("change", async (e) => {
       const files = Array.from(e.target.files || []);
       if (!files.length || !currentUser || !selectedPeer) return;
-
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
       const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent";
@@ -3613,96 +3731,59 @@
           let thumbUrl = null;
           if (isVideo) {
             const dur = await getVideoDurationSeconds(file);
-            if (dur > 60) {
-              alert(`"${file.name}" skipped: video must be 1 minute (60s) or less.`);
-              continue;
-            }
+            if (dur > 60) { alert(`"${file.name}" skipped: video must be 1 minute (60s) or less.`); continue; }
             thumbUrl = await extractVideoFirstFrame(file);
           }
-
           const mediaType = isVideo ? "video" : "image";
-          const finalUrl = await uploadMediaFile(file);
+          const finalUrl = await readOriginalDataUrl(file);
 
-          if (selectedPeer.isAI) {
-            const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
-            const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
-            const m = { id: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5), senderId: currentUser.uid, receiverId: "na_ai_assistant", text: "", mediaType, mediaUrl: finalUrl, thumbUrl: thumbUrl || null, status: "seen", timestamp: Date.now() };
-            renderOrUpdateMessage(m.id, m);
-            arr.push(m);
-            localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
-          } else {
-            await db.ref(`chats/${chatId}/messages`).push({
-              senderId: currentUser.uid,
-              receiverId: selectedPeer.uid,
-              text: "",
-              mediaType,
-              mediaUrl: finalUrl,
-              thumbUrl: thumbUrl || null,
-              sentOnline: !!navigator.onLine,
-              status: initialStatus,
-              timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-          }
+          await db.ref(`chats/${chatId}/messages`).push({
+            senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+            mediaType, mediaUrl: finalUrl, thumbUrl: thumbUrl || null,
+            sentOnline: !!navigator.onLine, status: initialStatus,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          });
         }
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        attachBtn.textContent = "📎";
-        mediaInput.value = "";
-      }
+      } catch (err) { alert(err.message); }
+      finally { attachBtn.textContent = "📎"; mediaInput.value = ""; }
     });
 
     voiceBtn.addEventListener("click", async () => {
-      if (!selectedPeer || !currentUser) return;
-      if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
+      if (!selectedPeer || !currentUser || selectedPeer.isAI) return;
+      if (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid)) return;
 
       if (!isRecordingVoice) {
         try {
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Microphone permission not available in this wrapper app.");
-            return;
-          }
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert("Microphone permission not available."); return; }
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-            ? { mimeType: "audio/webm;codecs=opus" }
-            : undefined;
+          const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" } : undefined;
           mediaRecorder = options ? new MediaRecorder(stream, options) : new MediaRecorder(stream);
           audioChunks = [];
           isRecordingVoice = true;
           voiceBtn.classList.add("recording");
           voiceBtn.textContent = "⏹";
 
-          mediaRecorder.ondataavailable = (ev) => {
-            if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
-          };
-
+          mediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) audioChunks.push(ev.data); };
           mediaRecorder.onstop = async () => {
             stream.getTracks().forEach((t) => t.stop());
             voiceBtn.classList.remove("recording");
             voiceBtn.textContent = "🎤";
             isRecordingVoice = false;
-
             const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
             if (blob.size < 250) return;
-
             const reader = new FileReader();
             reader.onloadend = async () => {
               const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
               const chatId = getChatId(currentUser.uid, selectedPeer.uid);
               await db.ref(`chats/${chatId}/messages`).push({
-                senderId: currentUser.uid,
-                receiverId: selectedPeer.uid,
-                text: "",
-                mediaType: "audio",
-                mediaUrl: reader.result,
-                sentOnline: !!navigator.onLine,
+                senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+                mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
                 status: isActuallyOnline(peerLive) ? "delivered" : "sent",
                 timestamp: firebase.database.ServerValue.TIMESTAMP
               });
             };
             reader.readAsDataURL(blob);
           };
-
           mediaRecorder.start();
         } catch (err) {
           isRecordingVoice = false;
@@ -3715,15 +3796,13 @@
       }
     });
 
-    // Settings handlers
+    // Settings & Privacy On/Off handlers
     chooseDpBtn.addEventListener("click", () => dpFileInput.click());
     dpFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f || !currentUser) return;
-      try {
-        const raw = await readOriginalDataUrl(f);
-        await db.ref(`users/${currentUser.uid}/dp`).set(raw);
-      } catch (err) { alert(err.message); }
+      try { const raw = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}/dp`).set(raw); }
+      catch (err) { alert(err.message); }
       dpFileInput.value = "";
     });
 
@@ -3742,121 +3821,57 @@
       document.documentElement.style.setProperty("--msg-font-size", sz);
     });
 
-    privacyLastSeenSelect.addEventListener("change", async () => {
-      if (!currentUser) return;
-      await db.ref(`users/${currentUser.uid}/privacy/lastSeen`).set(privacyLastSeenSelect.value);
-    });
+    toggleLastSeenEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/lastSeenEnabled`).set(toggleLastSeenEnabled.checked); });
+    toggleDpEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/dpEnabled`).set(toggleDpEnabled.checked); });
+    toggleAboutEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/aboutEnabled`).set(toggleAboutEnabled.checked); });
+    toggleStatusEnabled.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/statusEnabled`).set(toggleStatusEnabled.checked); });
+    privacyLastSeenSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/lastSeen`).set(privacyLastSeenSelect.value); });
+    privacyDpSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/dp`).set(privacyDpSelect.value); });
+    privacyProfileFieldsSelect.addEventListener("change", async () => { if (currentUser) await db.ref(`users/${currentUser.uid}/privacy/profileFields`).set(privacyProfileFieldsSelect.value); });
 
-    privacyDpSelect.addEventListener("change", async () => {
-      if (!currentUser) return;
-      await db.ref(`users/${currentUser.uid}/privacy/dp`).set(privacyDpSelect.value);
-    });
-
-    privacyProfileFieldsSelect.addEventListener("change", async () => {
-      if (!currentUser) return;
-      await db.ref(`users/${currentUser.uid}/privacy/profileFields`).set(privacyProfileFieldsSelect.value);
-    });
-
-    privacyStatusSelect.addEventListener("change", async () => {
-      if (!currentUser) return;
-      const val = privacyStatusSelect.value;
-      await db.ref(`users/${currentUser.uid}/privacy/status`).set(val);
-      statusSelectedUsersBox.classList.toggle("open", val === "selected");
-      if (val === "selected") renderSelectedStatusUsersPicker();
-    });
-
-    function renderSelectedStatusUsersPicker() {
-      if (!currentUser) return;
-      const me = allUsers[currentUser.uid] || {};
-      const sel = (me.privacy && me.privacy.statusSelected) || {};
-      statusSelectedUsersBox.innerHTML = "";
-      Object.values(allUsers).forEach((u) => {
-        if (u.uid === currentUser.uid) return;
-        const lbl = document.createElement("label");
-        lbl.className = "pick-item";
-        lbl.innerHTML = `<input type="checkbox" ${sel[u.uid] ? "checked" : ""} /> <span>${escapeHtml(u.name || u.email)}</span>`;
-        const cb = lbl.querySelector("input");
-        cb.addEventListener("change", async () => {
-          if (cb.checked) await db.ref(`users/${currentUser.uid}/privacy/statusSelected/${u.uid}`).set(true);
-          else await db.ref(`users/${currentUser.uid}/privacy/statusSelected/${u.uid}`).remove();
-        });
-        statusSelectedUsersBox.appendChild(lbl);
-      });
-    }
-
-    chooseWallpaperBtn.addEventListener("click", () => {
-      if (!selectedPeer) { alert("Open a chat first."); return; }
-      wallpaperFileInput.click();
-    });
-
+    chooseWallpaperBtn.addEventListener("click", () => { if (!selectedPeer) { alert("Open a chat first."); return; } wallpaperFileInput.click(); });
     wallpaperFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f || !currentUser || !selectedPeer) return;
-      try {
-        const rawWp = await readOriginalDataUrl(f);
-        const key = getWallpaperKey();
-        if (key) localStorage.setItem(key, rawWp);
-        applyWallpaper();
-      } catch (err) { alert("Wallpaper storage limit reached for large image."); }
+      try { const rawWp = await readOriginalDataUrl(f); const key = getWallpaperKey(); if (key) localStorage.setItem(key, rawWp); applyWallpaper(); }
+      catch (_) { alert("Wallpaper storage limit reached for large image."); }
       wallpaperFileInput.value = "";
     });
-
-    clearWallpaperBtn.addEventListener("click", () => {
-      const key = getWallpaperKey();
-      if (key) localStorage.removeItem(key);
-      applyWallpaper();
-    });
+    clearWallpaperBtn.addEventListener("click", () => { const key = getWallpaperKey(); if (key) localStorage.removeItem(key); applyWallpaper(); });
 
     soundSelect.addEventListener("change", () => localStorage.setItem("chatSound", soundSelect.value));
     testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); triggerMessageVibration(); });
 
-    // Status Creation
+    // Status Creation with Font Style
     function applyStatusBannerStyle() {
       statusPreviewBanner.style.background = selectedStatusBg;
       statusPreviewBanner.style.color = selectedStatusTextColor;
+      statusPreviewBanner.style.fontFamily = selectedStatusFont;
     }
 
     openAddStatusBtn.addEventListener("click", () => {
-      statusTextInput.value = "";
-      pendingStatusPhoto = "";
-      pendingStatusVideo = "";
-      statusMediaName.textContent = "";
-      selectedStatusBg = "#0d47a1";
-      selectedStatusTextColor = "#ffffff";
-      customStatusColorPicker.value = selectedStatusBg;
-      statusTextColorSelect.value = selectedStatusTextColor;
-      applyStatusBannerStyle();
-      statusPreviewText.textContent = "Type status text";
+      statusTextInput.value = ""; pendingStatusPhoto = ""; pendingStatusVideo = ""; statusMediaName.textContent = "";
+      selectedStatusBg = "#0d47a1"; selectedStatusTextColor = "#ffffff"; selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
+      customStatusColorPicker.value = selectedStatusBg; statusTextColorSelect.value = selectedStatusTextColor; statusFontSelect.value = selectedStatusFont;
+      applyStatusBannerStyle(); statusPreviewText.textContent = "Type status text";
       document.querySelectorAll(".color-swatch").forEach((sw, idx) => sw.classList.toggle("selected", idx === 0));
       addStatusModal.classList.add("active");
       pushNavState();
     });
 
+    statusFontSelect.addEventListener("change", () => { selectedStatusFont = statusFontSelect.value; applyStatusBannerStyle(); });
     statusColorPalette.querySelectorAll(".color-swatch").forEach((sw) => {
       sw.addEventListener("click", () => {
         document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-        sw.classList.add("selected");
-        selectedStatusBg = sw.dataset.color;
-        customStatusColorPicker.value = selectedStatusBg;
-        applyStatusBannerStyle();
+        sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; applyStatusBannerStyle();
       });
     });
-
     customStatusColorPicker.addEventListener("input", () => {
       document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-      selectedStatusBg = customStatusColorPicker.value;
-      applyStatusBannerStyle();
+      selectedStatusBg = customStatusColorPicker.value; applyStatusBannerStyle();
     });
-
-    statusTextColorSelect.addEventListener("change", () => {
-      selectedStatusTextColor = statusTextColorSelect.value;
-      applyStatusBannerStyle();
-    });
-
-    statusTextInput.addEventListener("input", () => {
-      statusPreviewText.textContent = statusTextInput.value.trim() || "Type status text";
-    });
-
+    statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; applyStatusBannerStyle(); });
+    statusTextInput.addEventListener("input", () => { statusPreviewText.textContent = statusTextInput.value.trim() || "Type status text"; });
     closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
     pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
 
@@ -3864,41 +3879,23 @@
       const f = e.target.files[0];
       if (!f) return;
       const isVid = f.type.startsWith("video/");
-      if (isVid) {
-        const dur = await getVideoDurationSeconds(f);
-        if (dur > 60) {
-          alert("Status video must be 1 minute (60s) or less.");
-          statusMediaInput.value = "";
-          return;
-        }
-      }
+      if (isVid) { const dur = await getVideoDurationSeconds(f); if (dur > 60) { alert("Status video must be 1 minute (60s) or less."); statusMediaInput.value = ""; return; } }
       statusMediaName.textContent = f.name;
-      try {
-        const url = await uploadMediaFile(f);
-        if (isVid) { pendingStatusVideo = url; pendingStatusPhoto = ""; }
-        else { pendingStatusPhoto = url; pendingStatusVideo = ""; }
-      } catch (err) { alert(err.message); }
+      try { const url = await readOriginalDataUrl(f); if (isVid) { pendingStatusVideo = url; pendingStatusPhoto = ""; } else { pendingStatusPhoto = url; pendingStatusVideo = ""; } }
+      catch (err) { alert(err.message); }
       statusMediaInput.value = "";
     });
 
     publishStatusBtn.addEventListener("click", async () => {
       if (!currentUser) return;
       const txt = statusTextInput.value.trim();
-      if (!txt && !pendingStatusPhoto && !pendingStatusVideo) {
-        alert("Enter status text or choose photo/video.");
-        return;
-      }
+      if (!txt && !pendingStatusPhoto && !pendingStatusVideo) { alert("Enter status text or choose photo/video."); return; }
       try {
         const me = allUsers[currentUser.uid] || {};
         await db.ref("statuses").push({
-          ownerUid: currentUser.uid,
-          ownerName: me.name || currentUser.email,
-          text: txt,
-          bgColor: selectedStatusBg,
-          textColor: selectedStatusTextColor,
-          photoUrl: pendingStatusPhoto || "",
-          videoUrl: pendingStatusVideo || "",
-          createdAt: Date.now()
+          ownerUid: currentUser.uid, ownerName: me.name || currentUser.email,
+          text: txt, fontFamily: selectedStatusFont, bgColor: selectedStatusBg, textColor: selectedStatusTextColor,
+          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "", createdAt: Date.now()
         });
         addStatusModal.classList.remove("active");
       } catch (err) { alert("Status post error: " + err.message); }
@@ -3908,16 +3905,12 @@
       if (!currentUser) return;
       statusFeedList.innerHTML = "";
       const seenMap = getSeenStatusCounts();
-
       const entries = Object.entries(allStatuses)
         .map(([id, st]) => ({ id, ...st }))
         .filter((st) => canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-      if (!entries.length) {
-        statusFeedList.innerHTML = `<div class="empty-chat">No status updates</div>`;
-        return;
-      }
+      if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No status updates</div>`; return; }
 
       entries.forEach((st) => {
         const isMine = st.ownerUid === currentUser.uid;
@@ -3933,11 +3926,8 @@
         row.className = "status-circle-row";
         row.innerHTML = `
           <div class="avatar-wrap ${ringClass}">
-            <div class="status-thumb-circle" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)};">
-              ${st.photoUrl
-                ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />`
-                : (st.videoUrl ? `<span>▶ Video</span>` : `<span>${escapeHtml((st.text || "Status").slice(0, 12))}</span>`)
-              }
+            <div class="status-thumb-circle" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(st.fontFamily || "inherit")};">
+              ${st.photoUrl ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />` : (st.videoUrl ? `<span>▶ Video</span>` : `<span>${escapeHtml((st.text || "Status").slice(0, 12))}</span>`)}
             </div>
           </div>
           <div class="row-meta">
@@ -3945,7 +3935,6 @@
             <div class="row-sub">${formatClock(st.createdAt)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
           </div>
         `;
-
         row.addEventListener("click", () => openStatusViewer(st.id));
         statusFeedList.appendChild(row);
       });
@@ -3955,14 +3944,12 @@
       activeStatusId = statusId;
       const st = allStatuses[statusId];
       if (!st || !currentUser) return;
-
       if (st.ownerUid !== currentUser.uid) {
         recordStatusView(statusId);
         renderStatusFeed();
         renderUsersList();
         updateTopHeader();
       }
-
       renderStatusViewerContent(statusId);
       statusViewerModal.classList.add("active");
       pushNavState();
@@ -3971,7 +3958,6 @@
     function renderStatusViewerContent(statusId) {
       const st = allStatuses[statusId];
       if (!st || !currentUser) return;
-
       const owner = allUsers[st.ownerUid] || {};
       const isOwner = st.ownerUid === currentUser.uid;
       viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
@@ -3980,12 +3966,10 @@
 
       const bg = st.bgColor || "#0d47a1";
       const fg = st.textColor || "#ffffff";
+      const ff = st.fontFamily || "'Segoe UI', Roboto, sans-serif";
       let bodyHtml = "";
-      if (st.text && !st.photoUrl && !st.videoUrl) {
-        bodyHtml += `<div class="status-text-banner fullscreen-fit" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)};">${escapeHtml(st.text)}</div>`;
-      } else if (st.text) {
-        bodyHtml += `<div class="status-text-banner" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)};">${escapeHtml(st.text)}</div>`;
-      }
+      if (st.text && !st.photoUrl && !st.videoUrl) bodyHtml += `<div class="status-text-banner fullscreen-fit" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(ff)};">${escapeHtml(st.text)}</div>`;
+      else if (st.text) bodyHtml += `<div class="status-text-banner" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(ff)};">${escapeHtml(st.text)}</div>`;
       if (st.photoUrl) bodyHtml += `<img class="full-st-img" src="${escapeAttr(st.photoUrl)}" alt="" />`;
       if (st.videoUrl) bodyHtml += `<video class="full-st-vid" controls autoplay playsinline src="${escapeAttr(st.videoUrl)}"></video>`;
       statusViewerBody.innerHTML = bodyHtml;
@@ -3999,13 +3983,12 @@
       const viewEntries = Object.values(viewsObj);
       const totalViews = viewEntries.reduce((sum, v) => sum + ((v && v.count) || 1), 0);
 
-      if (!viewEntries.length) {
-        statusViewersList.textContent = "Viewed by: None yet";
-      } else if (isOwner) {
+      if (!viewEntries.length) statusViewersList.textContent = "Viewed by: None yet";
+      else if (isOwner) {
         statusViewersList.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">Views: ${totalViews} (${viewEntries.length} people)</div>` +
           viewEntries.map((v) => `<div>• ${escapeHtml(v.name || "User")} — <strong>${(v.count || 1)}x</strong> (${formatClock(v.seenAt)})</div>`).join("");
       } else {
-        statusViewersList.textContent = `Total views: ${totalViews}`;
+        statusViewersList.textContent = `Viewed by ${viewEntries.length} (${totalViews} views)`;
       }
     }
 
@@ -4026,22 +4009,10 @@
       await db.ref(`statuses/${idToDel}`).remove();
     });
 
-    closeStatusViewerBtn.addEventListener("click", () => {
-      statusViewerModal.classList.remove("active");
-      activeStatusId = null;
-    });
+    closeStatusViewerBtn.addEventListener("click", () => { statusViewerModal.classList.remove("active"); activeStatusId = null; });
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    function escapeAttr(str) {
-      return String(str).replace(/"/g, "&quot;");
-    }
+    function escapeHtml(str) { return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+    function escapeAttr(str) { return String(str).replace(/"/g, "&quot;"); }
   </script>
 </body>
 </html>
