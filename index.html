@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>WhatsApp</title>
   <style>
     :root {
@@ -14,7 +14,7 @@
       --accent-bright: #42a5f5;
       --accent-glow: rgba(30, 136, 229, 0.35);
       --unread-badge-bg: #0d47a1;
-      --unread-badge-text: #000000;
+      --unread-badge-text: #ffffff;
       --online-blue: #4fc3f7;
       --typing-yellow: #ffd600;
       --status-unseen: #4fc3f7;
@@ -50,8 +50,11 @@
 
     html, body {
       width: 100%;
-      height: 100%;
+      height: 100dvh;
+      max-height: 100dvh;
       overflow: hidden;
+      position: fixed;
+      inset: 0;
       background: var(--bg-main);
       color: var(--text);
     }
@@ -93,6 +96,14 @@
       25%, 49% { content: ".."; }
       50%, 74% { content: "..."; }
       75%, 100% { content: ""; }
+    }
+
+    @keyframes msgHighlightFlash {
+      0%, 100% { box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+      50% { box-shadow: 0 0 0 3px var(--typing-yellow); }
+    }
+    .msg.msg-highlight {
+      animation: msgHighlightFlash 1.2s ease-in-out 2;
     }
 
     /* Lightweight Hardware-Accelerated Live Wallpapers */
@@ -151,7 +162,7 @@
       position: fixed;
       inset: 0;
       width: 100%;
-      height: 100%;
+      height: 100dvh;
       flex-direction: column;
       overflow: hidden;
       z-index: 1;
@@ -228,7 +239,7 @@
     .icon-btn:active { background: var(--panel-2); transform: scale(0.86); }
     .icon-btn.recording { background: #d32f2f; color: #fff; }
 
-    /* Permanently Fixed Topbar (Never scrolls or disappears) */
+    /* Permanently Locked Topbar (Never scrolls or moves) */
     .topbar {
       position: fixed;
       top: 0;
@@ -246,7 +257,9 @@
       gap: 6px;
       width: 100%;
       z-index: 45;
-      transform: translateZ(0);
+      touch-action: none;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
     }
     .peer-trigger { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1; }
     .avatar-wrap {
@@ -285,7 +298,7 @@
       right: 0;
       bottom: 0;
       width: 100%;
-      height: calc(100% - var(--topbar-h));
+      height: calc(100dvh - var(--topbar-h));
       min-height: 0;
       overflow: hidden;
       z-index: 2;
@@ -417,7 +430,7 @@
     .pinned-banner {
       display: none; align-items: center; justify-content: space-between; gap: 8px;
       background: var(--panel-2); border-bottom: 1px solid var(--border);
-      padding: 7px 12px; font-size: 12.5px; flex-shrink: 0; z-index: 10;
+      padding: 7px 12px; font-size: 12.5px; flex-shrink: 0; z-index: 10; cursor: pointer;
     }
     .pinned-banner.active { display: flex; }
 
@@ -434,7 +447,7 @@
     .messages {
       flex: 1; width: 100%; min-height: 0; overflow-y: auto;
       padding: 12px; display: flex; flex-direction: column; gap: 7px;
-      -webkit-overflow-scrolling: touch;
+      -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
     }
     .empty-chat {
       margin: auto; color: var(--text); background: rgba(17, 27, 33, 0.9);
@@ -886,7 +899,7 @@
             <button type="button" class="icon-btn" id="closeInChatSearchBtn" style="width:28px; height:28px; font-size:14px;">✕</button>
           </div>
 
-          <div class="pinned-banner" id="pinnedBanner">
+          <div class="pinned-banner" id="pinnedBanner" title="Tap to jump to pinned message">
             <div style="min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
               📌 <span id="pinnedBannerText"></span>
             </div>
@@ -1252,6 +1265,7 @@
     let lockModalMode = null;
     let pendingLockPeer = null;
     let typingStopTimer = null;
+    let typingExpiryTimer = null;
     let lastTypingSentAt = 0;
 
     let mediaRecorder = null;
@@ -1515,6 +1529,11 @@
       return s;
     }
 
+    function refreshPresenceAndTypingUI() {
+      renderUsersList();
+      updateTopHeader();
+    }
+
     // Send typing indicator to Firebase so ONLY the OTHER user sees "Typing..."
     function sendRemoteTypingState(isTyping) {
       if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
@@ -1522,6 +1541,7 @@
       const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
       if (isTyping) {
         ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {});
+        ref.onDisconnect().remove().catch(() => {});
       } else {
         ref.remove().catch(() => {});
       }
@@ -1538,15 +1558,16 @@
 
       if (hasText) {
         const now = Date.now();
-        if (now - lastTypingSentAt > 850) {
+        if (now - lastTypingSentAt > 750) {
           lastTypingSentAt = now;
           sendRemoteTypingState(true);
         }
         if (typingStopTimer) clearTimeout(typingStopTimer);
         typingStopTimer = setTimeout(() => {
           sendRemoteTypingState(false);
-        }, 1600);
+        }, 1800);
       } else {
+        if (typingStopTimer) clearTimeout(typingStopTimer);
         sendRemoteTypingState(false);
       }
 
@@ -1566,7 +1587,11 @@
       const chatId = getChatId(currentUser.uid, peerUid);
       const tEntry = (typingMap[chatId] && typingMap[chatId][peerUid]) || null;
       if (!tEntry || !tEntry.typing) return false;
-      return (Date.now() - (tEntry.updatedAt || 0)) < 4500;
+      const age = Date.now() - (tEntry.updatedAt || 0);
+      if (age >= 5000) return false;
+      if (typingExpiryTimer) clearTimeout(typingExpiryTimer);
+      typingExpiryTimer = setTimeout(refreshPresenceAndTypingUI, Math.max(200, 5000 - age + 80));
+      return true;
     }
 
     function isVibrateEnabled() {
@@ -1621,8 +1646,7 @@
         btn.addEventListener("click", async () => {
           await db.ref(`users/${currentUser.uid}/blocked/${bUid}`).remove();
           renderBlockedUsersList();
-          renderUsersList();
-          updateTopHeader();
+          refreshPresenceAndTypingUI();
         });
         row.appendChild(btn);
         blockedUsersListBox.appendChild(row);
@@ -2175,8 +2199,7 @@
         if (!currentUser) return;
         if (!navigator.onLine || document.hidden) markOfflineNow();
         else markOnlineNow();
-        renderUsersList();
-        updateTopHeader();
+        refreshPresenceAndTypingUI();
       }, 20000);
     }
 
@@ -2307,8 +2330,7 @@
 
         db.ref("typing").on("value", (snap) => {
           typingMap = snap.val() || {};
-          renderUsersList();
-          updateTopHeader();
+          refreshPresenceAndTypingUI();
         });
 
         db.ref("users").on("value", (snap) => {
@@ -2517,7 +2539,19 @@
         else { pinnedBanner.classList.remove("active"); }
       });
 
-      unpinMsgBtn.onclick = () => db.ref(`chats/${chatId}/pinned`).remove().catch(() => {});
+      pinnedBanner.onclick = (e) => {
+        if (e.target.closest("#unpinMsgBtn")) return;
+        const pTxt = pinnedBannerText.textContent || "";
+        const wraps = Array.from(messagesContainer.querySelectorAll(".msg-swipe-wrap"));
+        const match = wraps.find((w) => (w.textContent || "").includes(pTxt));
+        if (match) {
+          match.scrollIntoView({ behavior: "smooth", block: "center" });
+          const b = match.querySelector(".msg");
+          if (b) { b.classList.remove("msg-highlight"); void b.offsetWidth; b.classList.add("msg-highlight"); }
+        }
+      };
+
+      unpinMsgBtn.onclick = (e) => { e.stopPropagation(); db.ref(`chats/${chatId}/pinned`).remove().catch(() => {}); };
       cancelReplyBtn.onclick = () => { replyToMsg = null; replyPreviewBar.classList.remove("active"); };
 
       updateTopHeader(); renderUsersList(); applyWallpaper();
@@ -2635,7 +2669,7 @@
       const peerUid = selectedPeer.uid;
       if (isUserBlockedByMe(peerUid)) await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).remove();
       else await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).set(true);
-      updateTopHeader(); renderUsersList();
+      refreshPresenceAndTypingUI();
     });
 
     function openContactInfoModal(peer) {
@@ -2663,13 +2697,13 @@
       const peerUid = selectedPeer.uid;
       if (isUserBlockedByMe(peerUid)) await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).remove();
       else await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).set(true);
-      updateTopHeader(); renderUsersList(); openContactInfoModal(allUsers[peerUid] || selectedPeer);
+      refreshPresenceAndTypingUI(); openContactInfoModal(allUsers[peerUid] || selectedPeer);
     });
 
     unblockFromBannerBtn.addEventListener("click", async () => {
       if (!currentUser || !selectedPeer) return;
       await db.ref(`users/${currentUser.uid}/blocked/${selectedPeer.uid}`).remove();
-      updateTopHeader(); renderUsersList();
+      refreshPresenceAndTypingUI();
     });
 
     function attachSwipeToReply(wrapEl, msg) {
@@ -2933,6 +2967,7 @@
 
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault(); unlockAudio();
+      if (typingStopTimer) clearTimeout(typingStopTimer);
       sendRemoteTypingState(false);
       if (!currentUser || !selectedPeer) return;
       if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
@@ -3168,7 +3203,7 @@
       activeStatusId = statusId;
       const st = allStatuses[statusId];
       if (!st || !currentUser) return;
-      if (st.ownerUid !== currentUser.uid) { recordStatusView(statusId); renderStatusFeed(); renderUsersList(); updateTopHeader(); }
+      if (st.ownerUid !== currentUser.uid) { recordStatusView(statusId); renderStatusFeed(); refreshPresenceAndTypingUI(); }
       renderStatusViewerContent(statusId);
       statusViewerModal.classList.add("active"); pushNavState();
     }
