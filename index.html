@@ -90,7 +90,6 @@
       75%, 100% { content: ""; }
     }
 
-    /* 2-second Highlight when jumping to replied/pinned message */
     @keyframes msgHighlightTwoSec {
       0% { background-color: rgba(255, 214, 0, 0.35); box-shadow: 0 0 0 3px var(--typing-yellow); }
       50% { background-color: rgba(30, 136, 229, 0.35); box-shadow: 0 0 0 3px var(--accent-bright); }
@@ -98,23 +97,16 @@
     }
     .msg.msg-highlight-2s { animation: msgHighlightTwoSec 0.65s ease-in-out 3; }
 
-    /* Topbar Waterfall Flow Animation */
     @keyframes waterfallFlow {
       0% { background-position: 50% 0%; }
       50% { background-position: 50% 100%; }
       100% { background-position: 50% 0%; }
     }
 
-    /* Orbiting Blue Fireball / Beam Perimeter Spin */
-    @property --orbit-angle {
-      syntax: "<angle>";
-      initial-value: 0deg;
-      inherits: false;
-    }
-
-    @keyframes orbitPerimeterSpin {
-      0% { --orbit-angle: 0deg; transform: rotate(0deg); }
-      100% { --orbit-angle: 360deg; transform: rotate(360deg); }
+    /* Perimeter Serpent / Blue Light Path along Card Border (Never spins the center!) */
+    @keyframes serpentPerimeterTravel {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -1200; }
     }
 
     @keyframes cardAuroraMove {
@@ -135,16 +127,16 @@
       50% { filter: brightness(1.18); }
     }
 
-    /* Rich Live Wallpapers (Planet, Galaxy, Earth, Fish, Butterflies, Snow, etc.) */
+    /* Rich Live Wallpapers (Galaxy & Stars, Planets, Earth, Fish, Butterflies, Snow, etc.) */
     .live-anim-layer {
       position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
       overflow: hidden; will-change: transform, opacity; transform: translateZ(0);
     }
-    .live-anim-layer.active { opacity: 0.72; }
+    .live-anim-layer.active { opacity: 0.85; }
 
     .live-anim-layer.live-aurora {
-      background: radial-gradient(circle at 22% 28%, rgba(30, 136, 229, 0.55), transparent 55%),
-                  radial-gradient(circle at 78% 72%, rgba(0, 229, 255, 0.42), transparent 55%), #0b141a;
+      background: radial-gradient(circle at 22% 28%, rgba(30, 136, 229, 0.58), transparent 55%),
+                  radial-gradient(circle at 78% 72%, rgba(0, 229, 255, 0.45), transparent 55%), #0b141a;
       animation: auroraFloat 6s infinite alternate ease-in-out;
     }
     .live-anim-layer.live-grid {
@@ -158,77 +150,93 @@
       background-size: 56px 56px; animation: waveSlide 3.8s infinite linear;
     }
     .live-anim-layer.live-stars {
-      background-image: radial-gradient(2px 2px at 24px 32px, rgba(255,255,255,0.75), transparent),
-                        radial-gradient(2.5px 2.5px at 95px 72px, rgba(79,195,247,0.8), transparent),
-                        radial-gradient(2px 2px at 150px 42px, rgba(255,235,59,0.65), transparent);
-      background-size: 170px 110px; animation: gridSlide 9s infinite linear;
+      background-color: #050a14;
+      background-image:
+        radial-gradient(2px 2px at 24px 32px, #ffffff, transparent),
+        radial-gradient(2.5px 2.5px at 95px 72px, #81d4fa, transparent),
+        radial-gradient(2px 2px at 150px 42px, #fff59d, transparent),
+        radial-gradient(1.5px 1.5px at 60px 105px, #ce93d8, transparent),
+        radial-gradient(2px 2px at 185px 95px, #80deea, transparent);
+      background-size: 210px 130px; animation: starDrift 14s infinite linear;
     }
     .live-anim-layer.live-pulse {
-      background: radial-gradient(circle at center, rgba(66, 165, 245, 0.36), rgba(11, 20, 26, 0.92) 72%);
+      background: radial-gradient(circle at center, rgba(66, 165, 245, 0.4), rgba(11, 20, 26, 0.92) 72%);
       animation: pulseScale 3s infinite alternate ease-in-out;
     }
 
-    /* Planet Orbit Wallpaper */
+    /* Planet Orbit & Multi-Planet Wallpaper */
     .live-anim-layer.live-planet {
-      background: radial-gradient(circle at 75% 25%, rgba(255, 167, 38, 0.35), transparent 36%),
-                  radial-gradient(circle at 20% 80%, rgba(41, 182, 246, 0.28), transparent 42%),
-                  #060d17;
+      background:
+        radial-gradient(circle at 75% 22%, rgba(255, 167, 38, 0.34), transparent 36%),
+        radial-gradient(circle at 22% 78%, rgba(41, 182, 246, 0.28), transparent 42%),
+        radial-gradient(1.6px 1.6px at 35px 45px, rgba(255,255,255,0.85), transparent),
+        radial-gradient(2px 2px at 130px 95px, rgba(129,212,250,0.8), transparent),
+        #050b14;
+      background-size: 100% 100%, 100% 100%, 180px 140px, 220px 170px;
     }
     .live-anim-layer.live-planet::before {
-      content: ""; position: absolute; width: 130px; height: 130px; border-radius: 50%;
-      top: 18%; left: 62%;
+      content: ""; position: absolute; width: 132px; height: 132px; border-radius: 50%;
+      top: 17%; left: 60%;
       background: radial-gradient(circle at 30% 30%, #81d4fa, #0277bd 62%, #041e3a 100%);
-      box-shadow: 0 0 36px rgba(41, 182, 246, 0.65), inset -18px -12px 28px rgba(0,0,0,0.65);
+      box-shadow: 0 0 40px rgba(41, 182, 246, 0.7), inset -18px -12px 28px rgba(0,0,0,0.65);
       animation: planetDrift 14s ease-in-out infinite alternate;
     }
     .live-anim-layer.live-planet::after {
-      content: ""; position: absolute; width: 220px; height: 64px;
-      top: calc(18% + 34px); left: calc(62% - 45px);
-      border-radius: 50%; border: 3px solid rgba(129, 212, 250, 0.45);
-      transform: rotate(-18deg);
-      box-shadow: 0 0 14px rgba(79, 195, 247, 0.35);
-      animation: planetDrift 14s ease-in-out infinite alternate;
+      content: ""; position: absolute; width: 46px; height: 46px; border-radius: 50%;
+      bottom: 20%; left: 16%;
+      background: radial-gradient(circle at 32% 32%, #ffcc80, #ef6c00 70%, #4e2600 100%);
+      box-shadow: 0 0 22px rgba(255, 167, 38, 0.55);
+      animation: moonOrbit 18s ease-in-out infinite alternate;
     }
     @keyframes planetDrift {
-      0% { transform: translate(0px, 0px) rotate(-2deg); }
-      100% { transform: translate(-22px, 16px) rotate(3deg); }
+      0% { transform: translate(0px, 0px); }
+      100% { transform: translate(-24px, 16px); }
+    }
+    @keyframes moonOrbit {
+      0% { transform: translate(0px, 0px); }
+      100% { transform: translate(34px, -22px); }
     }
 
-    /* Galaxy Spiral Wallpaper */
+    /* Galaxy Spiral + Deep Stars Wallpaper */
     .live-anim-layer.live-galaxy {
-      background: radial-gradient(ellipse at center, rgba(126, 87, 194, 0.38), rgba(13, 71, 161, 0.28) 45%, #050811 85%);
+      background: radial-gradient(ellipse at center, rgba(126, 87, 194, 0.42), rgba(13, 71, 161, 0.32) 45%, #040711 85%);
     }
     .live-anim-layer.live-galaxy::before {
       content: ""; position: absolute; inset: -35%;
       background: conic-gradient(from 0deg at 50% 50%,
         rgba(66, 165, 245, 0.0) 0deg,
-        rgba(66, 165, 245, 0.34) 65deg,
-        rgba(186, 104, 200, 0.30) 140deg,
-        rgba(0, 229, 255, 0.25) 220deg,
+        rgba(66, 165, 245, 0.38) 65deg,
+        rgba(186, 104, 200, 0.34) 140deg,
+        rgba(0, 229, 255, 0.28) 220deg,
         rgba(66, 165, 245, 0.0) 360deg);
       filter: blur(26px);
       animation: galaxySpin 24s linear infinite;
     }
     .live-anim-layer.live-galaxy::after {
       content: ""; position: absolute; inset: 0;
-      background-image: radial-gradient(1.5px 1.5px at 30px 40px, #fff, transparent),
-                        radial-gradient(2px 2px at 120px 90px, #81d4fa, transparent),
-                        radial-gradient(1.5px 1.5px at 200px 160px, #ce93d8, transparent);
-      background-size: 220px 180px;
-      animation: gridSlide 12s linear infinite;
+      background-image:
+        radial-gradient(2px 2px at 30px 40px, #ffffff, transparent),
+        radial-gradient(2.5px 2.5px at 120px 90px, #81d4fa, transparent),
+        radial-gradient(2px 2px at 200px 160px, #e1bee7, transparent),
+        radial-gradient(1.5px 1.5px at 75px 150px, #fff59d, transparent);
+      background-size: 230px 180px;
+      animation: starDrift 16s linear infinite;
     }
     @keyframes galaxySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Earth Horizon Wallpaper */
+    /* Earth Horizon + Stars Wallpaper */
     .live-anim-layer.live-earth {
-      background: radial-gradient(circle at 50% 125%, #29b6f6 0%, #0277bd 34%, #01579b 44%, #040d1a 56%, #03070e 100%);
+      background: radial-gradient(circle at 50% 125%, #29b6f6 0%, #0277bd 34%, #01579b 44%, #040d1a 56%, #02060c 100%);
       animation: pulseScale 5s ease-in-out infinite alternate;
     }
     .live-anim-layer.live-earth::before {
       content: ""; position: absolute; inset: 0;
-      background-image: radial-gradient(1.8px 1.8px at 40px 50px, rgba(255,255,255,0.85), transparent),
-                        radial-gradient(1.5px 1.5px at 140px 110px, rgba(179,229,252,0.8), transparent);
-      background-size: 190px 140px;
+      background-image:
+        radial-gradient(2px 2px at 40px 50px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 140px 110px, rgba(179,229,252,0.85), transparent),
+        radial-gradient(1.5px 1.5px at 210px 65px, rgba(255,245,157,0.8), transparent);
+      background-size: 240px 160px;
+      animation: starDrift 20s linear infinite;
     }
 
     /* Snowfall Wallpaper */
@@ -239,18 +247,15 @@
     .live-anim-layer.live-snow::after {
       content: ""; position: absolute; inset: -100% 0 0 0;
       background-image:
-        radial-gradient(4px 4px at 12% 18%, rgba(255,255,255,0.88), transparent),
-        radial-gradient(3px 3px at 34% 42%, rgba(225,245,254,0.82), transparent),
-        radial-gradient(5px 5px at 58% 12%, rgba(255,255,255,0.9), transparent),
-        radial-gradient(3px 3px at 78% 65%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(4px 4px at 12% 18%, rgba(255,255,255,0.9), transparent),
+        radial-gradient(3px 3px at 34% 42%, rgba(225,245,254,0.85), transparent),
+        radial-gradient(5px 5px at 58% 12%, rgba(255,255,255,0.92), transparent),
+        radial-gradient(3px 3px at 78% 65%, rgba(255,255,255,0.82), transparent),
         radial-gradient(4px 4px at 90% 28%, rgba(225,245,254,0.85), transparent);
       background-size: 260px 260px;
       animation: snowFallA 7s linear infinite;
     }
-    .live-anim-layer.live-snow::after {
-      animation: snowFallB 11s linear infinite;
-      opacity: 0.7;
-    }
+    .live-anim-layer.live-snow::after { animation: snowFallB 11s linear infinite; opacity: 0.72; }
     @keyframes snowFallA { 0% { transform: translateY(0); } 100% { transform: translateY(50%); } }
     @keyframes snowFallB { 0% { transform: translateY(-20%); } 100% { transform: translateY(50%); } }
 
@@ -259,13 +264,13 @@
       background: linear-gradient(180deg, #042f4b 0%, #074f72 55%, #032539 100%);
     }
     .live-anim-layer.live-fish .anim-sprite {
-      position: absolute; font-size: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+      position: absolute; font-size: 27px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
       animation: fishSwimAcross var(--dur, 11s) linear infinite;
     }
     @keyframes fishSwimAcross {
-      0% { left: -45px; transform: translateY(0px) scaleX(1); }
-      50% { transform: translateY(-10px) scaleX(1); }
-      100% { left: calc(100% + 45px); transform: translateY(6px) scaleX(1); }
+      0% { left: -45px; transform: translateY(0px); }
+      50% { transform: translateY(-11px); }
+      100% { left: calc(100% + 45px); transform: translateY(6px); }
     }
 
     /* Fluttering Butterflies Wallpaper */
@@ -274,7 +279,7 @@
                   linear-gradient(180deg, #0d1b2a 0%, #162a3d 100%);
     }
     .live-anim-layer.live-butterfly .anim-sprite {
-      position: absolute; font-size: 25px;
+      position: absolute; font-size: 26px;
       animation: butterflyGlide var(--dur, 10s) ease-in-out infinite;
     }
     @keyframes butterflyGlide {
@@ -286,8 +291,9 @@
 
     @keyframes auroraFloat { 0% { transform: scale(1) translateZ(0); } 100% { transform: scale(1.06) translateZ(0); } }
     @keyframes gridSlide { 0% { background-position: 0 0, 0 0; } 100% { background-position: 28px 28px, 28px 28px; } }
+    @keyframes starDrift { 0% { background-position: 0 0, 0 0, 0 0, 0 0; } 100% { background-position: 210px 130px, 210px 130px, 210px 130px, 210px 130px; } }
     @keyframes waveSlide { 0% { background-position: 0 0; } 100% { background-position: 56px 56px; } }
-    @keyframes pulseScale { 0% { opacity: 0.45; } 100% { opacity: 0.82; } }
+    @keyframes pulseScale { 0% { opacity: 0.55; } 100% { opacity: 0.9; } }
 
     .screen {
       display: none; position: fixed; top: var(--vtop); left: 0; right: 0;
@@ -408,7 +414,15 @@
     .tab-pane { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
     .tab-pane.active { display: flex; }
 
-    /* Multi-select Bulk Action Bars */
+    .chat-filter-strip {
+      display: flex; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .filter-pill {
+      padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+      background: var(--panel-2); color: var(--muted); border: 1px solid var(--panel-3); cursor: pointer;
+    }
+    .filter-pill.active { background: var(--accent); color: #ffffff; border-color: var(--accent-bright); }
+
     .bulk-select-bar {
       display: none; align-items: center; justify-content: space-between; gap: 6px;
       padding: 8px 10px; background: linear-gradient(90deg, #0d47a1, #1565c0);
@@ -423,7 +437,7 @@
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 13.5px;
     }
 
-    /* Card View Chat List with Orbiting Blue Fireball/Beam Border */
+    /* Card View Chat List */
     .scroll-list {
       flex: 1; overflow-y: auto; min-height: 0; padding: 10px 10px 18px 10px;
       display: flex; flex-direction: column; gap: 10px;
@@ -440,31 +454,42 @@
       position: relative; overflow: visible;
     }
 
-    /* Orbiting Blue Fireball / Line along Card Perimeter */
-    .chat-card.card-orbit-fire::before {
-      content: "";
+    /* SVG Perimeter Serpent / Light Trace along Card Border */
+    .card-border-svg {
       position: absolute;
       inset: -2px;
-      border-radius: 15px;
-      padding: 2.5px;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        transparent 275deg,
-        rgba(30, 136, 229, 0.35) 305deg,
-        #29b6f6 335deg,
-        #80d8ff 350deg,
-        #ffffff 357deg,
-        #42a5f5 360deg
-      );
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
       pointer-events: none;
-      animation: orbitPerimeterSpin 3.4s linear infinite;
+      display: none;
       z-index: 2;
+      overflow: visible;
+    }
+    .chat-card.card-serpent-border .card-border-svg {
+      display: block;
+    }
+    .serpent-base-stroke {
+      fill: none;
+      stroke: rgba(41, 182, 246, 0.22);
+      stroke-width: 2;
+    }
+    .serpent-travel-stroke {
+      fill: none;
+      stroke: #4fc3f7;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 95 1105;
+      filter: drop-shadow(0 0 6px #29b6f6);
+      animation: serpentPerimeterTravel 4.2s linear infinite;
+    }
+    .serpent-head-stroke {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      stroke-dasharray: 18 1182;
+      filter: drop-shadow(0 0 8px #80d8ff);
+      animation: serpentPerimeterTravel 4.2s linear infinite;
     }
 
     .chat-card:hover { transform: translateY(-1px); }
@@ -533,7 +558,6 @@
       font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;
     }
 
-    /* Quick AI Prompt Chips */
     .ai-quick-bar {
       display: none; gap: 6px; padding: 6px 10px; background: rgba(17, 27, 33, 0.92);
       border-top: 1px solid var(--border); overflow-x: auto; flex-shrink: 0;
@@ -921,6 +945,11 @@
             </div>
           </div>
 
+          <div class="chat-filter-strip">
+            <button type="button" class="filter-pill active" data-chat-filter="all">All</button>
+            <button type="button" class="filter-pill" data-chat-filter="unread">Unread</button>
+          </div>
+
           <div class="search-bar">
             <input type="text" id="searchUsersInput" placeholder="Search to start new chat..." />
           </div>
@@ -976,7 +1005,7 @@
                 <div class="wa-cat-icon">💬</div>
                 <div>
                   <div class="wa-cat-title">Chats, Cards & Live Wallpapers</div>
-                  <div class="wa-cat-desc">Orbiting blue fireball card, live wallpapers, font</div>
+                  <div class="wa-cat-desc">Perimeter serpent border, live wallpapers, font</div>
                 </div>
               </div>
 
@@ -984,7 +1013,7 @@
                 <div class="wa-cat-icon">🌌</div>
                 <div>
                   <div class="wa-cat-title">Live Wallpapers & Effects</div>
-                  <div class="wa-cat-desc">Planets, galaxy, earth, fish, butterflies, snow</div>
+                  <div class="wa-cat-desc">Galaxy, stars, planets, earth, fish, butterflies, snow</div>
                 </div>
               </div>
 
@@ -1060,7 +1089,7 @@
             <div class="setting-panel-detail setting-card" id="panelChats">
               <label>Chat Card Border & Background Style</label>
               <select id="chatCardLiveSelect">
-                <option value="card-orbit-fire">Orbiting Blue Fireball Border (Recommended)</option>
+                <option value="card-serpent-border">Serpent Light Along Card Border (Recommended)</option>
                 <option value="none">Default Dark Card</option>
                 <option value="card-live-aurora">Live Aurora Cards</option>
                 <option value="card-live-waves">Live Flowing Waves Cards</option>
@@ -1079,16 +1108,16 @@
               <label>Chat Live Wallpaper</label>
               <select id="chatLiveWallpaperSelect">
                 <option value="none">Off</option>
-                <option value="live-planet">🪐 Planet Orbit</option>
-                <option value="live-galaxy">🌌 Galaxy Spiral</option>
+                <option value="live-galaxy">🌌 Galaxy & Stars</option>
+                <option value="live-planet">🪐 Planets & Rings</option>
                 <option value="live-earth">🌍 Earth Horizon</option>
+                <option value="live-stars">⭐ Twinkling Starfield</option>
                 <option value="live-fish">🐟 Swimming Fish</option>
                 <option value="live-butterfly">🦋 Fluttering Butterflies</option>
                 <option value="live-snow">❄️ Snowfall</option>
                 <option value="live-aurora">✨ Live Aurora</option>
                 <option value="live-grid">🔲 Live Grid Pulse</option>
                 <option value="live-waves">🌊 Live Diagonal Waves</option>
-                <option value="live-stars">⭐ Live Starfield</option>
                 <option value="live-pulse">🔵 Live Blue Pulse</option>
               </select>
 
@@ -1105,16 +1134,16 @@
               <label>App Live Wallpaper</label>
               <select id="homeLiveWallpaperSelect">
                 <option value="none">Off (Static)</option>
-                <option value="live-planet">🪐 Planet Orbit</option>
-                <option value="live-galaxy">🌌 Galaxy Spiral</option>
+                <option value="live-galaxy">🌌 Galaxy & Stars</option>
+                <option value="live-planet">🪐 Planets & Rings</option>
                 <option value="live-earth">🌍 Earth Horizon</option>
+                <option value="live-stars">⭐ Twinkling Starfield</option>
                 <option value="live-fish">🐟 Swimming Fish</option>
                 <option value="live-butterfly">🦋 Fluttering Butterflies</option>
                 <option value="live-snow">❄️ Snowfall</option>
                 <option value="live-aurora">✨ Live Aurora</option>
                 <option value="live-grid">🔲 Live Grid Pulse</option>
                 <option value="live-waves">🌊 Live Diagonal Waves</option>
-                <option value="live-stars">⭐ Live Starfield</option>
                 <option value="live-pulse">🔵 Live Blue Pulse</option>
               </select>
 
@@ -1361,10 +1390,10 @@
     </div>
   </div>
 
-  <!-- Message Action Modal -->
+  <!-- Message Action Modal (Forward, Edit, Delete for Me, Delete for Everyone, Pin, Star, Copy, React) -->
   <div class="modal" id="msgActionModal">
     <div class="sheet">
-      <h3>Message</h3>
+      <h3>Message options</h3>
       <p id="msgSeenInfoText"></p>
       <div class="reaction-bar" id="msgReactionBar">
         <button type="button" data-react="👍">👍</button>
@@ -1379,14 +1408,14 @@
         <button type="button" class="btn small" id="saveCustomReactionBtn">Set</button>
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:6px;">
-        <button class="btn secondary small" id="msgForwardBtn">↪ Forward</button>
-        <button class="btn secondary small" id="msgPinBtn">📌 Pin</button>
-        <button class="btn secondary small" id="msgStarBtn">⭐ Star</button>
-        <button class="btn secondary small" id="msgCopyBtn">📋 Copy</button>
-        <button class="btn secondary small" id="msgEditBtn">✏️ Edit</button>
-        <button class="btn secondary small" id="msgDeleteMeBtn">🗑 For me</button>
-        <button class="btn danger small" id="msgDeleteEveryoneBtn">🗑 Everyone</button>
-        <button class="btn secondary small" id="closeMsgModalBtn">Cancel</button>
+        <button type="button" class="btn secondary small" id="msgForwardBtn">↪ Forward</button>
+        <button type="button" class="btn secondary small" id="msgEditBtn">✏️ Edit</button>
+        <button type="button" class="btn secondary small" id="msgPinBtn">📌 Pin</button>
+        <button type="button" class="btn secondary small" id="msgStarBtn">⭐ Star</button>
+        <button type="button" class="btn secondary small" id="msgCopyBtn">📋 Copy</button>
+        <button type="button" class="btn secondary small" id="msgDeleteMeBtn">🗑 Delete for me</button>
+        <button type="button" class="btn danger small" id="msgDeleteEveryoneBtn">🗑 Delete for everyone</button>
+        <button type="button" class="btn secondary small" id="closeMsgModalBtn">Cancel</button>
       </div>
     </div>
   </div>
@@ -1396,7 +1425,7 @@
     <div class="sheet">
       <h3>Forward to</h3>
       <div id="forwardUsersList" style="display:flex; flex-direction:column; gap:6px;"></div>
-      <button class="btn secondary" id="closeForwardModalBtn">Cancel</button>
+      <button type="button" class="btn secondary" id="closeForwardModalBtn">Cancel</button>
     </div>
   </div>
 
@@ -1406,8 +1435,8 @@
       <h3>Edit message</h3>
       <textarea id="editMsgTextarea"></textarea>
       <div style="display:flex; gap:8px;">
-        <button class="btn" id="saveEditedMsgBtn">Save</button>
-        <button class="btn secondary" id="cancelEditMsgBtn">Cancel</button>
+        <button type="button" class="btn" id="saveEditedMsgBtn">Save</button>
+        <button type="button" class="btn secondary" id="cancelEditMsgBtn">Cancel</button>
       </div>
     </div>
   </div>
@@ -1450,11 +1479,11 @@
 
       <textarea id="statusTextInput" placeholder="Type a status..."></textarea>
       <input type="file" id="statusMediaInput" accept="image/*,video/*" style="display:none;" />
-      <button class="btn secondary small" id="pickStatusMediaBtn">Photo / Video (max 1m)</button>
+      <button type="button" class="btn secondary small" id="pickStatusMediaBtn">Photo / Video (max 1m)</button>
       <small id="statusMediaName" style="color:var(--muted);"></small>
       <div style="display:flex; gap:8px;">
-        <button class="btn" id="publishStatusBtn">Post</button>
-        <button class="btn secondary" id="closeAddStatusBtn">Cancel</button>
+        <button type="button" class="btn" id="publishStatusBtn">Post</button>
+        <button type="button" class="btn secondary" id="closeAddStatusBtn">Cancel</button>
       </div>
     </div>
   </div>
@@ -1548,12 +1577,11 @@
     let activeChatIds = {};
     let unreadCounts = {};
     let loadedMessagesMap = {};
+    let chatFilterMode = "all";
 
-    // Chat list multi-select state
     let selectedChatUids = new Set();
     let isMultiSelectMode = false;
 
-    // Inside-chat message multi-select state
     let selectedMsgIds = new Set();
     let isMsgMultiSelectMode = false;
 
@@ -1753,10 +1781,10 @@
     const customReactionInput = document.getElementById("customReactionInput");
     const saveCustomReactionBtn = document.getElementById("saveCustomReactionBtn");
     const msgForwardBtn = document.getElementById("msgForwardBtn");
+    const msgEditBtn = document.getElementById("msgEditBtn");
     const msgPinBtn = document.getElementById("msgPinBtn");
     const msgStarBtn = document.getElementById("msgStarBtn");
     const msgCopyBtn = document.getElementById("msgCopyBtn");
-    const msgEditBtn = document.getElementById("msgEditBtn");
     const msgDeleteMeBtn = document.getElementById("msgDeleteMeBtn");
     const msgDeleteEveryoneBtn = document.getElementById("msgDeleteEveryoneBtn");
     const closeMsgModalBtn = document.getElementById("closeMsgModalBtn");
@@ -1791,17 +1819,34 @@
       });
     });
 
+    document.querySelectorAll("[data-chat-filter]").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        chatFilterMode = pill.dataset.chatFilter || "all";
+        document.querySelectorAll("[data-chat-filter]").forEach((p) => p.classList.toggle("active", p === pill));
+        renderUsersList();
+      });
+    });
+
     function getCardLiveStyle() {
-      return localStorage.getItem("chatCardLiveStyle") || "card-orbit-fire";
+      return localStorage.getItem("chatCardLiveStyle") || "card-serpent-border";
     }
     function setCardLiveStyle(val) {
-      localStorage.setItem("chatCardLiveStyle", val || "card-orbit-fire");
-      chatCardLiveSelect.value = val || "card-orbit-fire";
+      localStorage.setItem("chatCardLiveStyle", val || "card-serpent-border");
+      chatCardLiveSelect.value = val || "card-serpent-border";
       renderUsersList();
     }
     chatCardLiveSelect.addEventListener("change", () => setCardLiveStyle(chatCardLiveSelect.value));
 
-    // Chat Card Multi-Select Controls
+    function createPerimeterSerpentSvg() {
+      return `
+        <svg class="card-border-svg" viewBox="0 0 400 72" preserveAspectRatio="none">
+          <rect class="serpent-base-stroke" x="2" y="2" width="396" height="68" rx="14" ry="14" pathLength="1200" />
+          <rect class="serpent-travel-stroke" x="2" y="2" width="396" height="68" rx="14" ry="14" pathLength="1200" />
+          <rect class="serpent-head-stroke" x="2" y="2" width="396" height="68" rx="14" ry="14" pathLength="1200" />
+        </svg>
+      `;
+    }
+
     function enterMultiSelectWith(uid) {
       if (!uid) return;
       isMultiSelectMode = true;
@@ -1854,17 +1899,12 @@
       if (!currentUser || !selectedChatUids.size) return;
       const targets = Array.from(selectedChatUids);
       for (const uid of targets) {
-        if (uid === "na_ai_assistant") {
-          localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
-        } else {
-          const uObj = allUsers[uid] || { uid };
-          await deleteEntireChat(uObj);
-        }
+        if (uid === "na_ai_assistant") localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
+        else await deleteEntireChat(allUsers[uid] || { uid });
       }
       exitMultiSelectMode();
     });
 
-    // Inside-Chat Message Multi-Select Controls
     function enterMsgMultiSelectWith(msgId) {
       if (!msgId) return;
       isMsgMultiSelectMode = true;
@@ -1953,7 +1993,6 @@
       exitMsgMultiSelectMode();
     });
 
-    // Status 24h Expiration Helpers
     function isStatusExpired(st) {
       if (!st) return true;
       const now = Date.now();
@@ -1988,7 +2027,6 @@
       updateTopHeader();
     }, 30000);
 
-    // Live AI Text & Photo Generator (Sinhala + Any Language)
     async function askLiveAI(promptText) {
       const trimmed = promptText.trim();
       const low = trimmed.toLowerCase();
@@ -2027,9 +2065,7 @@
         clearTimeout(timer);
         if (resp.ok) {
           const answer = (await resp.text()).trim();
-          if (answer && answer.length > 1 && !answer.toLowerCase().includes("error")) {
-            return { text: answer };
-          }
+          if (answer && answer.length > 1 && !answer.toLowerCase().includes("error")) return { text: answer };
         }
       } catch (_) {}
 
@@ -2084,26 +2120,18 @@
     function populateLiveSprites(el, mode) {
       el.innerHTML = "";
       if (mode === "live-fish") {
-        const fishList = ["🐠", "🐟", "🐡", "🐠", "🐟"];
-        fishList.forEach((em, idx) => {
+        ["🐠", "🐟", "🐡", "🐠", "🐟"].forEach((em, idx) => {
           const sp = document.createElement("span");
-          sp.className = "anim-sprite";
-          sp.textContent = em;
-          sp.style.top = `${16 + idx * 17}%`;
-          sp.style.setProperty("--dur", `${9 + idx * 2.2}s`);
-          sp.style.animationDelay = `${-idx * 2.5}s`;
-          el.appendChild(sp);
+          sp.className = "anim-sprite"; sp.textContent = em;
+          sp.style.top = `${16 + idx * 17}%`; sp.style.setProperty("--dur", `${9 + idx * 2.2}s`);
+          sp.style.animationDelay = `${-idx * 2.5}s`; el.appendChild(sp);
         });
       } else if (mode === "live-butterfly") {
-        const bList = ["🦋", "🦋", "🦋", "🦋"];
-        bList.forEach((em, idx) => {
+        ["🦋", "🦋", "🦋", "🦋"].forEach((em, idx) => {
           const sp = document.createElement("span");
-          sp.className = "anim-sprite";
-          sp.textContent = em;
-          sp.style.setProperty("--topY", `${20 + idx * 18}%`);
-          sp.style.setProperty("--dur", `${8.5 + idx * 2}s`);
-          sp.style.animationDelay = `${-idx * 2.1}s`;
-          el.appendChild(sp);
+          sp.className = "anim-sprite"; sp.textContent = em;
+          sp.style.setProperty("--topY", `${20 + idx * 18}%`); sp.style.setProperty("--dur", `${8.5 + idx * 2}s`);
+          sp.style.animationDelay = `${-idx * 2.1}s`; el.appendChild(sp);
         });
       }
     }
@@ -2138,45 +2166,25 @@
       return s.replace(/\n/g, "<br>");
     }
 
-    function refreshPresenceAndTypingUI() {
-      renderUsersList();
-      updateTopHeader();
-    }
+    function refreshPresenceAndTypingUI() { renderUsersList(); updateTopHeader(); }
 
     function sendRemoteTypingState(isTyping) {
       if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const ref = db.ref(`typing/${chatId}/${currentUser.uid}`);
-      if (isTyping) {
-        ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {});
-        ref.onDisconnect().remove().catch(() => {});
-      } else {
-        ref.remove().catch(() => {});
-      }
+      if (isTyping) { ref.set({ typing: true, updatedAt: Date.now() }).catch(() => {}); ref.onDisconnect().remove().catch(() => {}); }
+      else { ref.remove().catch(() => {}); }
     }
 
     function handleComposerTypingEvent() {
-      const val = messageInput.value;
-      const hasText = val.trim().length > 0;
-
-      if (currentUser && selectedPeer) {
-        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-        localStorage.setItem(`draft_${currentUser.uid}_${chatId}`, val);
-      }
-
+      const val = messageInput.value; const hasText = val.trim().length > 0;
+      if (currentUser && selectedPeer) localStorage.setItem(`draft_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`, val);
       if (hasText) {
         const now = Date.now();
-        if (now - lastTypingSentAt > 450) {
-          lastTypingSentAt = now;
-          sendRemoteTypingState(true);
-        }
+        if (now - lastTypingSentAt > 450) { lastTypingSentAt = now; sendRemoteTypingState(true); }
         if (typingStopTimer) clearTimeout(typingStopTimer);
-        typingStopTimer = setTimeout(() => { sendRemoteTypingState(false); }, 2200);
-      } else {
-        if (typingStopTimer) clearTimeout(typingStopTimer);
-        sendRemoteTypingState(false);
-      }
-
+        typingStopTimer = setTimeout(() => sendRemoteTypingState(false), 2200);
+      } else { if (typingStopTimer) clearTimeout(typingStopTimer); sendRemoteTypingState(false); }
       if (!hasText) { liveFormatBar.classList.remove("active"); liveFormatBar.innerHTML = ""; }
       else { liveFormatBar.classList.add("active"); liveFormatBar.innerHTML = `Preview: ${formatRichText(val)}`; }
     }
@@ -2195,8 +2203,7 @@
         typingMap[chatId][peerUid] = snap.val() || null;
         refreshPresenceAndTypingUI();
       };
-      pRef.on("value", cb);
-      peerTypingListeners[key] = { ref: pRef, cb };
+      pRef.on("value", cb); peerTypingListeners[key] = { ref: pRef, cb };
     }
 
     function isPeerTypingNow(peerUid) {
@@ -2217,7 +2224,6 @@
       if (!quotedText) return;
       const cleanQ = quotedText.replace(/^↪\s*/, "").trim().toLowerCase();
       if (!cleanQ) return;
-
       const wraps = Array.from(messagesContainer.querySelectorAll(".msg-swipe-wrap"));
       const targetWrap = wraps.find((w) => {
         const bubble = w.querySelector(".msg");
@@ -2226,30 +2232,22 @@
         clone.querySelectorAll(".reply-quote, .msg-meta").forEach((n) => n.remove());
         return (clone.textContent || "").trim().toLowerCase().includes(cleanQ);
       });
-
       if (targetWrap) {
         targetWrap.scrollIntoView({ behavior: "smooth", block: "center" });
         const bubble = targetWrap.querySelector(".msg");
         if (bubble) {
-          bubble.classList.remove("msg-highlight-2s");
-          void bubble.offsetWidth;
+          bubble.classList.remove("msg-highlight-2s"); void bubble.offsetWidth;
           bubble.classList.add("msg-highlight-2s");
-          setTimeout(() => { bubble.classList.remove("msg-highlight-2s"); }, 2000);
+          setTimeout(() => bubble.classList.remove("msg-highlight-2s"), 2000);
         }
       }
     }
 
-    function isVibrateEnabled() {
-      const saved = localStorage.getItem("chatVibrate");
-      return saved === null ? true : saved === "1";
-    }
-
+    function isVibrateEnabled() { const saved = localStorage.getItem("chatVibrate"); return saved === null ? true : saved === "1"; }
     function setVibrateEnabled(val) {
       localStorage.setItem("chatVibrate", val ? "1" : "0");
-      vibrateToggleAppearance.checked = val;
-      vibrateToggleNotif.checked = val;
+      vibrateToggleAppearance.checked = val; vibrateToggleNotif.checked = val;
     }
-
     vibrateToggleAppearance.addEventListener("change", () => setVibrateEnabled(vibrateToggleAppearance.checked));
     vibrateToggleNotif.addEventListener("change", () => setVibrateEnabled(vibrateToggleNotif.checked));
 
@@ -2260,8 +2258,7 @@
 
     document.querySelectorAll(".wa-cat-row").forEach((row) => {
       row.addEventListener("click", () => {
-        const targetId = row.dataset.panel;
-        const panel = document.getElementById(targetId);
+        const targetId = row.dataset.panel; const panel = document.getElementById(targetId);
         const alreadyOpen = panel && panel.classList.contains("open");
         document.querySelectorAll(".setting-panel-detail").forEach((p) => p.classList.remove("open"));
         if (panel && !alreadyOpen) {
@@ -2275,26 +2272,17 @@
 
     function renderBlockedUsersList() {
       if (!currentUser) return;
-      const me = allUsers[currentUser.uid] || {};
-      const blocked = me.blocked || {};
+      const me = allUsers[currentUser.uid] || {}; const blocked = me.blocked || {};
       const uids = Object.keys(blocked).filter((k) => blocked[k]);
       if (!uids.length) { blockedUsersListBox.textContent = "No blocked users"; return; }
       blockedUsersListBox.innerHTML = "";
       uids.forEach((bUid) => {
         const u = allUsers[bUid] || { uid: bUid, name: bUid };
-        const row = document.createElement("div");
-        row.className = "info-row";
+        const row = document.createElement("div"); row.className = "info-row";
         row.innerHTML = `<span>${escapeHtml(u.name || u.email || bUid)}</span>`;
-        const btn = document.createElement("button");
-        btn.className = "btn secondary small";
-        btn.textContent = "Unblock";
-        btn.addEventListener("click", async () => {
-          await db.ref(`users/${currentUser.uid}/blocked/${bUid}`).remove();
-          renderBlockedUsersList();
-          refreshPresenceAndTypingUI();
-        });
-        row.appendChild(btn);
-        blockedUsersListBox.appendChild(row);
+        const btn = document.createElement("button"); btn.className = "btn secondary small"; btn.textContent = "Unblock";
+        btn.addEventListener("click", async () => { await db.ref(`users/${currentUser.uid}/blocked/${bUid}`).remove(); renderBlockedUsersList(); refreshPresenceAndTypingUI(); });
+        row.appendChild(btn); blockedUsersListBox.appendChild(row);
       });
     }
 
@@ -2324,11 +2312,7 @@
       ).join("");
     }
 
-    clearStarredBtn.addEventListener("click", () => {
-      if (!currentUser) return;
-      localStorage.removeItem(`starred_${currentUser.uid}`);
-      renderStarredMessagesList();
-    });
+    clearStarredBtn.addEventListener("click", () => { if (!currentUser) return; localStorage.removeItem(`starred_${currentUser.uid}`); renderStarredMessagesList(); });
 
     window.history.replaceState({ appRoot: true }, "");
     function pushNavState() { window.history.pushState({ nav: Date.now() }, ""); }
@@ -2353,20 +2337,8 @@
       if (activeTab && activeTab.dataset.tab !== "chatsTab") switchToTab("chatsTab");
     });
 
-    function openFullPhoto(src) {
-      if (!src) return;
-      photoViewerImg.src = src;
-      photoViewerModal.classList.add("active");
-      pushNavState();
-    }
-
-    function openFullVideo(src) {
-      if (!src) return;
-      videoViewerEl.src = src;
-      videoViewerModal.classList.add("active");
-      videoViewerEl.play().catch(() => {});
-      pushNavState();
-    }
+    function openFullPhoto(src) { if (!src) return; photoViewerImg.src = src; photoViewerModal.classList.add("active"); pushNavState(); }
+    function openFullVideo(src) { if (!src) return; videoViewerEl.src = src; videoViewerModal.classList.add("active"); videoViewerEl.play().catch(() => {}); pushNavState(); }
 
     closePhotoViewerBtn.addEventListener("click", () => photoViewerModal.classList.remove("active"));
     closeVideoViewerBtn.addEventListener("click", () => { videoViewerEl.pause(); videoViewerEl.src = ""; videoViewerModal.classList.remove("active"); });
@@ -2376,33 +2348,17 @@
     function readOriginalDataUrl(file) {
       return new Promise((resolve, reject) => {
         if (!file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onerror = reject;
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-          return;
+          const reader = new FileReader(); reader.onerror = reject; reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); return;
         }
-        const url = URL.createObjectURL(file);
-        const img = new Image();
+        const url = URL.createObjectURL(file); const img = new Image();
         img.onload = () => {
-          URL.revokeObjectURL(url);
-          const maxDim = 960;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            else { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          const canvas = document.createElement("canvas");
-          canvas.width = w; canvas.height = h;
-          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.82));
+          URL.revokeObjectURL(url); const maxDim = 960; let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) { if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; } else { w = Math.round((w * maxDim) / h); h = maxDim; } }
+          const canvas = document.createElement("canvas"); canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h); resolve(canvas.toDataURL("image/jpeg", 0.82));
         };
         img.onerror = () => {
-          URL.revokeObjectURL(url);
-          const reader = new FileReader();
-          reader.onerror = reject;
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(file);
+          URL.revokeObjectURL(url); const reader = new FileReader(); reader.onerror = reject; reader.onload = () => resolve(reader.result); reader.readAsDataURL(file);
         };
         img.src = url;
       });
@@ -2410,37 +2366,25 @@
 
     function getVideoDurationSeconds(file) {
       return new Promise((resolve) => {
-        const url = URL.createObjectURL(file);
-        const vid = document.createElement("video");
-        vid.preload = "metadata";
+        const url = URL.createObjectURL(file); const vid = document.createElement("video"); vid.preload = "metadata";
         vid.onloadedmetadata = () => { const dur = vid.duration || 0; URL.revokeObjectURL(url); resolve(dur); };
-        vid.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
-        vid.src = url;
+        vid.onerror = () => { URL.revokeObjectURL(url); resolve(0); }; vid.src = url;
       });
     }
 
     function extractVideoFirstFrame(file) {
       return new Promise((resolve) => {
-        const url = URL.createObjectURL(file);
-        const vid = document.createElement("video");
-        vid.preload = "auto";
-        vid.muted = true;
-        vid.playsInline = true;
+        const url = URL.createObjectURL(file); const vid = document.createElement("video");
+        vid.preload = "auto"; vid.muted = true; vid.playsInline = true;
         const capture = () => {
           try {
-            const canvas = document.createElement("canvas");
-            canvas.width = Math.min(360, vid.videoWidth || 320);
-            canvas.height = Math.min(240, vid.videoHeight || 200);
+            const canvas = document.createElement("canvas"); canvas.width = Math.min(360, vid.videoWidth || 320); canvas.height = Math.min(240, vid.videoHeight || 200);
             canvas.getContext("2d").drawImage(vid, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
-            URL.revokeObjectURL(url);
-            resolve(dataUrl);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.72); URL.revokeObjectURL(url); resolve(dataUrl);
           } catch (_) { URL.revokeObjectURL(url); resolve(""); }
         };
         vid.onloadeddata = () => { vid.currentTime = Math.min(0.2, (vid.duration || 1) / 4); };
-        vid.onseeked = capture;
-        vid.onerror = () => { URL.revokeObjectURL(url); resolve(""); };
-        vid.src = url;
+        vid.onseeked = capture; vid.onerror = () => { URL.revokeObjectURL(url); resolve(""); }; vid.src = url;
       });
     }
 
@@ -2451,11 +2395,7 @@
 
     enableNotifBtn.addEventListener("click", async () => {
       if (!("Notification" in window)) return;
-      try {
-        const perm = await Notification.requestPermission();
-        refreshNotifStatusLabel();
-        if (perm === "granted") new Notification("WhatsApp", { body: "Notifications enabled" });
-      } catch (_) {}
+      try { const perm = await Notification.requestPermission(); refreshNotifStatusLabel(); if (perm === "granted") new Notification("WhatsApp", { body: "Notifications enabled" }); } catch (_) {}
     });
 
     function triggerSystemNotification(title, body) {
@@ -2465,10 +2405,7 @@
     }
 
     function unlockAudio() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-      } catch (_) {}
+      try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); } catch (_) {}
     }
     document.addEventListener("click", (e) => {
       unlockAudio();
@@ -2479,16 +2416,10 @@
     function switchToTab(tabId) {
       document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tabId));
       document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.id === tabId));
-      if (tabId === "settingsTab") {
-        syncSettingsFromUser();
-        renderStarredMessagesList();
-        renderBlockedUsersList();
-      }
+      if (tabId === "settingsTab") { syncSettingsFromUser(); renderStarredMessagesList(); renderBlockedUsersList(); }
     }
 
-    document.querySelectorAll(".nav-tab").forEach((tab) => {
-      tab.addEventListener("click", () => { switchToTab(tab.dataset.tab); pushNavState(); });
-    });
+    document.querySelectorAll(".nav-tab").forEach((tab) => { tab.addEventListener("click", () => { switchToTab(tab.dataset.tab); pushNavState(); }); });
 
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join("_"); }
     function formatClock(ts) { if (!ts) return ""; return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
@@ -2498,8 +2429,7 @@
       if (diffSec < 60) return "Last seen just now";
       const diffMin = Math.floor(diffSec / 60);
       if (diffMin < 60) return `Last seen ${diffMin} min ago`;
-      const d = new Date(ts);
-      const t = formatClock(ts);
+      const d = new Date(ts); const t = formatClock(ts);
       const isToday = d.toDateString() === new Date().toDateString();
       return isToday ? `Last seen today at ${t}` : `Last seen ${d.toLocaleDateString()} ${t}`;
     }
@@ -2511,48 +2441,31 @@
 
     function recordStatusView(statusId) {
       if (!currentUser || !statusId) return;
-      const counts = getSeenStatusCounts();
-      counts[statusId] = (counts[statusId] || 0) + 1;
+      const counts = getSeenStatusCounts(); counts[statusId] = (counts[statusId] || 0) + 1;
       localStorage.setItem(`seenStatusCounts_${currentUser.uid}`, JSON.stringify(counts));
       const me = allUsers[currentUser.uid] || {};
-      const vRef = db.ref(`statuses/${statusId}/views/${currentUser.uid}`);
-      vRef.transaction((cur) => ({
-        name: me.name || currentUser.email || "User",
-        count: ((cur && cur.count) || 0) + 1,
-        seenAt: Date.now()
+      db.ref(`statuses/${statusId}/views/${currentUser.uid}`).transaction((cur) => ({
+        name: me.name || currentUser.email || "User", count: ((cur && cur.count) || 0) + 1, seenAt: Date.now()
       })).catch(() => {});
     }
 
     function getUserStatuses(ownerUid) {
-      return Object.entries(allStatuses)
-        .map(([id, st]) => ({ id, ...st }))
+      return Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
         .filter((st) => st && !isStatusExpired(st) && st.ownerUid === ownerUid && canSeeStatus(allUsers[ownerUid] || { uid: ownerUid }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     }
 
     function getUserStatusRingClass(ownerUid) {
       if (!currentUser || ownerUid === currentUser.uid) return "";
-      const seenMap = getSeenStatusCounts();
-      const list = getUserStatuses(ownerUid);
+      const seenMap = getSeenStatusCounts(); const list = getUserStatuses(ownerUid);
       if (!list.length) return "";
       return list.some((st) => !seenMap[st.id]) ? "status-unseen" : "status-seen";
     }
 
-    function isUserBlockedByMe(peerUid) {
-      const me = allUsers[currentUser?.uid] || {};
-      return !!(me.blocked && me.blocked[peerUid]);
-    }
+    function isUserBlockedByMe(peerUid) { const me = allUsers[currentUser?.uid] || {}; return !!(me.blocked && me.blocked[peerUid]); }
+    function isMeBlockedByPeer(peerUid) { const peer = allUsers[peerUid] || {}; return !!(peer.blocked && peer.blocked[currentUser?.uid]); }
 
-    function isMeBlockedByPeer(peerUid) {
-      const peer = allUsers[peerUid] || {};
-      return !!(peer.blocked && peer.blocked[currentUser?.uid]);
-    }
-
-    function getChatLockPin(peerUid) {
-      if (!currentUser || !peerUid) return null;
-      return localStorage.getItem(`lock_${currentUser.uid}_${peerUid}`);
-    }
-
+    function getChatLockPin(peerUid) { if (!currentUser || !peerUid) return null; return localStorage.getItem(`lock_${currentUser.uid}_${peerUid}`); }
     function setChatLockPin(peerUid, pin) {
       if (!currentUser || !peerUid) return;
       if (pin) localStorage.setItem(`lock_${currentUser.uid}_${peerUid}`, pin);
@@ -2607,16 +2520,12 @@
       if (!userObj || !currentUser) return { html: "", isOnline: false, plain: "" };
       if (userObj.isAI) return { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" };
       if (isUserBlockedByMe(userObj.uid) || isMeBlockedByPeer(userObj.uid)) return { html: "", isOnline: false, plain: "" };
-
       const priv = userObj.privacy || {};
       if (priv.lastSeenEnabled === false) return { html: "", isOnline: false, plain: "" };
       const mode = priv.lastSeen || "everyone";
       if (mode === "nobody") return { html: "", isOnline: false, plain: "" };
       if (mode === "contacts" && !(userObj.contacts && userObj.contacts[currentUser.uid])) return { html: "", isOnline: false, plain: "" };
-
-      if (isActuallyOnline(userObj)) {
-        return { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" };
-      }
+      if (isActuallyOnline(userObj)) return { html: `<span class="mini-disc"></span><span>Online</span>`, isOnline: true, plain: "Online" };
       const ls = formatLastSeen(userObj.lastSeen || userObj.lastPing);
       return { html: `<span>${escapeHtml(ls)}</span>`, isOnline: false, plain: ls };
     }
@@ -2626,109 +2535,67 @@
       if (ownerUser.uid === currentUser.uid) return true;
       if (isUserBlockedByMe(ownerUser.uid) || isMeBlockedByPeer(ownerUser.uid)) return false;
       const priv = ownerUser.privacy || {};
-      if (priv.statusEnabled === false) return false;
-      return true;
+      return priv.statusEnabled !== false;
     }
 
     function updateTopHeader() {
       if (!currentUser) return;
       const me = allUsers[currentUser.uid] || {};
-
       if (selectedPeer) {
         const peer = selectedPeer.isAI ? selectedPeer : (allUsers[selectedPeer.uid] || selectedPeer);
         headerAvatar.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
         headerAvatarWrap.className = "avatar-wrap " + getUserStatusRingClass(peer.uid);
         headerTitle.textContent = getVisibleName(peer);
-        logoutBtn.style.display = "none";
-        chatMoreBtn.style.display = "grid";
-        voiceCallBtn.style.display = peer.isAI ? "none" : "grid";
-        videoCallBtn.style.display = peer.isAI ? "none" : "grid";
+        logoutBtn.style.display = "none"; chatMoreBtn.style.display = "grid";
+        voiceCallBtn.style.display = peer.isAI ? "none" : "grid"; videoCallBtn.style.display = peer.isAI ? "none" : "grid";
         aiQuickBar.classList.toggle("active", !!peer.isAI);
+        menuBlockBtn.textContent = isUserBlockedByMe(peer.uid) ? "Unblock" : "Block";
 
-        const blockedMe = isUserBlockedByMe(peer.uid);
-        menuBlockBtn.textContent = blockedMe ? "Unblock" : "Block";
-
-        const remoteTypingNow = isPeerTypingNow(peer.uid);
-
-        if (blockedMe || isMeBlockedByPeer(peer.uid)) {
-          peerOnlineDisc.classList.remove("active");
-          headerStatus.className = "status-line";
-          headerStatus.textContent = "";
-        } else if (remoteTypingNow) {
-          peerOnlineDisc.classList.remove("active");
-          headerStatus.className = "status-line typing-yellow-bordered";
-          headerStatus.innerHTML = renderAnimatedTypingHtml();
+        if (isUserBlockedByMe(peer.uid) || isMeBlockedByPeer(peer.uid)) {
+          peerOnlineDisc.classList.remove("active"); headerStatus.className = "status-line"; headerStatus.textContent = "";
+        } else if (isPeerTypingNow(peer.uid)) {
+          peerOnlineDisc.classList.remove("active"); headerStatus.className = "status-line typing-yellow-bordered"; headerStatus.innerHTML = renderAnimatedTypingHtml();
         } else {
-          headerStatus.className = "status-line";
-          const p = getPresenceDisplay(peer);
-          peerOnlineDisc.classList.toggle("active", p.isOnline);
-          headerStatus.classList.toggle("is-online", p.isOnline);
-          headerStatus.innerHTML = p.html;
+          headerStatus.className = "status-line"; const p = getPresenceDisplay(peer);
+          peerOnlineDisc.classList.toggle("active", p.isOnline); headerStatus.classList.toggle("is-online", p.isOnline); headerStatus.innerHTML = p.html;
         }
         updateBlockedComposerState();
       } else {
-        headerAvatar.src = me.dp || DEFAULT_DP;
-        headerAvatarWrap.className = "avatar-wrap";
-        headerTitle.textContent = "WhatsApp";
-        peerOnlineDisc.classList.remove("active");
-        headerStatus.className = "status-line";
-        headerStatus.textContent = me.about || "";
-        voiceCallBtn.style.display = "none";
-        videoCallBtn.style.display = "none";
-        aiQuickBar.classList.remove("active");
-        logoutBtn.style.display = "inline-flex";
-        chatMoreBtn.style.display = "none";
-        chatMoreMenu.classList.remove("open");
-        msgBulkSelectBar.classList.remove("active");
-        inChatSearchBar.classList.remove("active");
-        pinnedBanner.classList.remove("active");
-        stickerDrawer.classList.remove("open");
-        liveFormatBar.classList.remove("active");
-        blockedBanner.classList.remove("active");
-        replyPreviewBar.classList.remove("active");
-        messageForm.classList.remove("hidden");
+        headerAvatar.src = me.dp || DEFAULT_DP; headerAvatarWrap.className = "avatar-wrap";
+        headerTitle.textContent = "WhatsApp"; peerOnlineDisc.classList.remove("active");
+        headerStatus.className = "status-line"; headerStatus.textContent = me.about || "";
+        voiceCallBtn.style.display = "none"; videoCallBtn.style.display = "none"; aiQuickBar.classList.remove("active");
+        logoutBtn.style.display = "inline-flex"; chatMoreBtn.style.display = "none"; chatMoreMenu.classList.remove("open");
+        msgBulkSelectBar.classList.remove("active"); inChatSearchBar.classList.remove("active"); pinnedBanner.classList.remove("active");
+        stickerDrawer.classList.remove("open"); liveFormatBar.classList.remove("active"); blockedBanner.classList.remove("active");
+        replyPreviewBar.classList.remove("active"); messageForm.classList.remove("hidden");
       }
     }
 
     document.querySelectorAll("[data-ai-prompt]").forEach((chip) => {
       chip.addEventListener("click", () => {
         if (!selectedPeer || !selectedPeer.isAI) return;
-        messageInput.value = chip.dataset.aiPrompt || "";
-        messageForm.dispatchEvent(new Event("submit"));
+        messageInput.value = chip.dataset.aiPrompt || ""; messageForm.dispatchEvent(new Event("submit"));
       });
     });
 
     function listenIncomingCalls(myUid) {
       db.ref(`calls/${myUid}`).on("value", async (snap) => {
         const data = snap.val();
-        if (!data) {
-          if (callModal.classList.contains("active") && !activeCallId) { cleanupCallMediaOnly(); callModal.classList.remove("active"); }
-          return;
-        }
-        if (data.status === "ended" || data.status === "rejected") {
-          cleanupCallMediaOnly(); callModal.classList.remove("active"); activeCallId = null; incomingCallData = null; return;
-        }
+        if (!data) { if (callModal.classList.contains("active") && !activeCallId) { cleanupCallMediaOnly(); callModal.classList.remove("active"); } return; }
+        if (data.status === "ended" || data.status === "rejected") { cleanupCallMediaOnly(); callModal.classList.remove("active"); activeCallId = null; incomingCallData = null; return; }
         if (data.status === "ringing" && data.fromUid && data.fromUid !== myUid) {
-          incomingCallData = data;
-          const caller = allUsers[data.fromUid] || { uid: data.fromUid, name: "Caller" };
+          incomingCallData = data; const caller = allUsers[data.fromUid] || { uid: data.fromUid, name: "Caller" };
           callPeerDp.src = canSeeDp(caller) ? (caller.dp || DEFAULT_DP) : DEFAULT_DP;
           callPeerName.textContent = getVisibleName(caller);
           callStatusText.textContent = data.mode === "video" ? "Incoming Video Call..." : "Incoming Voice Call...";
-          acceptCallBtn.style.display = "inline-flex";
-          callModal.classList.add("active");
-          triggerMessageVibration();
-          playNotificationSound();
+          acceptCallBtn.style.display = "inline-flex"; callModal.classList.add("active"); triggerMessageVibration(); playNotificationSound();
         } else if (data.status === "answered" && data.answer && pc && activeCallId === data.callId) {
-          if (!pc.currentRemoteDescription) {
-            await pc.setRemoteDescription(new RTCSessionDescription(data.answer)).catch(() => {});
-            callStatusText.textContent = "Connected";
-          }
+          if (!pc.currentRemoteDescription) { await pc.setRemoteDescription(new RTCSessionDescription(data.answer)).catch(() => {}); callStatusText.textContent = "Connected"; }
         }
         if (data.candidates) {
           for (const c of Object.values(data.candidates)) {
-            if (c && c.senderUid !== myUid && c.candidate && pc && pc.remoteDescription) {
-              await pc.addIceCandidate(new RTCIceCandidate(c.candidate)).catch(() => {});
-            }
+            if (c && c.senderUid !== myUid && c.candidate && pc && pc.remoteDescription) await pc.addIceCandidate(new RTCIceCandidate(c.candidate)).catch(() => {});
           }
         }
       });
@@ -2736,16 +2603,10 @@
 
     function createPeerConnection(targetUid, callId, isVideo) {
       const conn = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-      conn.onicecandidate = (ev) => {
-        if (ev.candidate && currentUser) {
-          db.ref(`calls/${targetUid}/candidates`).push({ senderUid: currentUser.uid, callId, candidate: ev.candidate.toJSON() }).catch(() => {});
-        }
-      };
+      conn.onicecandidate = (ev) => { if (ev.candidate && currentUser) db.ref(`calls/${targetUid}/candidates`).push({ senderUid: currentUser.uid, callId, candidate: ev.candidate.toJSON() }).catch(() => {}); };
       conn.ontrack = (ev) => {
-        const stream = ev.streams && ev.streams[0];
-        if (!stream) return;
-        if (isVideo) { remoteCallVideo.style.display = "block"; remoteCallVideo.srcObject = stream; }
-        else { remoteCallAudio.srcObject = stream; }
+        const stream = ev.streams && ev.streams[0]; if (!stream) return;
+        if (isVideo) { remoteCallVideo.style.display = "block"; remoteCallVideo.srcObject = stream; } else { remoteCallAudio.srcObject = stream; }
         callStatusText.textContent = "Connected";
       };
       return conn;
@@ -2753,45 +2614,29 @@
 
     async function startOutgoingCall(mode) {
       if (!selectedPeer || selectedPeer.isAI || !currentUser) return;
-      const peer = allUsers[selectedPeer.uid] || selectedPeer;
-      const isVideo = mode === "video";
-      const callId = "call_" + Date.now();
-      activeCallId = callId;
-      callPeerDp.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
-      callPeerName.textContent = getVisibleName(peer);
-      callStatusText.textContent = isVideo ? "Calling video..." : "Calling...";
-      acceptCallBtn.style.display = "none";
-      remoteCallVideo.style.display = "none";
-      callModal.classList.add("active");
-      pushNavState();
-
+      const peer = allUsers[selectedPeer.uid] || selectedPeer; const isVideo = mode === "video"; const callId = "call_" + Date.now();
+      activeCallId = callId; callPeerDp.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
+      callPeerName.textContent = getVisibleName(peer); callStatusText.textContent = isVideo ? "Calling video..." : "Calling...";
+      acceptCallBtn.style.display = "none"; remoteCallVideo.style.display = "none"; callModal.classList.add("active"); pushNavState();
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
         pc = createPeerConnection(peer.uid, callId, isVideo);
         localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        await db.ref(`calls/${peer.uid}`).set({
-          callId, fromUid: currentUser.uid, toUid: peer.uid, mode, status: "ringing",
-          offer: { type: offer.type, sdp: offer.sdp }, updatedAt: Date.now()
-        });
+        const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+        await db.ref(`calls/${peer.uid}`).set({ callId, fromUid: currentUser.uid, toUid: peer.uid, mode, status: "ringing", offer: { type: offer.type, sdp: offer.sdp }, updatedAt: Date.now() });
       } catch (err) { callStatusText.textContent = "Call failed: " + err.message; }
     }
 
     acceptCallBtn.addEventListener("click", async () => {
       if (!incomingCallData || !currentUser) return;
-      const data = incomingCallData;
-      const isVideo = data.mode === "video";
-      activeCallId = data.callId;
-      acceptCallBtn.style.display = "none";
-      callStatusText.textContent = "Connecting...";
+      const data = incomingCallData; const isVideo = data.mode === "video"; activeCallId = data.callId;
+      acceptCallBtn.style.display = "none"; callStatusText.textContent = "Connecting...";
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
         pc = createPeerConnection(data.fromUid, data.callId, isVideo);
         localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
         await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
+        const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
         await db.ref(`calls/${currentUser.uid}`).update({ status: "answered", answer: { type: answer.type, sdp: answer.sdp } });
       } catch (err) { callStatusText.textContent = "Mic/Camera error: " + err.message; }
     });
@@ -2819,44 +2664,25 @@
     function updateBlockedComposerState() {
       if (!selectedPeer || !currentUser) return;
       if (selectedPeer.isAI) { blockedBanner.classList.remove("active"); messageForm.classList.remove("hidden"); return; }
-      const blockedMe = isUserBlockedByMe(selectedPeer.uid);
-      const blockedByPeer = isMeBlockedByPeer(selectedPeer.uid);
-      if (blockedMe) {
-        blockedBanner.classList.add("active"); blockedBannerText.textContent = "Contact blocked";
-        unblockFromBannerBtn.style.display = "inline-flex"; messageForm.classList.add("hidden");
-      } else if (blockedByPeer) {
-        blockedBanner.classList.add("active"); blockedBannerText.textContent = "Can't send messages";
-        unblockFromBannerBtn.style.display = "none"; messageForm.classList.add("hidden");
-      } else { blockedBanner.classList.remove("active"); messageForm.classList.remove("hidden"); }
+      const blockedMe = isUserBlockedByMe(selectedPeer.uid); const blockedByPeer = isMeBlockedByPeer(selectedPeer.uid);
+      if (blockedMe) { blockedBanner.classList.add("active"); blockedBannerText.textContent = "Contact blocked"; unblockFromBannerBtn.style.display = "inline-flex"; messageForm.classList.add("hidden"); }
+      else if (blockedByPeer) { blockedBanner.classList.add("active"); blockedBannerText.textContent = "Can't send messages"; unblockFromBannerBtn.style.display = "none"; messageForm.classList.add("hidden"); }
+      else { blockedBanner.classList.remove("active"); messageForm.classList.remove("hidden"); }
     }
 
     function setupPresence(uid) {
-      const userRef = db.ref(`users/${uid}`);
-      const connectedRef = db.ref(".info/connected");
+      const userRef = db.ref(`users/${uid}`); const connectedRef = db.ref(".info/connected");
       const markOfflineNow = () => { const now = Date.now(); userRef.update({ online: false, lastSeen: now, lastPing: now }).catch(() => {}); };
       const markOnlineNow = () => { if (!navigator.onLine || document.hidden) return; userRef.update({ online: true, lastPing: Date.now() }).catch(() => {}); };
 
       connectedRef.on("value", (snap) => {
-        if (snap.val() === true && navigator.onLine) {
-          markOnlineNow();
-          userRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
-        } else { markOfflineNow(); }
+        if (snap.val() === true && navigator.onLine) { markOnlineNow(); userRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP }); }
+        else { markOfflineNow(); }
       });
 
-      window.addEventListener("offline", markOfflineNow);
-      window.addEventListener("online", markOnlineNow);
-      document.addEventListener("visibilitychange", () => {
-        if (!currentUser) return;
-        if (document.hidden || !navigator.onLine) markOfflineNow();
-        else markOnlineNow();
-      });
-
-      setInterval(() => {
-        if (!currentUser) return;
-        if (!navigator.onLine || document.hidden) markOfflineNow();
-        else markOnlineNow();
-        refreshPresenceAndTypingUI();
-      }, 20000);
+      window.addEventListener("offline", markOfflineNow); window.addEventListener("online", markOnlineNow);
+      document.addEventListener("visibilitychange", () => { if (!currentUser) return; if (document.hidden || !navigator.onLine) markOfflineNow(); else markOnlineNow(); });
+      setInterval(() => { if (!currentUser) return; if (!navigator.onLine || document.hidden) markOfflineNow(); else markOnlineNow(); refreshPresenceAndTypingUI(); }, 20000);
     }
 
     function listenActiveChatsAndUnread(myUid) {
@@ -2867,8 +2693,7 @@
           attachPeerTypingListener(otherUid);
           const chatId = getChatId(myUid, otherUid);
           db.ref(`chats/${chatId}/messages`).limitToLast(50).on("value", (mSnap) => {
-            let count = 0;
-            let hasAnyVisibleMsg = false;
+            let count = 0, hasAnyVisibleMsg = false;
             const msgs = mSnap.val() || {};
             Object.values(msgs).forEach((m) => {
               if (!m) return;
@@ -2878,8 +2703,7 @@
               if (m.senderId === otherUid && m.receiverId === myUid && m.status !== "seen") count++;
             });
             activeChatIds[otherUid] = hasAnyVisibleMsg;
-            const prev = unreadCounts[otherUid] || 0;
-            unreadCounts[otherUid] = count;
+            const prev = unreadCounts[otherUid] || 0; unreadCounts[otherUid] = count;
             if (count > prev && (!selectedPeer || selectedPeer.uid !== otherUid)) triggerMessageVibration();
             renderUsersList();
           });
@@ -2891,50 +2715,31 @@
       const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime";
       if (mode === "mute") return;
       try {
-        unlockAudio();
-        if (!audioCtx) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        unlockAudio(); if (!audioCtx) return;
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.type = mode === "chime" ? "sine" : "triangle";
         osc.frequency.setValueAtTime(mode === "chime" ? 660 : 440, audioCtx.currentTime);
         if (mode === "chime") osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
-        gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.28);
+        gain.gain.setValueAtTime(0.22, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.28);
       } catch (_) {}
     }
 
-    function getWallpaperKey() {
-      if (!currentUser || !selectedPeer) return null;
-      return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`;
-    }
-
-    function applyWallpaper() {
-      const key = getWallpaperKey();
-      const wp = key ? localStorage.getItem(key) : null;
-      document.documentElement.style.setProperty("--chat-wallpaper", wp ? `url("${wp}")` : "none");
-    }
+    function getWallpaperKey() { if (!currentUser || !selectedPeer) return null; return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`; }
+    function applyWallpaper() { const key = getWallpaperKey(); const wp = key ? localStorage.getItem(key) : null; document.documentElement.style.setProperty("--chat-wallpaper", wp ? `url("${wp}")` : "none"); }
 
     function renderTickSvg(msg) {
       if (msg.senderId !== currentUser.uid) return "";
-      const isSeen = msg.status === "seen";
-      const isDouble = isSeen || msg.status === "delivered" || (navigator.onLine && msg.sentOnline === true);
+      const isSeen = msg.status === "seen"; const isDouble = isSeen || msg.status === "delivered" || (navigator.onLine && msg.sentOnline === true);
       const seenClass = isSeen ? " seen" : "";
       if (isDouble) return `<svg class="tick-svg${seenClass}" viewBox="0 0 24 16"><path d="M2 8.5L6.5 13L15.5 3" /><path d="M8.5 8.5L13 13L22 3" /></svg>`;
       return `<svg class="tick-svg" viewBox="0 0 20 16"><path d="M4 8.5L8.5 13L17.5 3" /></svg>`;
     }
 
     toggleAuthModeBtn.addEventListener("click", () => {
-      isRegisterMode = !isRegisterMode;
-      authError.textContent = "";
-      if (isRegisterMode) {
-        authTitle.textContent = "Create account"; nameInput.style.display = "block";
-        authSubmitBtn.textContent = "Register"; toggleAuthModeBtn.textContent = "Log in";
-      } else {
-        authTitle.textContent = "Log in"; nameInput.style.display = "none";
-        authSubmitBtn.textContent = "Log in"; toggleAuthModeBtn.textContent = "Create account";
-      }
+      isRegisterMode = !isRegisterMode; authError.textContent = "";
+      if (isRegisterMode) { authTitle.textContent = "Create account"; nameInput.style.display = "block"; authSubmitBtn.textContent = "Register"; toggleAuthModeBtn.textContent = "Log in"; }
+      else { authTitle.textContent = "Log in"; nameInput.style.display = "none"; authSubmitBtn.textContent = "Log in"; toggleAuthModeBtn.textContent = "Create account"; }
     });
 
     authSubmitBtn.addEventListener("click", async () => {
@@ -2955,70 +2760,42 @@
     });
 
     async function performLogout() {
-      localStorage.removeItem("hasActiveSession");
-      sendRemoteTypingState(false);
+      localStorage.removeItem("hasActiveSession"); sendRemoteTypingState(false);
       if (currentUser) await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() }).catch(() => {});
-      if (messagesRef) messagesRef.off();
-      auth.signOut();
+      if (messagesRef) messagesRef.off(); auth.signOut();
     }
 
-    logoutBtn.addEventListener("click", performLogout);
-    settingsLogoutBtn.addEventListener("click", performLogout);
+    logoutBtn.addEventListener("click", performLogout); settingsLogoutBtn.addEventListener("click", performLogout);
 
     auth.onAuthStateChanged((user) => {
       if (user) {
-        localStorage.setItem("hasActiveSession", "1");
-        currentUser = user;
-        authScreen.classList.remove("active");
-        chatScreen.classList.add("active");
-        syncViewportVars();
+        localStorage.setItem("hasActiveSession", "1"); currentUser = user;
+        authScreen.classList.remove("active"); chatScreen.classList.add("active"); syncViewportVars();
 
         soundSelect.value = localStorage.getItem("chatSound") || "chime";
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
-        fontSizeSelect.value = savedFont;
-        document.documentElement.style.setProperty("--msg-font-size", savedFont);
-        setCardLiveStyle(getCardLiveStyle());
-        setVibrateEnabled(isVibrateEnabled());
-        setSelectedEmojiTone(getSelectedEmojiTone());
-        setCustomEmojiColor(getCustomEmojiColor());
-        setEmojiShape(getEmojiShape());
+        fontSizeSelect.value = savedFont; document.documentElement.style.setProperty("--msg-font-size", savedFont);
+        setCardLiveStyle(getCardLiveStyle()); setVibrateEnabled(isVibrateEnabled());
+        setSelectedEmojiTone(getSelectedEmojiTone()); setCustomEmojiColor(getCustomEmojiColor()); setEmojiShape(getEmojiShape());
         applyHomeLiveWallpaper(localStorage.getItem("homeLiveWallpaper") || "none");
         applyChatLiveWallpaper(localStorage.getItem("chatLiveWallpaper") || "none");
-        refreshNotifStatusLabel();
-        renderStarredMessagesList();
-        setupPresence(user.uid);
-        listenActiveChatsAndUnread(user.uid);
-        listenIncomingCalls(user.uid);
+        refreshNotifStatusLabel(); renderStarredMessagesList(); setupPresence(user.uid); listenActiveChatsAndUnread(user.uid); listenIncomingCalls(user.uid);
 
         db.ref("users").on("value", (snap) => {
           allUsers = snap.val() || {};
-          Object.keys(allUsers).forEach((uid) => {
-            if (uid !== currentUser.uid) attachPeerTypingListener(uid);
-          });
-          syncSettingsFromUser();
-          renderUsersList();
-          renderStatusFeed();
-          updateTopHeader();
+          Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) attachPeerTypingListener(uid); });
+          syncSettingsFromUser(); renderUsersList(); renderStatusFeed(); updateTopHeader();
         });
 
         db.ref("statuses").on("value", (snap) => {
-          allStatuses = snap.val() || {};
-          pruneExpiredStatuses();
-          renderUsersList();
-          renderStatusFeed();
-          updateTopHeader();
+          allStatuses = snap.val() || {}; pruneExpiredStatuses(); renderUsersList(); renderStatusFeed(); updateTopHeader();
           if (activeStatusId && statusViewerModal.classList.contains("active")) {
-            if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) {
-              statusViewerModal.classList.remove("active");
-              activeStatusId = null;
-            } else {
-              renderStatusViewerContent(activeStatusId);
-            }
+            if (!allStatuses[activeStatusId] || isStatusExpired(allStatuses[activeStatusId])) { statusViewerModal.classList.remove("active"); activeStatusId = null; }
+            else renderStatusViewerContent(activeStatusId);
           }
         });
       } else {
-        localStorage.removeItem("hasActiveSession");
-        currentUser = null; selectedPeer = null;
+        localStorage.removeItem("hasActiveSession"); currentUser = null; selectedPeer = null;
         chatScreen.classList.remove("active"); authScreen.classList.add("active");
       }
     });
@@ -3026,10 +2803,8 @@
     function syncSettingsFromUser() {
       if (!currentUser || !allUsers[currentUser.uid]) return;
       const me = allUsers[currentUser.uid];
-      heroAvatar.src = me.dp || DEFAULT_DP;
-      heroName.textContent = me.name || "User";
-      heroEmail.textContent = me.email || currentUser.email || "";
-      heroNoteBubble.textContent = me.about || "Hey there! I am using WhatsApp";
+      heroAvatar.src = me.dp || DEFAULT_DP; heroName.textContent = me.name || "User";
+      heroEmail.textContent = me.email || currentUser.email || ""; heroNoteBubble.textContent = me.about || "Hey there! I am using WhatsApp";
       accountUidText.textContent = `ID: ${currentUser.uid}`;
       if (document.activeElement !== accountNameInput) accountNameInput.value = me.name || "";
       if (document.activeElement !== aboutInput) aboutInput.value = me.about || "";
@@ -3049,11 +2824,9 @@
       const trigger = () => { timer = null; enterMultiSelectWith(uid); };
       const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
       cardEl.addEventListener("touchstart", () => { timer = setTimeout(trigger, 460); }, { passive: true });
-      cardEl.addEventListener("touchend", cancel);
-      cardEl.addEventListener("touchmove", cancel);
+      cardEl.addEventListener("touchend", cancel); cardEl.addEventListener("touchmove", cancel);
       cardEl.addEventListener("mousedown", (e) => { if (e.button === 0) timer = setTimeout(trigger, 520); });
-      cardEl.addEventListener("mouseup", cancel);
-      cardEl.addEventListener("mouseleave", cancel);
+      cardEl.addEventListener("mouseup", cancel); cardEl.addEventListener("mouseleave", cancel);
       cardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); enterMultiSelectWith(uid); });
     }
 
@@ -3063,23 +2836,18 @@
       const cardLiveCls = getCardLiveStyle() !== "none" ? ` ${getCardLiveStyle()}` : "";
       usersList.innerHTML = "";
 
-      if (!q || "na ai".includes(q)) {
+      if (chatFilterMode === "all" && (!q || "na ai".includes(q))) {
         const aiSelected = selectedChatUids.has("na_ai_assistant");
         const aiRow = document.createElement("div");
-        aiRow.className = "chat-card" + cardLiveCls +
-          (selectedPeer && selectedPeer.isAI ? " active" : "") +
-          (aiSelected ? " selected-multi" : "");
+        aiRow.className = "chat-card" + cardLiveCls + (selectedPeer && selectedPeer.isAI ? " active" : "") + (aiSelected ? " selected-multi" : "");
         aiRow.innerHTML = `
+          ${createPerimeterSerpentSvg()}
           <span class="select-check-circle">${aiSelected ? "✓" : ""}</span>
           <div class="avatar-wrap"><img class="avatar" src="${NA_AI_DP}" alt="" /><span class="online-disc active"></span></div>
           <div class="row-meta"><div class="row-name">NA Ai ✨</div><div class="row-sub status-line is-online">Live AI • Sinhala & All Lang • Photo Gen</div></div>
         `;
-        aiRow.addEventListener("click", () => {
-          if (isMultiSelectMode) toggleChatSelection("na_ai_assistant");
-          else openChatWith(NA_AI_USER);
-        });
-        attachCardLongPress(aiRow, "na_ai_assistant");
-        usersList.appendChild(aiRow);
+        aiRow.addEventListener("click", () => { if (isMultiSelectMode) toggleChatSelection("na_ai_assistant"); else openChatWith(NA_AI_USER); });
+        attachCardLongPress(aiRow, "na_ai_assistant"); usersList.appendChild(aiRow);
       }
 
       Object.values(allUsers).forEach((u) => {
@@ -3087,32 +2855,26 @@
         attachPeerTypingListener(u.uid);
 
         const hasChat = !!activeChatIds[u.uid] || (selectedPeer && selectedPeer.uid === u.uid);
-        const visName = getVisibleName(u);
-        const visAbout = getVisibleAbout(u);
+        const visName = getVisibleName(u); const visAbout = getVisibleAbout(u);
         const rawMatch = `${visName} ${u.name || ""} ${u.email || ""} ${visAbout}`.toLowerCase();
+        const badgeNum = (!selectedPeer || selectedPeer.uid !== u.uid) ? (unreadCounts[u.uid] || 0) : 0;
 
+        if (chatFilterMode === "unread" && badgeNum <= 0) return;
         if (!q && !hasChat) return;
         if (q && !rawMatch.includes(q)) return;
 
-        const isBlocked = isUserBlockedByMe(u.uid);
-        const isLocked = !!getChatLockPin(u.uid);
-        const isSelected = selectedChatUids.has(u.uid);
-        const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
-        const ringClass = getUserStatusRingClass(u.uid);
-        const remoteTypingNow = isPeerTypingNow(u.uid);
+        const isBlocked = isUserBlockedByMe(u.uid); const isLocked = !!getChatLockPin(u.uid);
+        const isSelected = selectedChatUids.has(u.uid); const dpSrc = canSeeDp(u) ? (u.dp || DEFAULT_DP) : DEFAULT_DP;
+        const ringClass = getUserStatusRingClass(u.uid); const remoteTypingNow = isPeerTypingNow(u.uid);
         const p = !isBlocked && !isMeBlockedByPeer(u.uid) ? getPresenceDisplay(u) : { html: "", isOnline: false, plain: "" };
-        const badgeNum = (!selectedPeer || selectedPeer.uid !== u.uid) ? (unreadCounts[u.uid] || 0) : 0;
 
-        const subHtml = isBlocked
-          ? escapeHtml("Blocked")
-          : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout));
+        const subHtml = isBlocked ? escapeHtml("Blocked") : (remoteTypingNow ? renderAnimatedTypingHtml() : escapeHtml(p.plain || visAbout));
         const subClass = "row-sub" + (remoteTypingNow ? " typing-yellow-bordered" : (p.isOnline ? " status-line is-online" : ""));
 
         const card = document.createElement("div");
-        card.className = "chat-card" + cardLiveCls +
-          (selectedPeer && selectedPeer.uid === u.uid ? " active" : "") +
-          (isSelected ? " selected-multi" : "");
+        card.className = "chat-card" + cardLiveCls + (selectedPeer && selectedPeer.uid === u.uid ? " active" : "") + (isSelected ? " selected-multi" : "");
         card.innerHTML = `
+          ${createPerimeterSerpentSvg()}
           <span class="select-check-circle">${isSelected ? "✓" : ""}</span>
           <div class="avatar-wrap ${ringClass}" data-dp-uid="${escapeAttr(u.uid)}">
             <img class="avatar" src="${dpSrc}" alt="" />
@@ -3129,34 +2891,23 @@
           ev.stopPropagation();
           if (isMultiSelectMode) { toggleChatSelection(u.uid); return; }
           const stList = getUserStatuses(u.uid);
-          if (stList.length) openStatusViewer(stList[0].id);
-          else openContactInfoModal(u);
+          if (stList.length) openStatusViewer(stList[0].id); else openContactInfoModal(u);
         });
 
-        card.addEventListener("click", () => {
-          if (isMultiSelectMode) toggleChatSelection(u.uid);
-          else handleSelectPeer(u);
-        });
-
-        attachCardLongPress(card, u.uid);
-        usersList.appendChild(card);
+        card.addEventListener("click", () => { if (isMultiSelectMode) toggleChatSelection(u.uid); else handleSelectPeer(u); });
+        attachCardLongPress(card, u.uid); usersList.appendChild(card);
       });
     }
 
     searchUsersInput.addEventListener("input", renderUsersList);
 
     headerAvatarWrap.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (!selectedPeer || selectedPeer.isAI) return;
+      ev.stopPropagation(); if (!selectedPeer || selectedPeer.isAI) return;
       const stList = getUserStatuses(selectedPeer.uid);
-      if (stList.length) openStatusViewer(stList[0].id);
-      else openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer);
+      if (stList.length) openStatusViewer(stList[0].id); else openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer);
     });
 
-    headerTitleWrap.addEventListener("click", () => {
-      if (!selectedPeer || selectedPeer.isAI) return;
-      openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer);
-    });
+    headerTitleWrap.addEventListener("click", () => { if (!selectedPeer || selectedPeer.isAI) return; openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); });
 
     function handleSelectPeer(peer) {
       const pin = getChatLockPin(peer.uid);
@@ -3169,31 +2920,21 @@
     }
 
     confirmChatLockBtn.addEventListener("click", () => {
-      const pin = chatLockPinInput.value.trim();
-      if (!pin) return;
+      const pin = chatLockPinInput.value.trim(); if (!pin) return;
       if (lockModalMode === "unlock" && pendingLockPeer) {
-        if (pin === getChatLockPin(pendingLockPeer.uid)) {
-          const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target);
-        } else { alert("Wrong passcode"); }
-      } else if (lockModalMode === "set" && selectedPeer) {
-        setChatLockPin(selectedPeer.uid, pin); chatLockModal.classList.remove("active"); renderUsersList();
-      }
+        if (pin === getChatLockPin(pendingLockPeer.uid)) { const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target); }
+        else alert("Wrong passcode");
+      } else if (lockModalMode === "set" && selectedPeer) { setChatLockPin(selectedPeer.uid, pin); chatLockModal.classList.remove("active"); renderUsersList(); }
     });
 
     cancelChatLockBtn.addEventListener("click", () => { pendingLockPeer = null; chatLockModal.classList.remove("active"); });
 
     function openChatWith(peer) {
-      unlockAudio();
-      sendRemoteTypingState(false);
-      exitMsgMultiSelectMode();
-      loadedMessagesMap = {};
-      selectedPeer = peer; unreadCounts[peer.uid] = 0;
-      replyToMsg = null; replyPreviewBar.classList.remove("active");
-      stickerDrawer.classList.remove("open"); liveFormatBar.classList.remove("active");
-      inChatSearchBar.classList.remove("active"); inChatSearchInput.value = "";
-      mainGrid.classList.add("chat-open");
-      if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
-      pushNavState();
+      unlockAudio(); sendRemoteTypingState(false); exitMsgMultiSelectMode(); loadedMessagesMap = {};
+      selectedPeer = peer; unreadCounts[peer.uid] = 0; replyToMsg = null;
+      replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
+      liveFormatBar.classList.remove("active"); inChatSearchBar.classList.remove("active"); inChatSearchInput.value = "";
+      mainGrid.classList.add("chat-open"); if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid"; pushNavState();
 
       const chatId = getChatId(currentUser.uid, peer.uid);
       const draft = localStorage.getItem(`draft_${currentUser.uid}_${chatId}`) || "";
@@ -3205,11 +2946,7 @@
         attachPeerTypingListener(peer.uid);
         if (activePeerTypingRef) activePeerTypingRef.off();
         activePeerTypingRef = db.ref(`typing/${chatId}/${peer.uid}`);
-        activePeerTypingRef.on("value", (snap) => {
-          if (!typingMap[chatId]) typingMap[chatId] = {};
-          typingMap[chatId][peer.uid] = snap.val() || null;
-          refreshPresenceAndTypingUI();
-        });
+        activePeerTypingRef.on("value", (snap) => { if (!typingMap[chatId]) typingMap[chatId] = {}; typingMap[chatId][peer.uid] = snap.val() || null; refreshPresenceAndTypingUI(); });
       }
 
       db.ref(`chats/${chatId}/pinned`).on("value", (snap) => {
@@ -3218,11 +2955,7 @@
         else { pinnedBanner.classList.remove("active"); }
       });
 
-      pinnedBanner.onclick = (e) => {
-        if (e.target.closest("#unpinMsgBtn")) return;
-        jumpAndHighlightQuotedMessage(pinnedBannerText.textContent || "");
-      };
-
+      pinnedBanner.onclick = (e) => { if (e.target.closest("#unpinMsgBtn")) return; jumpAndHighlightQuotedMessage(pinnedBannerText.textContent || ""); };
       unpinMsgBtn.onclick = (e) => { e.stopPropagation(); db.ref(`chats/${chatId}/pinned`).remove().catch(() => {}); };
       cancelReplyBtn.onclick = () => { replyToMsg = null; replyPreviewBar.classList.remove("active"); };
 
@@ -3232,8 +2965,7 @@
       messagesContainer.innerHTML = ""; isInitialLoad = true;
 
       if (peer.isAI) {
-        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
-        let aiMsgs = [];
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`; let aiMsgs = [];
         try { aiMsgs = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]"); } catch (_) {}
         if (!aiMsgs.length) {
           aiMsgs = [{
@@ -3269,9 +3001,7 @@
     }
 
     function closeActiveChatToList() {
-      sendRemoteTypingState(false);
-      exitMsgMultiSelectMode();
-      selectedPeer = null; replyToMsg = null;
+      sendRemoteTypingState(false); exitMsgMultiSelectMode(); selectedPeer = null; replyToMsg = null;
       replyPreviewBar.classList.remove("active"); stickerDrawer.classList.remove("open");
       liveFormatBar.classList.remove("active"); inChatSearchBar.classList.remove("active");
       pinnedBanner.classList.remove("active"); aiQuickBar.classList.remove("active");
@@ -3282,17 +3012,12 @@
     backToUsersBtn.addEventListener("click", closeActiveChatToList);
     chatMoreBtn.addEventListener("click", (e) => { e.stopPropagation(); chatMoreMenu.classList.toggle("open"); });
 
-    menuSearchChatBtn.addEventListener("click", () => {
-      chatMoreMenu.classList.remove("open"); inChatSearchBar.classList.toggle("active");
-      if (inChatSearchBar.classList.contains("active")) inChatSearchInput.focus();
-    });
+    menuSearchChatBtn.addEventListener("click", () => { chatMoreMenu.classList.remove("open"); inChatSearchBar.classList.toggle("active"); if (inChatSearchBar.classList.contains("active")) inChatSearchInput.focus(); });
     closeInChatSearchBtn.addEventListener("click", () => { inChatSearchBar.classList.remove("active"); inChatSearchInput.value = ""; filterMessagesInChat(""); });
     inChatSearchInput.addEventListener("input", () => filterMessagesInChat(inChatSearchInput.value.trim().toLowerCase()));
 
     function filterMessagesInChat(q) {
-      messagesContainer.querySelectorAll(".msg-swipe-wrap").forEach((wrap) => {
-        wrap.style.display = (!q || (wrap.textContent || "").toLowerCase().includes(q)) ? "" : "none";
-      });
+      messagesContainer.querySelectorAll(".msg-swipe-wrap").forEach((wrap) => { wrap.style.display = (!q || (wrap.textContent || "").toLowerCase().includes(q)) ? "" : "none"; });
     }
 
     menuContactInfoBtn.addEventListener("click", () => { chatMoreMenu.classList.remove("open"); if (selectedPeer && !selectedPeer.isAI) openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); });
@@ -3302,39 +3027,33 @@
 
     document.querySelectorAll("[data-set-font]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const sz = btn.dataset.setFont;
-        localStorage.setItem("chatFontSize", sz); fontSizeSelect.value = sz;
+        const sz = btn.dataset.setFont; localStorage.setItem("chatFontSize", sz); fontSizeSelect.value = sz;
         document.documentElement.style.setProperty("--msg-font-size", sz); fontSizeModal.classList.remove("active");
       });
     });
     closeFontModalBtn.addEventListener("click", () => fontSizeModal.classList.remove("active"));
 
     menuLockChatBtn.addEventListener("click", () => {
-      chatMoreMenu.classList.remove("open");
-      if (!selectedPeer || selectedPeer.isAI) return;
+      chatMoreMenu.classList.remove("open"); if (!selectedPeer || selectedPeer.isAI) return;
       if (getChatLockPin(selectedPeer.uid)) { setChatLockPin(selectedPeer.uid, null); renderUsersList(); }
       else { lockModalMode = "set"; chatLockModalTitle.textContent = "Lock chat"; chatLockModalDesc.textContent = "Enter passcode"; chatLockPinInput.value = ""; chatLockModal.classList.add("active"); pushNavState(); }
     });
 
     menuClearChatBtn.addEventListener("click", async () => {
-      chatMoreMenu.classList.remove("open");
-      if (!currentUser || !selectedPeer) return;
+      chatMoreMenu.classList.remove("open"); if (!currentUser || !selectedPeer) return;
       if (selectedPeer.isAI) { localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`); messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`; return; }
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-      await db.ref(`chats/${chatId}/messages`).remove();
-      activeChatIds[selectedPeer.uid] = false;
+      await db.ref(`chats/${chatId}/messages`).remove(); activeChatIds[selectedPeer.uid] = false;
       messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`;
     });
 
     async function deleteEntireChat(peer) {
       if (!currentUser || !peer) return;
-      if (peer.isAI) { localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`); }
+      if (peer.isAI) localStorage.removeItem(`na_ai_msgs_${currentUser.uid}`);
       else {
         const chatId = getChatId(currentUser.uid, peer.uid);
-        await db.ref(`chats/${chatId}`).remove().catch(() => {});
-        await db.ref(`typing/${chatId}`).remove().catch(() => {});
-        await db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).remove().catch(() => {});
-        activeChatIds[peer.uid] = false;
+        await db.ref(`chats/${chatId}`).remove().catch(() => {}); await db.ref(`typing/${chatId}`).remove().catch(() => {});
+        await db.ref(`users/${currentUser.uid}/contacts/${peer.uid}`).remove().catch(() => {}); activeChatIds[peer.uid] = false;
       }
       setChatLockPin(peer.uid, null); unreadCounts[peer.uid] = 0;
       if (selectedPeer && selectedPeer.uid === peer.uid) closeActiveChatToList();
@@ -3345,8 +3064,7 @@
     infoDeleteChatBtn.addEventListener("click", async () => { contactInfoModal.classList.remove("active"); if (selectedPeer) await deleteEntireChat(selectedPeer); });
 
     menuBlockBtn.addEventListener("click", async () => {
-      chatMoreMenu.classList.remove("open");
-      if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
+      chatMoreMenu.classList.remove("open"); if (!currentUser || !selectedPeer || selectedPeer.isAI) return;
       const peerUid = selectedPeer.uid;
       if (isUserBlockedByMe(peerUid)) await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).remove();
       else await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).set(true);
@@ -3354,12 +3072,9 @@
     });
 
     function openContactInfoModal(peer) {
-      if (!peer) return;
-      const p = getPresenceDisplay(peer);
+      if (!peer) return; const p = getPresenceDisplay(peer);
       infoAvatar.src = canSeeDp(peer) ? (peer.dp || DEFAULT_DP) : DEFAULT_DP;
-      infoName.textContent = getVisibleName(peer);
-      infoStatus.textContent = p.plain;
-      infoAbout.textContent = getVisibleAbout(peer);
+      infoName.textContent = getVisibleName(peer); infoStatus.textContent = p.plain; infoAbout.textContent = getVisibleAbout(peer);
       toggleChatLockBtn.textContent = getChatLockPin(peer.uid) ? "Unlock" : "Lock";
       infoBlockBtn.textContent = isUserBlockedByMe(peer.uid) ? "Unblock" : "Block";
       contactInfoModal.classList.add("active"); pushNavState();
@@ -3374,8 +3089,7 @@
     });
 
     infoBlockBtn.addEventListener("click", async () => {
-      if (!currentUser || !selectedPeer) return;
-      const peerUid = selectedPeer.uid;
+      if (!currentUser || !selectedPeer) return; const peerUid = selectedPeer.uid;
       if (isUserBlockedByMe(peerUid)) await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).remove();
       else await db.ref(`users/${currentUser.uid}/blocked/${peerUid}`).set(true);
       refreshPresenceAndTypingUI(); openContactInfoModal(allUsers[peerUid] || selectedPeer);
@@ -3383,24 +3097,19 @@
 
     unblockFromBannerBtn.addEventListener("click", async () => {
       if (!currentUser || !selectedPeer) return;
-      await db.ref(`users/${currentUser.uid}/blocked/${selectedPeer.uid}`).remove();
-      refreshPresenceAndTypingUI();
+      await db.ref(`users/${currentUser.uid}/blocked/${selectedPeer.uid}`).remove(); refreshPresenceAndTypingUI();
     });
 
     function attachSwipeToReply(wrapEl, msg) {
       let startX = 0, startY = 0, dx = 0, swiping = false;
-      wrapEl.addEventListener("touchstart", (e) => {
-        if (isMsgMultiSelectMode || !e.touches || !e.touches[0]) return;
-        startX = e.touches[0].clientX; startY = e.touches[0].clientY; dx = 0; swiping = true;
-      }, { passive: true });
+      wrapEl.addEventListener("touchstart", (e) => { if (isMsgMultiSelectMode || !e.touches || !e.touches[0]) return; startX = e.touches[0].clientX; startY = e.touches[0].clientY; dx = 0; swiping = true; }, { passive: true });
       wrapEl.addEventListener("touchmove", (e) => {
         if (!swiping || isMsgMultiSelectMode || !e.touches || !e.touches[0]) return;
         const diffX = e.touches[0].clientX - startX; const diffY = Math.abs(e.touches[0].clientY - startY);
         if (diffX > 8 && diffX > diffY) { dx = Math.min(72, diffX); wrapEl.style.transform = `translateX(${dx}px)`; }
       }, { passive: true });
       const finishSwipe = () => {
-        if (!swiping) return; swiping = false;
-        const triggered = dx >= 46; wrapEl.style.transform = "";
+        if (!swiping) return; swiping = false; const triggered = dx >= 46; wrapEl.style.transform = "";
         if (triggered && !isMsgMultiSelectMode) { replyToMsg = msg.text || msg.sticker || "[Media]"; replyPreviewText.textContent = replyToMsg; replyPreviewBar.classList.add("active"); messageInput.focus(); }
       };
       wrapEl.addEventListener("touchend", finishSwipe); wrapEl.addEventListener("touchcancel", finishSwipe);
@@ -3417,27 +3126,22 @@
 
     async function handleDoubleTapReaction(msgId, msg) {
       if (!currentUser || !selectedPeer || isMsgMultiSelectMode) return;
-      const quickEmoji = getCustomReactionEmoji();
-      const nextVal = msg.reaction === quickEmoji ? null : quickEmoji;
+      const quickEmoji = getCustomReactionEmoji(); const nextVal = msg.reaction === quickEmoji ? null : quickEmoji;
       msg.reaction = nextVal; renderOrUpdateMessage(msgId, msg);
       if (!selectedPeer.isAI) {
-        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-        const ref = db.ref(`chats/${chatId}/messages/${msgId}/reaction`);
+        const ref = db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${msgId}/reaction`);
         if (nextVal) await ref.set(nextVal); else await ref.remove();
       }
     }
 
     function renderOrUpdateMessage(msgId, msg) {
-      if (!currentUser) return;
-      loadedMessagesMap[msgId] = msg;
+      if (!currentUser) return; loadedMessagesMap[msgId] = msg;
       const existing = messagesContainer.querySelector(`[data-msg-wrap-id="${msgId}"]`);
       if (msg.deletedFor && msg.deletedFor[currentUser.uid]) { if (existing) existing.remove(); return; }
 
-      const emptyEl = messagesContainer.querySelector(".empty-chat");
-      if (emptyEl) emptyEl.remove();
+      const emptyEl = messagesContainer.querySelector(".empty-chat"); if (emptyEl) emptyEl.remove();
 
-      const isMine = msg.senderId === currentUser.uid;
-      const isDeletedEveryone = !!msg.deletedForEveryone;
+      const isMine = msg.senderId === currentUser.uid; const isDeletedEveryone = !!msg.deletedForEveryone;
       const isSticker = !isDeletedEveryone && !!msg.sticker;
       const isMediaOnly = !isDeletedEveryone && !isSticker && !msg.text && !msg.replyTo && (msg.mediaType === "image" || msg.mediaType === "video");
 
@@ -3449,9 +3153,7 @@
         const toneCls = msg.stickerTone ? ` ${escapeAttr(msg.stickerTone)}` : "";
         const shapeCls = msg.stickerShape ? ` ${escapeAttr(msg.stickerShape)}` : " shape-none";
         const customCol = msg.stickerColor || "#42a5f5";
-        const frameStyle = msg.stickerShape && msg.stickerShape !== "shape-none"
-          ? `border-color:${escapeAttr(customCol)}; color:${escapeAttr(customCol)};`
-          : `color:${escapeAttr(customCol)};`;
+        const frameStyle = msg.stickerShape && msg.stickerShape !== "shape-none" ? `border-color:${escapeAttr(customCol)}; color:${escapeAttr(customCol)};` : `color:${escapeAttr(customCol)};`;
         bodyHtml = `<span class="sticker-frame${shapeCls}" style="${frameStyle}"><span class="sticker-glyph${animCls}${toneCls}">${escapeHtml(msg.sticker)}</span></span>`;
       } else {
         const quoteHtml = msg.replyTo ? `<div class="reply-quote" data-quote-jump="${escapeAttr(msg.replyTo)}">${formatRichText(msg.replyTo)}</div>` : "";
@@ -3467,8 +3169,7 @@
         bodyHtml = `${quoteHtml}${textHtml}${mediaHtml}${reactHtml}`;
       }
 
-      const timeStr = formatClock(msg.timestamp);
-      const tickHtml = isDeletedEveryone ? "" : renderTickSvg(msg);
+      const timeStr = formatClock(msg.timestamp); const tickHtml = isDeletedEveryone ? "" : renderTickSvg(msg);
       const html = `${bodyHtml}<div class="msg-meta"><time>${timeStr}</time>${tickHtml}</div>`;
       const isChecked = selectedMsgIds.has(msgId);
 
@@ -3480,37 +3181,18 @@
         (isDeletedEveryone ? " deleted-msg" : "") + (isMediaOnly ? " media-only" : "") + (isSticker ? " sticker-msg" : "");
 
       wrap.innerHTML = `<span class="msg-check-circle">${isChecked ? "✓" : ""}</span><div class="${bubbleClass}">${html}</div>`;
-      const checkEl = wrap.querySelector(".msg-check-circle");
-      const bubbleEl = wrap.querySelector(".msg");
+      const checkEl = wrap.querySelector(".msg-check-circle"); const bubbleEl = wrap.querySelector(".msg");
 
       if (checkEl) checkEl.addEventListener("click", (ev) => { ev.stopPropagation(); toggleMsgSelection(msgId); });
 
       const quoteEl = bubbleEl.querySelector("[data-quote-jump]");
-      if (quoteEl) {
-        quoteEl.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
-          else jumpAndHighlightQuotedMessage(msg.replyTo || "");
-        });
-      }
+      if (quoteEl) quoteEl.addEventListener("click", (ev) => { ev.stopPropagation(); if (isMsgMultiSelectMode) toggleMsgSelection(msgId); else jumpAndHighlightQuotedMessage(msg.replyTo || ""); });
 
       const photoEl = bubbleEl.querySelector("img.chat-photo");
-      if (photoEl && msg.mediaUrl) {
-        photoEl.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
-          else openFullPhoto(msg.mediaUrl);
-        });
-      }
+      if (photoEl && msg.mediaUrl) photoEl.addEventListener("click", (ev) => { ev.stopPropagation(); if (isMsgMultiSelectMode) toggleMsgSelection(msgId); else openFullPhoto(msg.mediaUrl); });
 
       const vidCard = bubbleEl.querySelector(".video-thumb-card");
-      if (vidCard && msg.mediaUrl) {
-        vidCard.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          if (isMsgMultiSelectMode) toggleMsgSelection(msgId);
-          else openFullVideo(msg.mediaUrl);
-        });
-      }
+      if (vidCard && msg.mediaUrl) vidCard.addEventListener("click", (ev) => { ev.stopPropagation(); if (isMsgMultiSelectMode) toggleMsgSelection(msgId); else openFullVideo(msg.mediaUrl); });
 
       attachSwipeToReply(wrap, msg);
       attachLongPress(bubbleEl, () => {
@@ -3524,7 +3206,7 @@
         if (isDeletedEveryone) return;
         const now = Date.now();
         if (now - lastTap < 300) { lastTap = 0; handleDoubleTapReaction(msgId, msg); }
-        else { lastTap = now; }
+        else { lastTap = now; openMessageActionSheet(msgId, msg); }
       });
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -3534,6 +3216,12 @@
       activeMsgTarget = { msgId, msg };
       customReactionInput.value = getCustomReactionEmoji();
       const isMine = msg.senderId === currentUser.uid;
+      msgForwardBtn.style.display = "inline-flex";
+      msgPinBtn.style.display = "inline-flex";
+      msgStarBtn.style.display = "inline-flex";
+      msgCopyBtn.style.display = "inline-flex";
+      msgDeleteMeBtn.style.display = "inline-flex";
+
       if (isMine) {
         msgSeenInfoText.textContent = msg.seenAt ? `Seen: ${formatClock(msg.seenAt)}` : (msg.status === "seen" ? "Seen" : "Sent");
         msgEditBtn.style.display = msg.text ? "inline-flex" : "none";
@@ -3560,6 +3248,8 @@
         if (!activeMsgTarget) return;
         const chosen = btn.dataset.react; setCustomReactionEmoji(chosen);
         const nextVal = activeMsgTarget.msg.reaction === chosen ? null : chosen;
+        activeMsgTarget.msg.reaction = nextVal;
+        renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
         if (selectedPeer && !selectedPeer.isAI) {
           const ref = db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}/reaction`);
           if (nextVal) await ref.set(nextVal); else await ref.remove();
@@ -3571,9 +3261,26 @@
     msgForwardBtn.addEventListener("click", () => {
       if (!activeMsgTarget) return;
       forwardUsersList.innerHTML = "";
+
+      const aiBtn = document.createElement("button");
+      aiBtn.type = "button"; aiBtn.className = "btn secondary full"; aiBtn.textContent = "NA Ai ✨";
+      aiBtn.addEventListener("click", () => {
+        const m = activeMsgTarget.msg;
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
+        const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
+        arr.push({
+          id: "fwd_" + Date.now(), senderId: currentUser.uid, receiverId: "na_ai_assistant",
+          text: m.text ? `↪ ${m.text}` : "", sticker: m.sticker || "", mediaType: m.mediaType || null, mediaUrl: m.mediaUrl || null,
+          status: "seen", timestamp: Date.now()
+        });
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+        forwardModal.classList.remove("active"); msgActionModal.classList.remove("active"); activeMsgTarget = null;
+      });
+      forwardUsersList.appendChild(aiBtn);
+
       Object.values(allUsers).forEach((u) => {
         if (u.uid === currentUser.uid) return;
-        const b = document.createElement("button"); b.className = "btn secondary full"; b.textContent = getVisibleName(u);
+        const b = document.createElement("button"); b.type = "button"; b.className = "btn secondary full"; b.textContent = getVisibleName(u);
         b.addEventListener("click", async () => {
           const m = activeMsgTarget.msg;
           await db.ref(`chats/${getChatId(currentUser.uid, u.uid)}/messages`).push({
@@ -3594,8 +3301,12 @@
     closeForwardModalBtn.addEventListener("click", () => forwardModal.classList.remove("active"));
 
     msgPinBtn.addEventListener("click", async () => {
-      if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
-      await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/pinned`).set({ text: activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "[Media]", ts: Date.now() });
+      if (!activeMsgTarget) return;
+      const pinText = activeMsgTarget.msg.text || activeMsgTarget.msg.sticker || "[Media]";
+      pinnedBannerText.textContent = pinText; pinnedBanner.classList.add("active");
+      if (selectedPeer && !selectedPeer.isAI) {
+        await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/pinned`).set({ text: pinText, ts: Date.now() });
+      }
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
     });
 
@@ -3610,9 +3321,7 @@
       if (t) {
         allowExplicitChatCopy = true;
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).catch(() => {});
-        else {
-          const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
-        }
+        else { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
         setTimeout(() => { allowExplicitChatCopy = false; }, 120);
       }
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
@@ -3628,24 +3337,51 @@
     cancelEditMsgBtn.addEventListener("click", () => editMsgModal.classList.remove("active"));
 
     saveEditedMsgBtn.addEventListener("click", async () => {
-      if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
+      if (!activeMsgTarget) return;
       const updated = editMsgTextarea.value.trim(); if (!updated) return;
-      await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}`).update({ text: updated, edited: true });
+      activeMsgTarget.msg.text = updated; activeMsgTarget.msg.edited = true;
+      renderOrUpdateMessage(activeMsgTarget.msgId, activeMsgTarget.msg);
+      if (selectedPeer && selectedPeer.isAI) {
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
+        const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").map((m) => m.id === activeMsgTarget.msgId ? { ...m, text: updated, edited: true } : m);
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr));
+      } else if (selectedPeer) {
+        await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}`).update({ text: updated, edited: true });
+      }
       editMsgModal.classList.remove("active"); activeMsgTarget = null;
     });
 
     msgDeleteMeBtn.addEventListener("click", async () => {
-      if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
-      await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}/deletedFor/${currentUser.uid}`).set(true);
+      if (!activeMsgTarget) return;
+      const targetId = activeMsgTarget.msgId;
+      const wrap = messagesContainer.querySelector(`[data-msg-wrap-id="${targetId}"]`);
+      if (wrap) wrap.remove();
+      if (selectedPeer && selectedPeer.isAI) {
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
+        const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").filter((m) => m.id !== targetId);
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr));
+      } else if (selectedPeer) {
+        await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${targetId}/deletedFor/${currentUser.uid}`).set(true);
+      }
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
     });
 
     msgDeleteEveryoneBtn.addEventListener("click", async () => {
-      if (!activeMsgTarget || !selectedPeer || selectedPeer.isAI) return;
-      await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${activeMsgTarget.msgId}`).update({
+      if (!activeMsgTarget) return;
+      const targetId = activeMsgTarget.msgId;
+      const delPatch = {
         deletedForEveryone: true, text: "", sticker: "", stickerAnim: "", stickerTone: "",
         stickerColor: "", stickerShape: "", mediaUrl: null, mediaType: null, thumbUrl: null
-      });
+      };
+      activeMsgTarget.msg = { ...activeMsgTarget.msg, ...delPatch };
+      renderOrUpdateMessage(targetId, activeMsgTarget.msg);
+      if (selectedPeer && selectedPeer.isAI) {
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
+        const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]").map((m) => m.id === targetId ? { ...m, ...delPatch } : m);
+        localStorage.setItem(aiHistoryKey, JSON.stringify(arr));
+      } else if (selectedPeer) {
+        await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages/${targetId}`).update(delPatch);
+      }
       msgActionModal.classList.remove("active"); activeMsgTarget = null;
     });
 
@@ -3667,8 +3403,7 @@
           localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60))); return;
         }
 
-        const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-        activeChatIds[selectedPeer.uid] = true;
+        const peerLive = allUsers[selectedPeer.uid] || selectedPeer; activeChatIds[selectedPeer.uid] = true;
         await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
           senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
           sticker: stGlyph, stickerAnim: stAnim, stickerTone: stTone, stickerColor: stColor, stickerShape: stShape,
@@ -3680,8 +3415,7 @@
 
     messageForm.addEventListener("submit", async (e) => {
       e.preventDefault(); unlockAudio();
-      if (typingStopTimer) clearTimeout(typingStopTimer);
-      sendRemoteTypingState(false);
+      if (typingStopTimer) clearTimeout(typingStopTimer); sendRemoteTypingState(false);
       if (!currentUser || !selectedPeer) return;
       if (!selectedPeer.isAI && (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid))) return;
 
@@ -3691,36 +3425,24 @@
       replyToMsg = null; replyPreviewBar.classList.remove("active"); updateTopHeader();
 
       if (selectedPeer.isAI) {
-        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-        localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
-        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`;
-        const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid); localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
+        const aiHistoryKey = `na_ai_msgs_${currentUser.uid}`; const arr = JSON.parse(localStorage.getItem(aiHistoryKey) || "[]");
         const uMsg = { id: "u_" + Date.now(), senderId: currentUser.uid, receiverId: "na_ai_assistant", text, replyTo: quoteText, status: "seen", timestamp: Date.now() };
-        renderOrUpdateMessage(uMsg.id, uMsg); arr.push(uMsg);
-        localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+        renderOrUpdateMessage(uMsg.id, uMsg); arr.push(uMsg); localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
 
         const thinkId = "think_" + Date.now();
         renderOrUpdateMessage(thinkId, { id: thinkId, senderId: "na_ai_assistant", receiverId: currentUser.uid, text: "🤔 ...", status: "seen", timestamp: Date.now() });
 
         const aiRes = await askLiveAI(text);
-        const thinkEl = messagesContainer.querySelector(`[data-msg-wrap-id="${thinkId}"]`);
-        if (thinkEl) thinkEl.remove();
+        const thinkEl = messagesContainer.querySelector(`[data-msg-wrap-id="${thinkId}"]`); if (thinkEl) thinkEl.remove();
 
-        const bMsg = {
-          id: "b_" + Date.now(), senderId: "na_ai_assistant", receiverId: currentUser.uid,
-          text: aiRes.text, mediaType: aiRes.mediaType || null, mediaUrl: aiRes.mediaUrl || null,
-          status: "seen", timestamp: Date.now()
-        };
-        renderOrUpdateMessage(bMsg.id, bMsg);
-        arr.push(bMsg);
-        localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
+        const bMsg = { id: "b_" + Date.now(), senderId: "na_ai_assistant", receiverId: currentUser.uid, text: aiRes.text, mediaType: aiRes.mediaType || null, mediaUrl: aiRes.mediaUrl || null, status: "seen", timestamp: Date.now() };
+        renderOrUpdateMessage(bMsg.id, bMsg); arr.push(bMsg); localStorage.setItem(aiHistoryKey, JSON.stringify(arr.slice(-60)));
         return;
       }
 
-      const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-      localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`);
-      activeChatIds[selectedPeer.uid] = true;
+      const peerLive = allUsers[selectedPeer.uid] || selectedPeer; const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      localStorage.removeItem(`draft_${currentUser.uid}_${chatId}`); activeChatIds[selectedPeer.uid] = true;
 
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid, receiverId: selectedPeer.uid, text, replyTo: quoteText,
@@ -3732,17 +3454,13 @@
     attachBtn.addEventListener("click", () => { if (selectedPeer) mediaInput.click(); });
 
     mediaInput.addEventListener("change", async (e) => {
-      const files = Array.from(e.target.files || []);
-      if (!files.length || !currentUser || !selectedPeer) return;
-      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
-      const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-      const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent";
-      activeChatIds[selectedPeer.uid] = true;
+      const files = Array.from(e.target.files || []); if (!files.length || !currentUser || !selectedPeer) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid); const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+      const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent"; activeChatIds[selectedPeer.uid] = true;
       try {
         attachBtn.textContent = "⏳";
         for (const file of files) {
-          const isVideo = file.type.startsWith("video/");
-          let thumbUrl = null;
+          const isVideo = file.type.startsWith("video/"); let thumbUrl = null;
           if (isVideo) {
             const dur = await getVideoDurationSeconds(file);
             if (dur > 60) { alert(`"${file.name}" skipped: video must be 1 minute (60s) or less.`); continue; }
@@ -3771,14 +3489,11 @@
           audioChunks = []; isRecordingVoice = true; voiceBtn.classList.add("recording"); voiceBtn.textContent = "⏹";
           mediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) audioChunks.push(ev.data); };
           mediaRecorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop());
-            voiceBtn.classList.remove("recording"); voiceBtn.textContent = "🎤"; isRecordingVoice = false;
-            const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-            if (blob.size < 250) return;
+            stream.getTracks().forEach((t) => t.stop()); voiceBtn.classList.remove("recording"); voiceBtn.textContent = "🎤"; isRecordingVoice = false;
+            const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" }); if (blob.size < 250) return;
             const reader = new FileReader();
             reader.onloadend = async () => {
-              const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
-              activeChatIds[selectedPeer.uid] = true;
+              const peerLive = allUsers[selectedPeer.uid] || selectedPeer; activeChatIds[selectedPeer.uid] = true;
               await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
                 senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
                 mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
@@ -3795,8 +3510,7 @@
     chooseDpBtn.addEventListener("click", () => dpFileInput.click());
     dpFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0]; if (!f || !currentUser) return;
-      try { const raw = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}/dp`).set(raw); }
-      catch (err) { alert(err.message); }
+      try { const raw = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}/dp`).set(raw); } catch (err) { alert(err.message); }
       dpFileInput.value = "";
     });
 
@@ -3808,17 +3522,13 @@
     });
 
     fontSizeSelect.addEventListener("change", () => {
-      const sz = fontSizeSelect.value; localStorage.setItem("chatFontSize", sz);
-      document.documentElement.style.setProperty("--msg-font-size", sz);
+      const sz = fontSizeSelect.value; localStorage.setItem("chatFontSize", sz); document.documentElement.style.setProperty("--msg-font-size", sz);
     });
 
     async function savePrivacyField(path, val) {
       if (!currentUser) return;
       await db.ref(`users/${currentUser.uid}/privacy/${path}`).set(val);
-      if (allUsers[currentUser.uid]) {
-        if (!allUsers[currentUser.uid].privacy) allUsers[currentUser.uid].privacy = {};
-        allUsers[currentUser.uid].privacy[path] = val;
-      }
+      if (allUsers[currentUser.uid]) { if (!allUsers[currentUser.uid].privacy) allUsers[currentUser.uid].privacy = {}; allUsers[currentUser.uid].privacy[path] = val; }
       refreshPresenceAndTypingUI();
     }
 
@@ -3833,8 +3543,7 @@
     chooseWallpaperBtn.addEventListener("click", () => { if (!selectedPeer) { alert("Open a chat first."); return; } wallpaperFileInput.click(); });
     wallpaperFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0]; if (!f || !currentUser || !selectedPeer) return;
-      try { const rawWp = await readOriginalDataUrl(f); const key = getWallpaperKey(); if (key) localStorage.setItem(key, rawWp); applyWallpaper(); }
-      catch (_) { alert("Wallpaper storage limit reached for large image."); }
+      try { const rawWp = await readOriginalDataUrl(f); const key = getWallpaperKey(); if (key) localStorage.setItem(key, rawWp); applyWallpaper(); } catch (_) { alert("Wallpaper storage limit reached for large image."); }
       wallpaperFileInput.value = "";
     });
     clearWallpaperBtn.addEventListener("click", () => { const key = getWallpaperKey(); if (key) localStorage.removeItem(key); applyWallpaper(); });
@@ -3843,9 +3552,7 @@
     testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); triggerMessageVibration(); });
 
     function applyStatusBannerStyle() {
-      statusPreviewBanner.style.background = selectedStatusBg;
-      statusPreviewBanner.style.color = selectedStatusTextColor;
-      statusPreviewBanner.style.fontFamily = selectedStatusFont;
+      statusPreviewBanner.style.background = selectedStatusBg; statusPreviewBanner.style.color = selectedStatusTextColor; statusPreviewBanner.style.fontFamily = selectedStatusFont;
     }
 
     openAddStatusBtn.addEventListener("click", () => {
@@ -3864,10 +3571,7 @@
         sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; applyStatusBannerStyle();
       });
     });
-    customStatusColorPicker.addEventListener("input", () => {
-      document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-      selectedStatusBg = customStatusColorPicker.value; applyStatusBannerStyle();
-    });
+    customStatusColorPicker.addEventListener("input", () => { document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected")); selectedStatusBg = customStatusColorPicker.value; applyStatusBannerStyle(); });
     statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; applyStatusBannerStyle(); });
     statusTextInput.addEventListener("input", () => { statusPreviewText.textContent = statusTextInput.value.trim() || "Type status text"; });
     closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
@@ -3878,8 +3582,7 @@
       const isVid = f.type.startsWith("video/");
       if (isVid) { const dur = await getVideoDurationSeconds(f); if (dur > 60) { alert("Status video must be 1 minute (60s) or less."); statusMediaInput.value = ""; return; } }
       statusMediaName.textContent = f.name;
-      try { const url = await readOriginalDataUrl(f); if (isVid) { pendingStatusVideo = url; pendingStatusPhoto = ""; } else { pendingStatusPhoto = url; pendingStatusVideo = ""; } }
-      catch (err) { alert(err.message); }
+      try { const url = await readOriginalDataUrl(f); if (isVid) { pendingStatusVideo = url; pendingStatusPhoto = ""; } else { pendingStatusPhoto = url; pendingStatusVideo = ""; } } catch (err) { alert(err.message); }
       statusMediaInput.value = "";
     });
 
@@ -3888,33 +3591,27 @@
       const txt = statusTextInput.value.trim();
       if (!txt && !pendingStatusPhoto && !pendingStatusVideo) { alert("Enter status text or choose photo/video."); return; }
       try {
-        const me = allUsers[currentUser.uid] || {};
-        const now = Date.now();
+        const me = allUsers[currentUser.uid] || {}; const now = Date.now();
         await db.ref("statuses").push({
-          ownerUid: currentUser.uid, ownerName: me.name || currentUser.email,
-          text: txt, fontFamily: selectedStatusFont, bgColor: selectedStatusBg, textColor: selectedStatusTextColor,
-          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "",
-          createdAt: now, expiresAt: now + STATUS_TTL_MS
+          ownerUid: currentUser.uid, ownerName: me.name || currentUser.email, text: txt,
+          fontFamily: selectedStatusFont, bgColor: selectedStatusBg, textColor: selectedStatusTextColor,
+          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "", createdAt: now, expiresAt: now + STATUS_TTL_MS
         });
         addStatusModal.classList.remove("active");
       } catch (err) { alert("Status post error: " + err.message); }
     });
 
     function renderStatusFeed() {
-      if (!currentUser) return;
-      pruneExpiredStatuses();
-      statusFeedList.innerHTML = "";
+      if (!currentUser) return; pruneExpiredStatuses(); statusFeedList.innerHTML = "";
       const seenMap = getSeenStatusCounts();
-      const entries = Object.entries(allStatuses)
-        .map(([id, st]) => ({ id, ...st }))
+      const entries = Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
         .filter((st) => st && !isStatusExpired(st) && canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
       if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No active status updates</div>`; return; }
 
       entries.forEach((st) => {
-        const isMine = st.ownerUid === currentUser.uid;
-        const isUnseen = !isMine && !seenMap[st.id];
+        const isMine = st.ownerUid === currentUser.uid; const isUnseen = !isMine && !seenMap[st.id];
         const ringClass = isMine ? "" : (isUnseen ? "status-unseen" : "status-seen");
         const bg = st.bgColor || "#0d47a1"; const fg = st.textColor || "#ffffff";
         const likesCount = st.likes ? Object.keys(st.likes).length : 0;
@@ -3922,8 +3619,7 @@
         const totalViews = viewEntries.reduce((sum, v) => sum + ((v && v.count) || 1), 0);
         const remLabel = formatRemainingTime(st);
 
-        const row = document.createElement("div");
-        row.className = "status-circle-row";
+        const row = document.createElement("div"); row.className = "status-circle-row";
         row.innerHTML = `
           <div class="avatar-wrap ${ringClass}">
             <div class="status-thumb-circle" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(st.fontFamily || "inherit")};">
@@ -3935,23 +3631,19 @@
             <div class="row-sub">⏳ ${escapeHtml(remLabel)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
           </div>
         `;
-        row.addEventListener("click", () => openStatusViewer(st.id));
-        statusFeedList.appendChild(row);
+        row.addEventListener("click", () => openStatusViewer(st.id)); statusFeedList.appendChild(row);
       });
     }
 
     function openStatusViewer(statusId) {
-      activeStatusId = statusId;
-      const st = allStatuses[statusId];
+      activeStatusId = statusId; const st = allStatuses[statusId];
       if (!st || isStatusExpired(st) || !currentUser) return;
       if (st.ownerUid !== currentUser.uid) { recordStatusView(statusId); renderStatusFeed(); refreshPresenceAndTypingUI(); }
-      renderStatusViewerContent(statusId);
-      statusViewerModal.classList.add("active"); pushNavState();
+      renderStatusViewerContent(statusId); statusViewerModal.classList.add("active"); pushNavState();
     }
 
     function renderStatusViewerContent(statusId) {
-      const st = allStatuses[statusId];
-      if (!st || isStatusExpired(st) || !currentUser) return;
+      const st = allStatuses[statusId]; if (!st || isStatusExpired(st) || !currentUser) return;
       const owner = allUsers[st.ownerUid] || {}; const isOwner = st.ownerUid === currentUser.uid;
       viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
       viewerOwnerName.textContent = st.ownerName || getVisibleName(owner);
@@ -3980,15 +3672,13 @@
     }
 
     statusLikeBtn.addEventListener("click", async () => {
-      if (!activeStatusId || !currentUser) return;
-      const st = allStatuses[activeStatusId]; if (!st) return;
+      if (!activeStatusId || !currentUser) return; const st = allStatuses[activeStatusId]; if (!st) return;
       const ref = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
       if (st.likes && st.likes[currentUser.uid]) await ref.remove(); else await ref.set(true);
     });
 
     statusDeleteBtn.addEventListener("click", async () => {
-      if (!activeStatusId) return;
-      const idToDel = activeStatusId; statusViewerModal.classList.remove("active"); activeStatusId = null;
+      if (!activeStatusId) return; const idToDel = activeStatusId; statusViewerModal.classList.remove("active"); activeStatusId = null;
       await db.ref(`statuses/${idToDel}`).remove();
     });
 
