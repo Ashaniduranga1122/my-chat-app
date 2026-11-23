@@ -102,7 +102,6 @@
       100% { background-position: 50% 0%; }
     }
 
-    /* Perimeter Serpent / Light Trace along Card Border */
     @keyframes serpentPerimeterTravel {
       0% { stroke-dashoffset: 0; }
       100% { stroke-dashoffset: -1200; }
@@ -126,7 +125,6 @@
       50% { filter: brightness(1.18); }
     }
 
-    /* Rich Live Wallpapers */
     .live-anim-layer {
       position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
       overflow: hidden; will-change: transform, opacity; transform: translateZ(0);
@@ -318,11 +316,75 @@
 
     .icon-btn {
       background: transparent; color: #ffffff; border: none; border-radius: 50%;
-      width: 34px; height: 34px; display: grid; place-items: center; cursor: pointer;
+      width: 36px; height: 36px; display: grid; place-items: center; cursor: pointer;
       flex-shrink: 0; font-size: 17px; transition: transform 0.14s ease, background 0.12s ease;
     }
     .icon-btn:active { background: rgba(255, 255, 255, 0.18); transform: scale(0.86); }
-    .icon-btn.recording { background: #d32f2f; color: #fff; }
+
+    /* Blue Paper-Rocket Send Button & Hold-to-Record Mic Button */
+    .send-rocket-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+      color: #ffffff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(30, 136, 229, 0.52);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .send-rocket-btn:active { transform: scale(0.88); }
+    .send-rocket-btn svg { width: 19px; height: 19px; fill: #ffffff; transform: translate(1px, -1px); }
+
+    .mic-hold-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+      color: #ffffff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; font-size: 18px;
+      box-shadow: 0 4px 12px rgba(13, 71, 161, 0.45);
+      touch-action: none; transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .mic-hold-btn.recording {
+      background: linear-gradient(135deg, #ff5252 0%, #c62828 100%);
+      transform: scale(1.24);
+      box-shadow: 0 0 18px rgba(239, 83, 80, 0.85);
+    }
+
+    .voice-rec-overlay {
+      display: none; flex: 1; align-items: center; justify-content: space-between;
+      background: rgba(211, 47, 47, 0.16); border: 1px solid rgba(239, 83, 80, 0.45);
+      border-radius: 20px; padding: 7px 13px; font-size: 13px; color: #ff8a80; font-weight: 600;
+    }
+    .voice-rec-overlay.active { display: flex; }
+    .rec-dot-pulse {
+      width: 10px; height: 10px; border-radius: 50%; background: #ff5252;
+      display: inline-block; margin-right: 6px; animation: pulseScale 0.7s infinite alternate;
+    }
+
+    /* Custom Voice Player (No Download + 1x / 1.5x / 2x Speed Control) */
+    .custom-voice-player {
+      display: flex; align-items: center; gap: 8px;
+      min-width: 215px; max-width: 72vw;
+      background: rgba(0, 0, 0, 0.28); border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px; padding: 6px 9px; margin-top: 4px;
+    }
+    .vp-play-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: var(--accent-bright); color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; cursor: pointer; flex-shrink: 0;
+    }
+    .vp-play-btn:active { transform: scale(0.9); }
+    .vp-track-wrap { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 75px; }
+    .vp-range {
+      width: 100%; height: 4px; accent-color: #4fc3f7; cursor: pointer;
+    }
+    .vp-time-row {
+      display: flex; justify-content: space-between; font-size: 10px; color: rgba(255, 255, 255, 0.75);
+    }
+    .vp-speed-btn {
+      padding: 3px 7px; border-radius: 999px; border: 1px solid rgba(79, 195, 247, 0.45);
+      background: rgba(13, 71, 161, 0.65); color: #ffffff;
+      font-size: 11px; font-weight: 800; cursor: pointer; flex-shrink: 0;
+    }
+    .vp-speed-btn:active { transform: scale(0.92); }
 
     .topbar {
       position: fixed; top: var(--vtop); left: 0; right: 0;
@@ -694,7 +756,6 @@
     .video-thumb-card { position: relative; width: 220px; max-width: 72vw; height: 155px; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; }
     .video-thumb-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .video-play-badge { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.28); font-size: 32px; color: #ffffff; }
-    .msg audio { width: 195px; max-width: 100%; height: 34px; margin-top: 4px; display: block; }
     .edited-tag { font-size: 10.5px; color: rgba(255,255,255,0.62); margin-left: 4px; font-style: italic; }
 
     .msg-meta { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 3px; }
@@ -738,11 +799,11 @@
 
     .composer {
       background: var(--panel); padding: 7px 8px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0; flex-shrink: 0; z-index: 15;
+      display: flex; align-items: center; gap: 5px; width: 100%; min-width: 0; flex-shrink: 0; z-index: 15;
     }
     .composer.hidden { display: none; }
     .composer input[type="text"] {
-      flex: 1; min-width: 0; padding: 9px 12px; border-radius: 20px;
+      flex: 1; min-width: 0; padding: 9px 13px; border-radius: 20px;
       border: 1px solid var(--panel-3); background: var(--panel-2); color: var(--text); outline: none; font-size: 14px;
     }
 
@@ -781,7 +842,6 @@
     .reaction-bar { display: flex; justify-content: space-around; background: var(--panel-2); padding: 8px; border-radius: 10px; }
     .reaction-bar button { background: transparent; border: none; font-size: 20px; cursor: pointer; }
 
-    /* Pattern Lock 3x3 Grid */
     .pattern-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
       padding: 14px; background: var(--panel-2); border-radius: 12px; border: 1px solid var(--panel-3);
@@ -975,8 +1035,8 @@
               <div class="wa-cat-row" data-panel="panelNotifications">
                 <div class="wa-cat-icon">🔔</div>
                 <div>
-                  <div class="wa-cat-title">Notifications & Call Info</div>
-                  <div class="wa-cat-desc">Alerts, tones, vibrate, call capabilities</div>
+                  <div class="wa-cat-title">Notifications & Custom 3s Tone</div>
+                  <div class="wa-cat-desc">Choose custom notification audio (3s), tones, vibrate</div>
                 </div>
               </div>
             </div>
@@ -1110,7 +1170,7 @@
               </div>
             </div>
 
-            <!-- Notifications -->
+            <!-- Notifications & Custom 3-Second Tone -->
             <div class="setting-panel-detail setting-card" id="panelNotifications">
               <label>Notifications</label>
               <small id="notifPermStatus">Status: Checking...</small>
@@ -1119,13 +1179,21 @@
                 <span>Vibration alerts</span>
                 <input type="checkbox" id="vibrateToggleNotif" checked />
               </div>
+
+              <label>Notification Tone (Plays 3s)</label>
               <select id="soundSelect">
-                <option value="chime">Tone: Chime</option>
-                <option value="pop">Tone: Pop</option>
+                <option value="chime3s">Tone: Melodic Chime (3s)</option>
+                <option value="bell3s">Tone: Crystal Bell (3s)</option>
+                <option value="custom3s">Tone: Custom Audio File (3s)</option>
                 <option value="mute">Tone: Mute</option>
               </select>
-              <button class="btn secondary small" id="testSoundBtn">Test tone</button>
-              <small>Note: Browser calls use WebRTC microphone/camera while open; native phone ringing requires a mobile app wrapper.</small>
+
+              <input type="file" id="customToneInput" accept="audio/*" style="display:none;" />
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn secondary small" id="chooseCustomToneBtn">🎵 Pick Custom Audio</button>
+                <button type="button" class="btn secondary small" id="testSoundBtn">▶ Test Tone (3s)</button>
+              </div>
+              <small id="customToneLabel">No custom audio selected</small>
             </div>
           </div>
         </div>
@@ -1161,7 +1229,6 @@
             <div class="empty-chat">Select a chat card or search a contact to start messaging</div>
           </div>
 
-          <!-- Fun & Useful Prompts for NA Ai (No Boredom!) -->
           <div class="ai-quick-bar" id="aiQuickBar">
             <button type="button" class="ai-chip" data-ai-prompt="මට සිංහල තේරවිල්ලක් කියලා උත්තරේ ටිකකින් දෙන්න">🧩 සිංහල තේරවිල්ලක්</button>
             <button type="button" class="ai-chip" data-ai-prompt="පාලුව නැති වෙන්න රසවත් කරුණු 3ක් සිංහලෙන් කියන්න">✨ රසවත් කරුණු</button>
@@ -1225,13 +1292,26 @@
             <button class="btn secondary small" id="unblockFromBannerBtn">Unblock</button>
           </div>
 
+          <!-- Composer with Hold-to-Record Mic & Paper-Rocket Send Button -->
           <form class="composer" id="messageForm">
             <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display:none;" />
             <button type="button" class="icon-btn" id="stickerToggleBtn" title="Stickers">🎭</button>
             <button type="button" class="icon-btn" id="attachBtn" title="Attach photos/videos">📎</button>
-            <input type="text" id="messageInput" placeholder="Message (**bold** *italic* ~strike~)" autocomplete="off" />
-            <button type="button" class="icon-btn" id="voiceBtn" title="Voice message">🎤</button>
-            <button type="submit" class="btn small">Send</button>
+
+            <input type="text" id="messageInput" placeholder="Message..." autocomplete="off" />
+
+            <div class="voice-rec-overlay" id="voiceRecOverlay">
+              <span><span class="rec-dot-pulse"></span><span id="voiceRecTimerText">0:00</span></span>
+              <span style="font-size:11.5px; color:var(--muted);">◀ Slide left to cancel</span>
+            </div>
+
+            <button type="button" class="mic-hold-btn" id="voiceBtn" title="Hold to record voice">🎤</button>
+
+            <button type="submit" class="send-rocket-btn" id="sendRocketBtn" style="display:none;" title="Send">
+              <svg viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
           </form>
         </div>
       </main>
@@ -1244,7 +1324,6 @@
       <img id="callPeerDp" class="hero-avatar" src="" alt="" />
       <h3 id="callPeerName">Call</h3>
       <p id="callStatusText">Connecting...</p>
-      <small style="color:var(--muted);">Browser WebRTC call (requires mic/camera permission & open page; native phone call is not triggered by web browsers).</small>
       <div style="display:flex; gap:8px; width:100%; justify-content:center; flex-wrap:wrap;">
         <video id="remoteCallVideo" autoplay playsinline style="display:none; width:100%; max-height:170px; border-radius:10px; background:#000;"></video>
         <audio id="remoteCallAudio" autoplay playsinline></audio>
@@ -1280,7 +1359,7 @@
     </div>
   </div>
 
-  <!-- Fullscreen Status Viewer (Auto-advances every 10s, exits when no more statuses) -->
+  <!-- Fullscreen Status Viewer -->
   <div class="status-viewer-modal" id="statusViewerModal">
     <div>
       <div class="status-progress-track">
@@ -1345,15 +1424,15 @@
     </div>
   </div>
 
-  <!-- Customizable Chat Lock Modal (Fingerprint / Pattern / PIN) -->
+  <!-- Customizable Chat Lock Modal -->
   <div class="modal" id="chatLockModal">
     <div class="sheet">
       <h3 id="chatLockModalTitle">Chat lock</h3>
       <p id="chatLockModalDesc">Choose lock method or unlock chat</p>
 
       <select id="lockMethodSelect">
-        <option value="pattern">Pattern Lock (3x3 Grid — Great for non-fingerprint phones)</option>
-        <option value="fingerprint">Fingerprint / Biometric Lock (Device Biometrics)</option>
+        <option value="pattern">Pattern Lock (3x3 Grid)</option>
+        <option value="fingerprint">Fingerprint / Biometric Lock</option>
         <option value="pin">Passcode / PIN Lock</option>
       </select>
 
@@ -1419,7 +1498,7 @@
     </div>
   </div>
 
-  <!-- Forward Target Modal (Shows Sender Name + DP!) -->
+  <!-- Forward Target Modal -->
   <div class="modal" id="forwardModal">
     <div class="sheet">
       <h3>Forward message</h3>
@@ -1595,10 +1674,12 @@
 
     let isInitialLoad = true;
     let audioCtx = null;
+    let activeToneAudioEl = null;
+    let activeToneStopTimer = null;
+
     let activeMsgTarget = null;
     let replyToMsg = null;
 
-    // Status auto-advance timers
     let activeStatusId = null;
     let activeStatusQueue = [];
     let activeStatusIndex = 0;
@@ -1611,7 +1692,6 @@
     let selectedStatusTextColor = "#ffffff";
     let selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
 
-    // Lock modal state (Fingerprint / Pattern / PIN)
     let lockModalMode = null;
     let pendingLockPeer = null;
     let patternSequence = [];
@@ -1620,9 +1700,15 @@
     let typingExpiryTimer = null;
     let lastTypingSentAt = 0;
 
+    // Hold-to-record voice state
     let mediaRecorder = null;
+    let activeMicStream = null;
     let audioChunks = [];
     let isRecordingVoice = false;
+    let voiceCancelled = false;
+    let voiceStartX = 0;
+    let voiceTimerInterval = null;
+    let voiceRecordSeconds = 0;
 
     let pc = null;
     let localStream = null;
@@ -1737,6 +1823,9 @@
     const chooseWallpaperBtn = document.getElementById("chooseWallpaperBtn");
     const clearWallpaperBtn = document.getElementById("clearWallpaperBtn");
     const soundSelect = document.getElementById("soundSelect");
+    const customToneInput = document.getElementById("customToneInput");
+    const chooseCustomToneBtn = document.getElementById("chooseCustomToneBtn");
+    const customToneLabel = document.getElementById("customToneLabel");
     const testSoundBtn = document.getElementById("testSoundBtn");
 
     const messagesContainer = document.getElementById("messagesContainer");
@@ -1756,6 +1845,9 @@
     const mediaInput = document.getElementById("mediaInput");
     const messageInput = document.getElementById("messageInput");
     const voiceBtn = document.getElementById("voiceBtn");
+    const sendRocketBtn = document.getElementById("sendRocketBtn");
+    const voiceRecOverlay = document.getElementById("voiceRecOverlay");
+    const voiceRecTimerText = document.getElementById("voiceRecTimerText");
 
     const contactInfoModal = document.getElementById("contactInfoModal");
     const infoAvatar = document.getElementById("infoAvatar");
@@ -2011,7 +2103,6 @@
 
     setInterval(() => { pruneExpiredStatuses(); renderStatusFeed(); renderUsersList(); updateTopHeader(); }, 30000);
 
-    // Real-Time Live AI (Gemini API if configured + Live AI endpoint fallback)
     async function askLiveAI(promptText) {
       const trimmed = promptText.trim();
       const low = trimmed.toLowerCase();
@@ -2155,6 +2246,17 @@
       return s.replace(/\n/g, "<br>");
     }
 
+    function updateComposerActionButton() {
+      const hasText = messageInput.value.trim().length > 0;
+      if (hasText) {
+        voiceBtn.style.display = "none";
+        sendRocketBtn.style.display = "flex";
+      } else {
+        sendRocketBtn.style.display = "none";
+        voiceBtn.style.display = "flex";
+      }
+    }
+
     function refreshPresenceAndTypingUI() { renderUsersList(); updateTopHeader(); }
 
     function sendRemoteTypingState(isTyping) {
@@ -2166,7 +2268,10 @@
     }
 
     function handleComposerTypingEvent() {
-      const val = messageInput.value; const hasText = val.trim().length > 0;
+      const val = messageInput.value;
+      const hasText = val.trim().length > 0;
+      updateComposerActionButton();
+
       if (currentUser && selectedPeer) localStorage.setItem(`draft_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`, val);
       if (hasText) {
         const now = Date.now();
@@ -2392,6 +2497,82 @@
     }, { passive: true });
     document.addEventListener("touchstart", unlockAudio, { passive: true });
 
+    // Custom 3-Second Notification Tone System
+    function stopActiveNotificationTone() {
+      if (activeToneStopTimer) { clearTimeout(activeToneStopTimer); activeToneStopTimer = null; }
+      if (activeToneAudioEl) {
+        try { activeToneAudioEl.pause(); activeToneAudioEl.currentTime = 0; } catch (_) {}
+        activeToneAudioEl = null;
+      }
+    }
+
+    function playNotificationSound() {
+      const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime3s";
+      if (mode === "mute") return;
+      stopActiveNotificationTone();
+
+      if (mode === "custom3s") {
+        const customData = localStorage.getItem("customNotifToneData");
+        if (customData) {
+          try {
+            const aud = new Audio(customData);
+            activeToneAudioEl = aud;
+            aud.play().catch(() => {});
+            activeToneStopTimer = setTimeout(() => {
+              try { aud.pause(); aud.currentTime = 0; } catch (_) {}
+              activeToneAudioEl = null;
+            }, 3000);
+            return;
+          } catch (_) {}
+        }
+      }
+
+      try {
+        unlockAudio(); if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const notes = mode === "bell3s"
+          ? [880, 1108.73, 1318.51, 880, 1108.73, 1318.51]
+          : [587.33, 739.99, 880, 1174.66, 880, 1174.66];
+
+        notes.forEach((freq, idx) => {
+          const t0 = now + idx * 0.48;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = mode === "bell3s" ? "triangle" : "sine";
+          osc.frequency.setValueAtTime(freq, t0);
+          gain.gain.setValueAtTime(0.001, t0);
+          gain.gain.linearRampToValueAtTime(0.22, t0 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.46);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(t0); osc.stop(t0 + 0.48);
+        });
+      } catch (_) {}
+    }
+
+    chooseCustomToneBtn.addEventListener("click", () => customToneInput.click());
+    customToneInput.addEventListener("change", (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      if (f.size > 1.8 * 1024 * 1024) { alert("Please select an audio file under 1.8 MB."); customToneInput.value = ""; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          localStorage.setItem("customNotifToneData", reader.result);
+          localStorage.setItem("customNotifToneName", f.name);
+          localStorage.setItem("chatSound", "custom3s");
+          soundSelect.value = "custom3s";
+          customToneLabel.textContent = `Custom tone (3s): ${f.name}`;
+          playNotificationSound();
+        } catch (_) {
+          alert("Audio too large for browser storage. Choose a shorter clip.");
+        }
+      };
+      reader.readAsDataURL(f);
+      customToneInput.value = "";
+    });
+
+    soundSelect.addEventListener("change", () => localStorage.setItem("chatSound", soundSelect.value));
+    testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); triggerMessageVibration(); });
+
     function switchToTab(tabId) {
       document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tabId));
       document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.id === tabId));
@@ -2444,7 +2625,6 @@
     function isUserBlockedByMe(peerUid) { const me = allUsers[currentUser?.uid] || {}; return !!(me.blocked && me.blocked[peerUid]); }
     function isMeBlockedByPeer(peerUid) { const peer = allUsers[peerUid] || {}; return !!(peer.blocked && peer.blocked[currentUser?.uid]); }
 
-    // Customizable Chat Lock (Pattern / Fingerprint / PIN)
     function getChatLockConfig(peerUid) {
       if (!currentUser || !peerUid) return null;
       const raw = localStorage.getItem(`lockcfg_${currentUser.uid}_${peerUid}`);
@@ -2542,7 +2722,7 @@
           peerOnlineDisc.classList.remove("active"); headerStatus.className = "status-line typing-yellow-bordered"; headerStatus.innerHTML = renderAnimatedTypingHtml();
         } else {
           headerStatus.className = "status-line"; const p = getPresenceDisplay(peer);
-          peerOnlineDisc.classList.toggle("active", p.isOnline); headerStatus.classList.toggle("is-online", p.isOnline); headerStatus.innerHTML = p.html;
+          peerOnlineDisc.classList.toggle("active", p.isOnline); headerStatus.class.toggle("is-online", p.isOnline); headerStatus.innerHTML = p.html;
         }
         updateBlockedComposerState();
       } else {
@@ -2560,7 +2740,9 @@
     document.querySelectorAll("[data-ai-prompt]").forEach((chip) => {
       chip.addEventListener("click", () => {
         if (!selectedPeer || !selectedPeer.isAI) return;
-        messageInput.value = chip.dataset.aiPrompt || ""; messageForm.dispatchEvent(new Event("submit"));
+        messageInput.value = chip.dataset.aiPrompt || "";
+        updateComposerActionButton();
+        messageForm.dispatchEvent(new Event("submit"));
       });
     });
 
@@ -2696,20 +2878,6 @@
       });
     }
 
-    function playNotificationSound() {
-      const mode = soundSelect.value || localStorage.getItem("chatSound") || "chime";
-      if (mode === "mute") return;
-      try {
-        unlockAudio(); if (!audioCtx) return;
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        osc.type = mode === "chime" ? "sine" : "triangle";
-        osc.frequency.setValueAtTime(mode === "chime" ? 660 : 440, audioCtx.currentTime);
-        if (mode === "chime") osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
-        gain.gain.setValueAtTime(0.22, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.28);
-      } catch (_) {}
-    }
-
     function getWallpaperKey() { if (!currentUser || !selectedPeer) return null; return `wp_${currentUser.uid}_${getChatId(currentUser.uid, selectedPeer.uid)}`; }
     function applyWallpaper() { const key = getWallpaperKey(); const wp = key ? localStorage.getItem(key) : null; document.documentElement.style.setProperty("--chat-wallpaper", wp ? `url("${wp}")` : "none"); }
 
@@ -2757,7 +2925,10 @@
         localStorage.setItem("hasActiveSession", "1"); currentUser = user;
         authScreen.classList.remove("active"); chatScreen.classList.add("active"); syncViewportVars();
 
-        soundSelect.value = localStorage.getItem("chatSound") || "chime";
+        soundSelect.value = localStorage.getItem("chatSound") || "chime3s";
+        const savedToneName = localStorage.getItem("customNotifToneName");
+        if (savedToneName) customToneLabel.textContent = `Custom tone (3s): ${savedToneName}`;
+
         geminiApiKeyInput.value = localStorage.getItem("geminiApiKey") || "";
         const savedFont = localStorage.getItem("chatFontSize") || "14.5px";
         fontSizeSelect.value = savedFont; document.documentElement.style.setProperty("--msg-font-size", savedFont);
@@ -2895,7 +3066,6 @@
 
     headerTitleWrap.addEventListener("click", () => { if (!selectedPeer || selectedPeer.isAI) return; openContactInfoModal(allUsers[selectedPeer.uid] || selectedPeer); });
 
-    // Pattern / Fingerprint / PIN Lock UI Logic
     function resetPatternUi() {
       patternSequence = [];
       patternGrid.querySelectorAll(".pattern-node").forEach((n) => n.classList.remove("active"));
@@ -2930,11 +3100,7 @@
         const challenge = new Uint8Array(16);
         crypto.getRandomValues(challenge);
         await navigator.credentials.get({
-          publicKey: {
-            challenge,
-            timeout: 20000,
-            userVerification: "required"
-          }
+          publicKey: { challenge, timeout: 20000, userVerification: "required" }
         });
         return true;
       } catch (_) {
@@ -2979,14 +3145,10 @@
         const cfg = getChatLockConfig(pendingLockPeer.uid);
         if (!cfg) return;
         let matched = false;
-        if (method === "pattern") {
-          const seqStr = patternSequence.join("-");
-          matched = (cfg.method === "pattern" && cfg.secret === seqStr);
-        } else if (method === "pin") {
-          matched = (cfg.method === "pin" && cfg.secret === chatLockPinInput.value.trim());
-        } else if (method === "fingerprint") {
-          matched = await verifyBiometricPrompt();
-        }
+        if (method === "pattern") matched = (cfg.method === "pattern" && cfg.secret === patternSequence.join("-"));
+        else if (method === "pin") matched = (cfg.method === "pin" && cfg.secret === chatLockPinInput.value.trim());
+        else if (method === "fingerprint") matched = await verifyBiometricPrompt();
+
         if (matched) {
           const target = pendingLockPeer; pendingLockPeer = null; chatLockModal.classList.remove("active"); openChatWith(target);
         } else {
@@ -3021,6 +3183,7 @@
       const chatId = getChatId(currentUser.uid, peer.uid);
       const draft = localStorage.getItem(`draft_${currentUser.uid}_${chatId}`) || "";
       messageInput.value = draft;
+      updateComposerActionButton();
       if (draft.trim()) { liveFormatBar.classList.add("active"); liveFormatBar.innerHTML = `Preview: ${formatRichText(draft)}`; }
 
       if (!peer.isAI) {
@@ -3216,6 +3379,74 @@
       }
     }
 
+    function fmtAudioSec(sec) {
+      if (!isFinite(sec) || sec < 0) return "0:00";
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? "0" : ""}${s}`;
+    }
+
+    function wireCustomVoicePlayers(containerEl) {
+      containerEl.querySelectorAll(".custom-voice-player").forEach((playerBox) => {
+        if (playerBox.dataset.wired === "1") return;
+        playerBox.dataset.wired = "1";
+        const src = playerBox.getAttribute("data-audio-src");
+        const playBtn = playerBox.querySelector(".vp-play-btn");
+        const rangeEl = playerBox.querySelector(".vp-range");
+        const curTimeEl = playerBox.querySelector(".vp-cur");
+        const durTimeEl = playerBox.querySelector(".vp-dur");
+        const speedBtn = playerBox.querySelector(".vp-speed-btn");
+
+        const aud = new Audio(src);
+        const speeds = [1, 1.5, 2];
+        let speedIdx = 0;
+
+        aud.addEventListener("loadedmetadata", () => {
+          durTimeEl.textContent = fmtAudioSec(aud.duration);
+        });
+
+        aud.addEventListener("timeupdate", () => {
+          if (aud.duration && isFinite(aud.duration)) {
+            rangeEl.value = String((aud.currentTime / aud.duration) * 100);
+            curTimeEl.textContent = fmtAudioSec(aud.currentTime);
+          }
+        });
+
+        aud.addEventListener("ended", () => {
+          playBtn.textContent = "▶";
+          rangeEl.value = "0";
+          curTimeEl.textContent = "0:00";
+        });
+
+        playBtn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          if (aud.paused) {
+            aud.play().catch(() => {});
+            playBtn.textContent = "⏸";
+          } else {
+            aud.pause();
+            playBtn.textContent = "▶";
+          }
+        });
+
+        rangeEl.addEventListener("click", (ev) => ev.stopPropagation());
+        rangeEl.addEventListener("input", (ev) => {
+          ev.stopPropagation();
+          if (aud.duration && isFinite(aud.duration)) {
+            aud.currentTime = (Number(rangeEl.value) / 100) * aud.duration;
+          }
+        });
+
+        speedBtn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          speedIdx = (speedIdx + 1) % speeds.length;
+          const nextRate = speeds[speedIdx];
+          aud.playbackRate = nextRate;
+          speedBtn.textContent = `${nextRate}x`;
+        });
+      });
+    }
+
     function renderOrUpdateMessage(msgId, msg) {
       if (!currentUser) return; loadedMessagesMap[msgId] = msg;
       const existing = messagesContainer.querySelector(`[data-msg-wrap-id="${msgId}"]`);
@@ -3248,7 +3479,18 @@
         else if (msg.mediaType === "video" && msg.mediaUrl) {
           const thumbSrc = msg.thumbUrl || msg.mediaUrl;
           mediaHtml = `<div class="video-thumb-card" data-vid-src="${escapeAttr(msg.mediaUrl)}"><img loading="lazy" src="${escapeAttr(thumbSrc)}" alt="" /><div class="video-play-badge">▶</div></div>`;
-        } else if (msg.mediaType === "audio" && msg.mediaUrl) mediaHtml = `<audio controls preload="metadata" src="${escapeAttr(msg.mediaUrl)}"></audio>`;
+        } else if (msg.mediaType === "audio" && msg.mediaUrl) {
+          mediaHtml = `
+            <div class="custom-voice-player" data-audio-src="${escapeAttr(msg.mediaUrl)}">
+              <button type="button" class="vp-play-btn">▶</button>
+              <div class="vp-track-wrap">
+                <input type="range" class="vp-range" min="0" max="100" value="0" />
+                <div class="vp-time-row"><span class="vp-cur">0:00</span><span class="vp-dur">0:00</span></div>
+              </div>
+              <button type="button" class="vp-speed-btn" title="Playback speed">1x</button>
+            </div>
+          `;
+        }
         const editedHtml = msg.edited ? `<span class="edited-tag">Edited</span>` : "";
         const textHtml = msg.text ? `<div>${formatRichText(msg.text)}${editedHtml}</div>` : "";
         const reactHtml = msg.reaction ? `<div class="reaction-badge">${escapeHtml(msg.reaction)}</div>` : "";
@@ -3267,8 +3509,9 @@
         (isDeletedEveryone ? " deleted-msg" : "") + (isMediaOnly ? " media-only" : "") + (isSticker ? " sticker-msg" : "");
 
       wrap.innerHTML = `<span class="msg-check-circle">${isChecked ? "✓" : ""}</span><div class="${bubbleClass}">${html}</div>`;
-      const checkEl = wrap.querySelector(".msg-check-circle"); const bubbleEl = wrap.querySelector(".msg");
+      wireCustomVoicePlayers(wrap);
 
+      const checkEl = wrap.querySelector(".msg-check-circle"); const bubbleEl = wrap.querySelector(".msg");
       if (checkEl) checkEl.addEventListener("click", (ev) => { ev.stopPropagation(); toggleMsgSelection(msgId); });
 
       const quoteEl = bubbleEl.querySelector("[data-quote-jump]");
@@ -3285,7 +3528,7 @@
 
       let lastTap = 0;
       bubbleEl.addEventListener("click", (ev) => {
-        if (ev.target.closest("[data-quote-jump]") || ev.target.closest("img.chat-photo") || ev.target.closest(".video-thumb-card")) return;
+        if (ev.target.closest("[data-quote-jump]") || ev.target.closest("img.chat-photo") || ev.target.closest(".video-thumb-card") || ev.target.closest(".custom-voice-player")) return;
         if (isMsgMultiSelectMode) { toggleMsgSelection(msgId); return; }
         if (isDeletedEveryone) return;
         const now = Date.now();
@@ -3336,7 +3579,6 @@
       });
     });
 
-    // Forward with Sender Name + DP!
     msgForwardBtn.addEventListener("click", () => {
       if (!activeMsgTarget || !currentUser) return;
       const m = activeMsgTarget.msg;
@@ -3493,7 +3735,9 @@
 
       const text = messageInput.value.trim(); if (!text) return;
       const quoteText = replyToMsg || "";
-      messageInput.value = ""; liveFormatBar.classList.remove("active"); liveFormatBar.innerHTML = "";
+      messageInput.value = "";
+      updateComposerActionButton();
+      liveFormatBar.classList.remove("active"); liveFormatBar.innerHTML = "";
       replyToMsg = null; replyPreviewBar.classList.remove("active"); updateTopHeader();
 
       if (selectedPeer.isAI) {
@@ -3549,40 +3793,327 @@
       finally { attachBtn.textContent = "📎"; mediaInput.value = ""; }
     });
 
-    voiceBtn.addEventListener("click", async () => {
-      if (!selectedPeer || !currentUser || selectedPeer.isAI) return;
+    // WhatsApp-style Hold-to-Record Voice (Release to Send, Slide Left to Cancel)
+    function resetVoiceRecUi() {
+      isRecordingVoice = false;
+      voiceBtn.classList.remove("recording");
+      voiceRecOverlay.classList.remove("active");
+      messageInput.style.display = "block";
+      stickerToggleBtn.style.display = "grid";
+      attachBtn.style.display = "grid";
+      if (voiceTimerInterval) { clearInterval(voiceTimerInterval); voiceTimerInterval = null; }
+      updateComposerActionButton();
+    }
+
+    async function beginHoldVoiceRecording(clientX) {
+      if (!selectedPeer || !currentUser || selectedPeer.isAI || isRecordingVoice) return;
       if (isUserBlockedByMe(selectedPeer.uid) || isMeBlockedByPeer(selectedPeer.uid)) return;
-      if (!isRecordingVoice) {
-        try {
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert("Microphone permission not available."); return; }
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" } : undefined;
-          mediaRecorder = options ? new MediaRecorder(stream, options) : new MediaRecorder(stream);
-          audioChunks = []; isRecordingVoice = true; voiceBtn.classList.add("recording"); voiceBtn.textContent = "⏹";
-          mediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) audioChunks.push(ev.data); };
-          mediaRecorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop()); voiceBtn.classList.remove("recording"); voiceBtn.textContent = "🎤"; isRecordingVoice = false;
-            const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" }); if (blob.size < 250) return;
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-              const peerLive = allUsers[selectedPeer.uid] || selectedPeer; activeChatIds[selectedPeer.uid] = true;
-              await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
-                senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
-                mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
-                status: isActuallyOnline(peerLive) ? "delivered" : "sent", timestamp: firebase.database.ServerValue.TIMESTAMP
-              });
-            };
-            reader.readAsDataURL(blob);
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Microphone permission not available.");
+        return;
+      }
+
+      voiceCancelled = false;
+      voiceStartX = clientX || 0;
+      voiceRecordSeconds = 0;
+      voiceRecTimerText.textContent = "0:00";
+
+      try {
+        activeMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" } : undefined;
+        mediaRecorder = options ? new MediaRecorder(activeMicStream, options) : new MediaRecorder(activeMicStream);
+        audioChunks = [];
+        isRecordingVoice = true;
+
+        voiceBtn.classList.add("recording");
+        messageInput.style.display = "none";
+        stickerToggleBtn.style.display = "none";
+        attachBtn.style.display = "none";
+        voiceRecOverlay.classList.add("active");
+
+        voiceTimerInterval = setInterval(() => {
+          voiceRecordSeconds += 1;
+          voiceRecTimerText.textContent = fmtAudioSec(voiceRecordSeconds);
+        }, 1000);
+
+        mediaRecorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          if (activeMicStream) {
+            activeMicStream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} });
+            activeMicStream = null;
+          }
+          const wasCancelled = voiceCancelled;
+          const chunksCopy = audioChunks.slice();
+          const mimeType = mediaRecorder ? (mediaRecorder.mimeType || "audio/webm") : "audio/webm";
+          resetVoiceRecUi();
+
+          if (wasCancelled) return;
+          const blob = new Blob(chunksCopy, { type: mimeType });
+          if (blob.size < 250) return;
+
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            if (!selectedPeer || !currentUser) return;
+            const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
+            activeChatIds[selectedPeer.uid] = true;
+            await db.ref(`chats/${getChatId(currentUser.uid, selectedPeer.uid)}/messages`).push({
+              senderId: currentUser.uid, receiverId: selectedPeer.uid, text: "",
+              mediaType: "audio", mediaUrl: reader.result, sentOnline: !!navigator.onLine,
+              status: isActuallyOnline(peerLive) ? "delivered" : "sent",
+              timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
           };
-          mediaRecorder.start();
-        } catch (err) { isRecordingVoice = false; voiceBtn.classList.remove("recording"); voiceBtn.textContent = "🎤"; alert("Microphone error: " + err.message); }
-      } else { if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop(); }
+          reader.readAsDataURL(blob);
+        };
+
+        mediaRecorder.start();
+      } catch (err) {
+        resetVoiceRecUi();
+        alert("Mic error: " + err.message);
+      }
+    }
+
+    function finishHoldVoiceRecording(cancelFlag) {
+      if (!isRecordingVoice) return;
+      voiceCancelled = !!cancelFlag;
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        try { mediaRecorder.stop(); } catch (_) { resetVoiceRecUi(); }
+      } else {
+        resetVoiceRecUi();
+      }
+    }
+
+    voiceBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      try { voiceBtn.setPointerCapture(e.pointerId); } catch (_) {}
+      beginHoldVoiceRecording(e.clientX);
     });
+
+    voiceBtn.addEventListener("pointermove", (e) => {
+      if (!isRecordingVoice) return;
+      if (voiceStartX - e.clientX > 65) {
+        finishHoldVoiceRecording(true);
+      }
+    });
+
+    voiceBtn.addEventListener("pointerup", (e) => {
+      if (!isRecordingVoice) return;
+      try { voiceBtn.releasePointerCapture(e.pointerId); } catch (_) {}
+      finishHoldVoiceRecording(false);
+    });
+
+    voiceBtn.addEventListener("pointercancel", () => {
+      if (isRecordingVoice) finishHoldVoiceRecording(true);
+    });
+
+    function updateStatusPreview() {
+      const txt = statusTextInput.value.trim(); statusPreviewText.textContent = txt || "Type status text";
+      statusPreviewBanner.style.background = selectedStatusBg; statusPreviewBanner.style.color = selectedStatusTextColor;
+      statusPreviewBanner.style.fontFamily = selectedStatusFont;
+    }
+
+    statusFontSelect.addEventListener("change", () => { selectedStatusFont = statusFontSelect.value; updateStatusPreview(); });
+    statusColorPalette.querySelectorAll("[data-color]").forEach((sw) => {
+      sw.addEventListener("click", () => {
+        statusColorPalette.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
+        sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; updateStatusPreview();
+      });
+    });
+    customStatusColorPicker.addEventListener("input", () => {
+      statusColorPalette.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
+      selectedStatusBg = customStatusColorPicker.value; updateStatusPreview();
+    });
+    statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; updateStatusPreview(); });
+    statusTextInput.addEventListener("input", updateStatusPreview);
+
+    openAddStatusBtn.addEventListener("click", () => {
+      pendingStatusPhoto = ""; pendingStatusVideo = ""; statusTextInput.value = ""; statusMediaName.textContent = "";
+      selectedStatusBg = "#0d47a1"; selectedStatusTextColor = "#ffffff"; selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
+      statusFontSelect.value = selectedStatusFont; customStatusColorPicker.value = selectedStatusBg; statusTextColorSelect.value = "#ffffff";
+      updateStatusPreview(); addStatusModal.classList.add("active"); pushNavState();
+    });
+
+    closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
+    pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
+
+    statusMediaInput.addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        if (f.type.startsWith("video/")) {
+          const dur = await getVideoDurationSeconds(f);
+          if (dur > 60) { alert("Status video must be 1 minute (60 seconds) or less."); statusMediaInput.value = ""; return; }
+          pendingStatusVideo = await readOriginalDataUrl(f); pendingStatusPhoto = "";
+        } else { pendingStatusPhoto = await readOriginalDataUrl(f); pendingStatusVideo = ""; }
+        statusMediaName.textContent = f.name;
+      } catch (err) { alert(err.message); }
+    });
+
+    publishStatusBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      const text = statusTextInput.value.trim();
+      if (!text && !pendingStatusPhoto && !pendingStatusVideo) return;
+      const me = allUsers[currentUser.uid] || {}; const now = Date.now();
+      await db.ref("statuses").push({
+        ownerUid: currentUser.uid, ownerName: me.name || currentUser.email, text,
+        bgColor: selectedStatusBg, textColor: selectedStatusTextColor, fontFamily: selectedStatusFont,
+        photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "",
+        createdAt: now, expiresAt: now + STATUS_TTL_MS
+      });
+      addStatusModal.classList.remove("active");
+    });
+
+    function renderStatusFeed() {
+      if (!currentUser) return;
+      statusFeedList.innerHTML = "";
+      const items = Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
+        .filter((st) => {
+          if (!st || isStatusExpired(st)) return false;
+          const owner = allUsers[st.ownerUid] || { uid: st.ownerUid };
+          return canSeeStatus(owner);
+        })
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if (!items.length) { statusFeedList.innerHTML = `<div style="color:var(--muted); font-size:13px;">No active statuses (24h)</div>`; return; }
+
+      const seenMap = getSeenStatusCounts();
+      items.forEach((st, idx) => {
+        const owner = allUsers[st.ownerUid] || {}; const isMine = st.ownerUid === currentUser.uid;
+        const ringColor = isMine ? "#42a5f5" : (seenMap[st.id] ? "#6b7c85" : "#4fc3f7");
+        const circleInner = st.photoUrl
+          ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />`
+          : (st.videoUrl
+            ? `<div style="width:100%;height:100%;background:#0d47a1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;">▶</div>`
+            : `<div style="width:100%;height:100%;background:${escapeAttr(st.bgColor || "#0d47a1")};color:${escapeAttr(st.textColor || "#fff")};font-family:${escapeAttr(st.fontFamily || "sans-serif")};display:flex;align-items:center;justify-content:center;padding:4px;">${escapeHtml((st.text || "").slice(0, 14))}</div>`);
+
+        const row = document.createElement("div"); row.className = "status-circle-row";
+        row.innerHTML = `
+          <div class="status-thumb-circle" style="border: 2.5px solid ${ringColor};">${circleInner}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:14px; font-weight:700;">${escapeHtml(isMine ? "My status" : getVisibleName(owner))}</div>
+            <div style="font-size:11.5px; color:var(--muted);">${formatClock(st.createdAt)} • ${formatRemainingTime(st)}</div>
+          </div>
+          <div style="font-size:12px; color:var(--muted);">❤️ ${st.likes ? Object.keys(st.likes).length : 0}</div>
+        `;
+        row.addEventListener("click", () => openStatusQueue(items, idx));
+        statusFeedList.appendChild(row);
+      });
+    }
+
+    function clearStatusAutoTimers() {
+      if (statusAutoAdvanceTimer) { clearTimeout(statusAutoAdvanceTimer); statusAutoAdvanceTimer = null; }
+      if (statusProgressRaf) { cancelAnimationFrame(statusProgressRaf); statusProgressRaf = null; }
+    }
+
+    function closeStatusViewer() {
+      clearStatusAutoTimers();
+      statusViewerBody.querySelectorAll("video").forEach((v) => { try { v.pause(); } catch (_) {} });
+      activeStatusId = null; activeStatusQueue = []; activeStatusIndex = 0;
+      statusViewerModal.classList.remove("active");
+    }
+
+    function advanceOrExitStatusViewer() {
+      clearStatusAutoTimers();
+      while (activeStatusIndex + 1 < activeStatusQueue.length) {
+        activeStatusIndex += 1;
+        const candidate = activeStatusQueue[activeStatusIndex];
+        const fresh = allStatuses[candidate.id];
+        if (fresh && !isStatusExpired(fresh)) {
+          showStatusAtQueueIndex(activeStatusIndex);
+          return;
+        }
+      }
+      closeStatusViewer();
+    }
+
+    function openStatusQueue(queueList, startIndex) {
+      activeStatusQueue = (queueList || []).filter((st) => st && !isStatusExpired(st));
+      if (!activeStatusQueue.length) return;
+      activeStatusIndex = Math.max(0, Math.min(startIndex || 0, activeStatusQueue.length - 1));
+      statusViewerModal.classList.add("active"); pushNavState();
+      showStatusAtQueueIndex(activeStatusIndex);
+    }
+
+    function showStatusAtQueueIndex(idx) {
+      clearStatusAutoTimers();
+      const item = activeStatusQueue[idx];
+      if (!item || !allStatuses[item.id] || isStatusExpired(allStatuses[item.id])) {
+        advanceOrExitStatusViewer();
+        return;
+      }
+      activeStatusId = item.id;
+      recordStatusView(activeStatusId); renderUsersList(); renderStatusFeed();
+      renderStatusViewerContent(activeStatusId);
+
+      const startTs = performance.now();
+      statusProgressFill.style.width = "0%";
+      const tickProgress = (now) => {
+        if (!statusViewerModal.classList.contains("active") || activeStatusId !== item.id) return;
+        const pct = Math.min(100, ((now - startTs) / STATUS_AUTO_NEXT_MS) * 100);
+        statusProgressFill.style.width = `${pct}%`;
+        if (pct < 100) statusProgressRaf = requestAnimationFrame(tickProgress);
+      };
+      statusProgressRaf = requestAnimationFrame(tickProgress);
+      statusAutoAdvanceTimer = setTimeout(() => {
+        advanceOrExitStatusViewer();
+      }, STATUS_AUTO_NEXT_MS);
+    }
+
+    nextStatusManualBtn.addEventListener("click", () => advanceOrExitStatusViewer());
+
+    function renderStatusViewerContent(statusId) {
+      const st = allStatuses[statusId]; if (!st) return;
+      const owner = allUsers[st.ownerUid] || {}; const isMine = st.ownerUid === currentUser.uid;
+      viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
+      viewerOwnerName.textContent = isMine ? "My status" : getVisibleName(owner);
+      viewerTimeText.textContent = `${formatClock(st.createdAt)} • ${formatRemainingTime(st)} (${activeStatusIndex + 1}/${activeStatusQueue.length})`;
+      statusViewerBody.innerHTML = "";
+
+      if (st.photoUrl) {
+        const img = document.createElement("img"); img.className = "full-st-img"; img.src = st.photoUrl; statusViewerBody.appendChild(img);
+        if (st.text) { const cap = document.createElement("div"); cap.style.cssText = `font-size:16px;text-align:center;font-family:${st.fontFamily || "sans-serif"};`; cap.textContent = st.text; statusViewerBody.appendChild(cap); }
+      } else if (st.videoUrl) {
+        const vid = document.createElement("video"); vid.className = "full-st-vid"; vid.src = st.videoUrl; vid.controls = true; vid.autoplay = true; vid.playsInline = true; statusViewerBody.appendChild(vid);
+        if (st.text) { const cap = document.createElement("div"); cap.style.cssText = `font-size:16px;text-align:center;font-family:${st.fontFamily || "sans-serif"};`; cap.textContent = st.text; statusViewerBody.appendChild(cap); }
+      } else {
+        const banner = document.createElement("div"); banner.className = "status-text-banner fullscreen-fit";
+        banner.style.background = st.bgColor || "#0d47a1"; banner.style.color = st.textColor || "#ffffff"; banner.style.fontFamily = st.fontFamily || "sans-serif";
+        banner.textContent = st.text || ""; statusViewerBody.appendChild(banner);
+      }
+
+      const likesObj = st.likes || {}; const likeCount = Object.keys(likesObj).length; const likedByMe = !!likesObj[currentUser.uid];
+      statusLikeBtn.textContent = `${likedByMe ? "❤️ Liked" : "🤍 Like"} (${likeCount})`;
+      statusDeleteBtn.style.display = isMine ? "inline-flex" : "none";
+
+      if (isMine) {
+        statusViewersList.style.display = "block"; const viewsObj = st.views || {}; const entries = Object.values(viewsObj);
+        statusViewersList.innerHTML = `<strong>Viewed by (${entries.length}):</strong>` +
+          (entries.length ? entries.map((v) => `<div>• ${escapeHtml(v.name)} (${v.count || 1}x)</div>`).join("") : `<div>No views yet</div>`);
+      } else { statusViewersList.style.display = "none"; }
+    }
+
+    statusLikeBtn.addEventListener("click", async () => {
+      if (!currentUser || !activeStatusId || !allStatuses[activeStatusId]) return;
+      const likeRef = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
+      if (allStatuses[activeStatusId].likes && allStatuses[activeStatusId].likes[currentUser.uid]) await likeRef.remove();
+      else await likeRef.set(true);
+    });
+
+    statusDeleteBtn.addEventListener("click", async () => {
+      if (!activeStatusId) return;
+      await db.ref(`statuses/${activeStatusId}`).remove();
+      advanceOrExitStatusViewer();
+    });
+
+    closeStatusViewerBtn.addEventListener("click", closeStatusViewer);
 
     chooseDpBtn.addEventListener("click", () => dpFileInput.click());
     dpFileInput.addEventListener("change", async (e) => {
       const f = e.target.files[0]; if (!f || !currentUser) return;
-      try { const raw = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}/dp`).set(raw); } catch (err) { alert(err.message); }
+      try { const dataUrl = await readOriginalDataUrl(f); await db.ref(`users/${currentUser.uid}`).update({ dp: dataUrl }); }
+      catch (err) { alert(err.message); }
       dpFileInput.value = "";
     });
 
@@ -3590,245 +4121,50 @@
       if (!currentUser) return;
       const newName = accountNameInput.value.trim(); const newAbout = aboutInput.value.trim();
       localStorage.setItem("geminiApiKey", geminiApiKeyInput.value.trim());
-      const upd = { about: newAbout }; if (newName) upd.name = newName;
-      await db.ref(`users/${currentUser.uid}`).update(upd);
-      alert("Saved!");
+      if (newName) await db.ref(`users/${currentUser.uid}`).update({ name: newName, about: newAbout });
     });
+
+    function savePrivacyPreferences() {
+      if (!currentUser) return;
+      db.ref(`users/${currentUser.uid}/privacy`).update({
+        lastSeenEnabled: toggleLastSeenEnabled.checked, dpEnabled: toggleDpEnabled.checked,
+        aboutEnabled: toggleAboutEnabled.checked, statusEnabled: toggleStatusEnabled.checked,
+        lastSeen: privacyLastSeenSelect.value, dp: privacyDpSelect.value, profileFields: privacyProfileFieldsSelect.value
+      });
+    }
+
+    [toggleLastSeenEnabled, toggleDpEnabled, toggleAboutEnabled, toggleStatusEnabled, privacyLastSeenSelect, privacyDpSelect, privacyProfileFieldsSelect]
+      .forEach((el) => el.addEventListener("change", savePrivacyPreferences));
 
     fontSizeSelect.addEventListener("change", () => {
       const sz = fontSizeSelect.value; localStorage.setItem("chatFontSize", sz); document.documentElement.style.setProperty("--msg-font-size", sz);
     });
 
-    async function savePrivacyField(path, val) {
-      if (!currentUser) return;
-      await db.ref(`users/${currentUser.uid}/privacy/${path}`).set(val);
-      if (allUsers[currentUser.uid]) { if (!allUsers[currentUser.uid].privacy) allUsers[currentUser.uid].privacy = {}; allUsers[currentUser.uid].privacy[path] = val; }
-      refreshPresenceAndTypingUI();
-    }
-
-    toggleLastSeenEnabled.addEventListener("change", () => savePrivacyField("lastSeenEnabled", toggleLastSeenEnabled.checked));
-    toggleDpEnabled.addEventListener("change", () => savePrivacyField("dpEnabled", toggleDpEnabled.checked));
-    toggleAboutEnabled.addEventListener("change", () => savePrivacyField("aboutEnabled", toggleAboutEnabled.checked));
-    toggleStatusEnabled.addEventListener("change", () => savePrivacyField("statusEnabled", toggleStatusEnabled.checked));
-    privacyLastSeenSelect.addEventListener("change", () => savePrivacyField("lastSeen", privacyLastSeenSelect.value));
-    privacyDpSelect.addEventListener("change", () => savePrivacyField("dp", privacyDpSelect.value));
-    privacyProfileFieldsSelect.addEventListener("change", () => savePrivacyField("profileFields", privacyProfileFieldsSelect.value));
-
-    chooseWallpaperBtn.addEventListener("click", () => { if (!selectedPeer) { alert("Open a chat first."); return; } wallpaperFileInput.click(); });
+    chooseWallpaperBtn.addEventListener("click", () => wallpaperFileInput.click());
     wallpaperFileInput.addEventListener("change", async (e) => {
-      const f = e.target.files[0]; if (!f || !currentUser || !selectedPeer) return;
-      try { const rawWp = await readOriginalDataUrl(f); const key = getWallpaperKey(); if (key) localStorage.setItem(key, rawWp); applyWallpaper(); } catch (_) { alert("Wallpaper storage limit reached for large image."); }
+      const f = e.target.files[0]; if (!f || !currentUser) return;
+      try {
+        const dataUrl = await readOriginalDataUrl(f);
+        if (selectedPeer) localStorage.setItem(getWallpaperKey(), dataUrl);
+        else Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) localStorage.setItem(`wp_${currentUser.uid}_${getChatId(currentUser.uid, uid)}`, dataUrl); });
+        applyWallpaper();
+      } catch (err) { alert(err.message); }
       wallpaperFileInput.value = "";
     });
-    clearWallpaperBtn.addEventListener("click", () => { const key = getWallpaperKey(); if (key) localStorage.removeItem(key); applyWallpaper(); });
 
-    soundSelect.addEventListener("change", () => localStorage.setItem("chatSound", soundSelect.value));
-    testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); triggerMessageVibration(); });
-
-    function applyStatusBannerStyle() {
-      statusPreviewBanner.style.background = selectedStatusBg; statusPreviewBanner.style.color = selectedStatusTextColor; statusPreviewBanner.style.fontFamily = selectedStatusFont;
-    }
-
-    openAddStatusBtn.addEventListener("click", () => {
-      statusTextInput.value = ""; pendingStatusPhoto = ""; pendingStatusVideo = ""; statusMediaName.textContent = "";
-      selectedStatusBg = "#0d47a1"; selectedStatusTextColor = "#ffffff"; selectedStatusFont = "'Segoe UI', Roboto, sans-serif";
-      customStatusColorPicker.value = selectedStatusBg; statusTextColorSelect.value = selectedStatusTextColor; statusFontSelect.value = selectedStatusFont;
-      applyStatusBannerStyle(); statusPreviewText.textContent = "Type status text";
-      document.querySelectorAll(".color-swatch").forEach((sw, idx) => sw.classList.toggle("selected", idx === 0));
-      addStatusModal.classList.add("active"); pushNavState();
-    });
-
-    statusFontSelect.addEventListener("change", () => { selectedStatusFont = statusFontSelect.value; applyStatusBannerStyle(); });
-    statusColorPalette.querySelectorAll(".color-swatch").forEach((sw) => {
-      sw.addEventListener("click", () => {
-        document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
-        sw.classList.add("selected"); selectedStatusBg = sw.dataset.color; customStatusColorPicker.value = selectedStatusBg; applyStatusBannerStyle();
-      });
-    });
-    customStatusColorPicker.addEventListener("input", () => { document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected")); selectedStatusBg = customStatusColorPicker.value; applyStatusBannerStyle(); });
-    statusTextColorSelect.addEventListener("change", () => { selectedStatusTextColor = statusTextColorSelect.value; applyStatusBannerStyle(); });
-    statusTextInput.addEventListener("input", () => { statusPreviewText.textContent = statusTextInput.value.trim() || "Type status text"; });
-    closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
-    pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
-
-    statusMediaInput.addEventListener("change", async (e) => {
-      const f = e.target.files[0]; if (!f) return;
-      const isVid = f.type.startsWith("video/");
-      if (isVid) { const dur = await getVideoDurationSeconds(f); if (dur > 60) { alert("Status video must be 1 minute (60s) or less."); statusMediaInput.value = ""; return; } }
-      statusMediaName.textContent = f.name;
-      try { const url = await readOriginalDataUrl(f); if (isVid) { pendingStatusVideo = url; pendingStatusPhoto = ""; } else { pendingStatusPhoto = url; pendingStatusVideo = ""; } } catch (err) { alert(err.message); }
-      statusMediaInput.value = "";
-    });
-
-    publishStatusBtn.addEventListener("click", async () => {
+    clearWallpaperBtn.addEventListener("click", () => {
       if (!currentUser) return;
-      const txt = statusTextInput.value.trim();
-      if (!txt && !pendingStatusPhoto && !pendingStatusVideo) { alert("Enter status text or choose photo/video."); return; }
-      try {
-        const me = allUsers[currentUser.uid] || {}; const now = Date.now();
-        await db.ref("statuses").push({
-          ownerUid: currentUser.uid, ownerName: me.name || currentUser.email, text: txt,
-          fontFamily: selectedStatusFont, bgColor: selectedStatusBg, textColor: selectedStatusTextColor,
-          photoUrl: pendingStatusPhoto || "", videoUrl: pendingStatusVideo || "", createdAt: now, expiresAt: now + STATUS_TTL_MS
-        });
-        addStatusModal.classList.remove("active");
-      } catch (err) { alert("Status post error: " + err.message); }
+      if (selectedPeer) localStorage.removeItem(getWallpaperKey());
+      else Object.keys(allUsers).forEach((uid) => { if (uid !== currentUser.uid) localStorage.removeItem(`wp_${currentUser.uid}_${getChatId(currentUser.uid, uid)}`); });
+      applyWallpaper();
     });
 
-    function getAllVisibleStatusesSorted() {
-      return Object.entries(allStatuses).map(([id, st]) => ({ id, ...st }))
-        .filter((st) => st && !isStatusExpired(st) && canSeeStatus(allUsers[st.ownerUid] || { uid: st.ownerUid }))
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
-
-    function renderStatusFeed() {
-      if (!currentUser) return; pruneExpiredStatuses(); statusFeedList.innerHTML = "";
-      const seenMap = getSeenStatusCounts();
-      const entries = getAllVisibleStatusesSorted();
-
-      if (!entries.length) { statusFeedList.innerHTML = `<div class="empty-chat">No active status updates</div>`; return; }
-
-      entries.forEach((st, idx) => {
-        const isMine = st.ownerUid === currentUser.uid; const isUnseen = !isMine && !seenMap[st.id];
-        const ringClass = isMine ? "" : (isUnseen ? "status-unseen" : "status-seen");
-        const bg = st.bgColor || "#0d47a1"; const fg = st.textColor || "#ffffff";
-        const likesCount = st.likes ? Object.keys(st.likes).length : 0;
-        const viewEntries = st.views ? Object.values(st.views) : [];
-        const totalViews = viewEntries.reduce((sum, v) => sum + ((v && v.count) || 1), 0);
-        const remLabel = formatRemainingTime(st);
-
-        const row = document.createElement("div"); row.className = "status-circle-row";
-        row.innerHTML = `
-          <div class="avatar-wrap ${ringClass}">
-            <div class="status-thumb-circle" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)}; font-family:${escapeAttr(st.fontFamily || "inherit")};">
-              ${st.photoUrl ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />` : (st.videoUrl ? `<span>▶ Video</span>` : `<span>${escapeHtml((st.text || "Status").slice(0, 12))}</span>`)}
-            </div>
-          </div>
-          <div class="row-meta">
-            <div class="row-name">${escapeHtml(st.ownerName || "")}</div>
-            <div class="row-sub">⏳ ${escapeHtml(remLabel)} • ❤️ ${likesCount} • 👁 ${totalViews}</div>
-          </div>
-        `;
-        row.addEventListener("click", () => openStatusQueue(entries, idx)); statusFeedList.appendChild(row);
-      });
+    function escapeAttr(str) {
+      return String(str).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
     }
-
-    function clearStatusAutoTimer() {
-      if (statusAutoAdvanceTimer) { clearTimeout(statusAutoAdvanceTimer); statusAutoAdvanceTimer = null; }
-      if (statusProgressRaf) { cancelAnimationFrame(statusProgressRaf); statusProgressRaf = null; }
-      statusProgressFill.style.width = "0%";
-    }
-
-    function closeStatusViewer() {
-      clearStatusAutoTimer();
-      statusViewerModal.classList.remove("active");
-      activeStatusId = null;
-      activeStatusQueue = [];
-      activeStatusIndex = 0;
-    }
-
-    function advanceOrExitStatusViewer() {
-      clearStatusAutoTimer();
-      activeStatusIndex += 1;
-      while (activeStatusIndex < activeStatusQueue.length) {
-        const cand = activeStatusQueue[activeStatusIndex];
-        if (cand && allStatuses[cand.id] && !isStatusExpired(allStatuses[cand.id])) {
-          showStatusAtIndex(activeStatusIndex);
-          return;
-        }
-        activeStatusIndex += 1;
-      }
-      // No more statuses -> exit back to current screen/list
-      closeStatusViewer();
-    }
-
-    function startTenSecondStatusTimer() {
-      clearStatusAutoTimer();
-      const startedAt = performance.now();
-      const step = (now) => {
-        if (!statusViewerModal.classList.contains("active")) return;
-        const pct = Math.min(100, ((now - startedAt) / STATUS_AUTO_NEXT_MS) * 100);
-        statusProgressFill.style.width = `${pct}%`;
-        if (pct < 100) statusProgressRaf = requestAnimationFrame(step);
-      };
-      statusProgressRaf = requestAnimationFrame(step);
-      statusAutoAdvanceTimer = setTimeout(() => {
-        advanceOrExitStatusViewer();
-      }, STATUS_AUTO_NEXT_MS);
-    }
-
-    function openStatusQueue(list, startIdx) {
-      if (!list || !list.length) return;
-      activeStatusQueue = list.slice();
-      activeStatusIndex = Math.max(0, Math.min(startIdx || 0, activeStatusQueue.length - 1));
-      statusViewerModal.classList.add("active");
-      pushNavState();
-      showStatusAtIndex(activeStatusIndex);
-    }
-
-    function showStatusAtIndex(idx) {
-      const item = activeStatusQueue[idx];
-      if (!item || !allStatuses[item.id] || isStatusExpired(allStatuses[item.id])) {
-        advanceOrExitStatusViewer();
-        return;
-      }
-      activeStatusId = item.id;
-      recordStatusView(item.id);
-      renderStatusViewerContent(item.id);
-      startTenSecondStatusTimer();
-    }
-
-    function renderStatusViewerContent(statusId) {
-      const st = allStatuses[statusId];
-      if (!st || isStatusExpired(st)) { advanceOrExitStatusViewer(); return; }
-      const owner = allUsers[st.ownerUid] || {};
-      viewerOwnerDp.src = canSeeDp(owner) ? (owner.dp || DEFAULT_DP) : DEFAULT_DP;
-      viewerOwnerName.textContent = st.ownerName || getVisibleName(owner) || "User";
-      viewerTimeText.textContent = `${formatRemainingTime(st)} • ${formatClock(st.createdAt)}`;
-
-      let mediaHtml = "";
-      if (st.photoUrl) mediaHtml = `<img class="full-st-img" src="${escapeAttr(st.photoUrl)}" alt="" />`;
-      else if (st.videoUrl) mediaHtml = `<video class="full-st-vid" controls autoplay playsinline src="${escapeAttr(st.videoUrl)}"></video>`;
-
-      const hasMedia = !!(st.photoUrl || st.videoUrl);
-      const textBannerHtml = st.text
-        ? `<div class="status-text-banner${!hasMedia ? " fullscreen-fit" : ""}" style="background:${escapeAttr(st.bgColor || "#0d47a1")}; color:${escapeAttr(st.textColor || "#ffffff")}; font-family:${escapeAttr(st.fontFamily || "inherit")};">${formatRichText(st.text)}</div>`
-        : "";
-
-      statusViewerBody.innerHTML = mediaHtml + textBannerHtml;
-      const fullImg = statusViewerBody.querySelector("img.full-st-img");
-      if (fullImg) fullImg.addEventListener("click", () => openFullPhoto(st.photoUrl));
-
-      const likesObj = st.likes || {}; const likesCount = Object.keys(likesObj).length; const iLiked = !!(currentUser && likesObj[currentUser.uid]);
-      statusLikeBtn.textContent = `${iLiked ? "❤️" : "🤍"} Like (${likesCount})`;
-      statusDeleteBtn.style.display = (currentUser && st.ownerUid === currentUser.uid) ? "inline-flex" : "none";
-
-      const viewEntries = st.views ? Object.values(st.views) : [];
-      if (!viewEntries.length) statusViewersList.textContent = "Viewed by: No views yet";
-      else statusViewersList.innerHTML = "<strong>Viewed by:</strong><br>" + viewEntries.map((v) => `${escapeHtml(v.name || "User")} (${v.count || 1})`).join("<br>");
-    }
-
-    nextStatusManualBtn.addEventListener("click", advanceOrExitStatusViewer);
-    closeStatusViewerBtn.addEventListener("click", closeStatusViewer);
-
-    statusLikeBtn.addEventListener("click", async () => {
-      if (!currentUser || !activeStatusId) return;
-      const likeRef = db.ref(`statuses/${activeStatusId}/likes/${currentUser.uid}`);
-      const snap = await likeRef.once("value");
-      if (snap.exists()) await likeRef.remove(); else await likeRef.set(true);
-    });
-
-    statusDeleteBtn.addEventListener("click", async () => {
-      if (!currentUser || !activeStatusId) return;
-      const st = allStatuses[activeStatusId]; if (!st || st.ownerUid !== currentUser.uid) return;
-      const delId = activeStatusId;
-      await db.ref(`statuses/${delId}`).remove();
-      delete allStatuses[delId];
-      advanceOrExitStatusViewer();
-    });
-
-    function escapeHtml(s) { return String(s || "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
-    function escapeAttr(s) { return escapeHtml(s).replace(/`/g, "&#96;"); }
   </script>
 </body>
 </html>
