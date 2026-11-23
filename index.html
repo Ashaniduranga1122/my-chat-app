@@ -10,14 +10,16 @@
       --panel: #111b21;
       --panel-2: #202c33;
       --panel-3: #2a3942;
-      --accent: #00a884;
+      --accent: #1e88e5;
+      --accent-bright: #42a5f5;
+      --accent-glow: rgba(30, 136, 229, 0.35);
       --online-blue: #4fc3f7;
       --status-unseen: #4fc3f7;
       --status-seen: #6b7c85;
       --seen-blue: #53bdeb;
       --text: #e9edef;
       --muted: #8696a0;
-      --sent: #005c4b;
+      --sent: #0d3b66;
       --recv: #202c33;
       --border: #222e35;
       --danger: #ef5350;
@@ -63,7 +65,7 @@
       flex-direction: column;
       gap: 12px;
     }
-    .auth-box h2 { text-align: center; color: var(--accent); font-size: 22px; font-weight: 700; }
+    .auth-box h2 { text-align: center; color: var(--accent-bright); font-size: 22px; font-weight: 700; }
     .auth-box input {
       width: 100%;
       padding: 12px 14px;
@@ -74,18 +76,20 @@
       outline: none;
       font-size: 14px;
     }
-    .auth-box input:focus { border-color: var(--accent); }
+    .auth-box input:focus { border-color: var(--accent-bright); }
     .err { color: #ff7675; font-size: 12.5px; min-height: 16px; text-align: center; }
 
-    /* Buttons */
+    /* Animated Blue Buttons */
     .btn {
+      position: relative;
+      overflow: hidden;
       padding: 10px 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 11px;
       cursor: pointer;
       font-weight: 600;
-      background: var(--accent);
-      color: #041f18;
+      background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+      color: #ffffff;
       font-size: 13.5px;
       display: inline-flex;
       align-items: center;
@@ -93,19 +97,45 @@
       gap: 6px;
       white-space: nowrap;
       flex-shrink: 0;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.16s ease, filter 0.16s ease;
     }
-    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn:hover { filter: brightness(1.06); }
+    .btn:active {
+      transform: scale(0.94);
+      box-shadow: 0 1px 6px var(--accent-glow);
+    }
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.45) 0%, transparent 65%);
+      opacity: 0;
+      transform: scale(0.3);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+    }
+    .btn:active::after {
+      opacity: 1;
+      transform: scale(1.4);
+      transition: 0s;
+    }
+
     .btn.secondary {
       background: var(--panel-2);
       color: var(--text);
       border: 1px solid var(--panel-3);
+      box-shadow: none;
     }
+    .btn.secondary:active { background: var(--panel-3); transform: scale(0.95); }
+
     .btn.danger {
       background: rgba(239, 83, 80, 0.16);
       color: #ff8a80;
       border: 1px solid rgba(239, 83, 80, 0.35);
+      box-shadow: none;
     }
-    .btn.small { padding: 7px 11px; font-size: 12.5px; border-radius: 8px; }
+    .btn.small { padding: 7px 11px; font-size: 12.5px; border-radius: 9px; }
     .btn.full { width: 100%; }
 
     .icon-btn {
@@ -120,8 +150,9 @@
       cursor: pointer;
       flex-shrink: 0;
       font-size: 18px;
+      transition: transform 0.14s ease, background 0.14s ease;
     }
-    .icon-btn:active { background: var(--panel-2); }
+    .icon-btn:active { background: var(--panel-2); transform: scale(0.9); }
     .icon-btn.recording {
       background: #d32f2f;
       color: #fff;
@@ -251,8 +282,9 @@
       color: var(--muted);
       cursor: pointer;
       border-bottom: 3px solid transparent;
+      transition: color 0.15s ease;
     }
-    .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .nav-tab.active { color: var(--accent-bright); border-bottom-color: var(--accent-bright); }
 
     .tab-pane { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
     .tab-pane.active { display: flex; }
@@ -277,6 +309,7 @@
       padding: 10px 14px;
       cursor: pointer;
       border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background 0.12s ease;
     }
     .list-row:hover, .list-row.active { background: var(--panel-2); }
     .row-meta { flex: 1; min-width: 0; }
@@ -285,7 +318,6 @@
 
     /* Compact Status Circle Rows */
     .status-pad { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-    .status-section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
     .status-circle-row {
       display: flex;
       align-items: center;
@@ -295,8 +327,9 @@
       border: 1px solid var(--panel-3);
       border-radius: 12px;
       cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
     }
-    .status-circle-row:active { background: var(--panel-3); }
+    .status-circle-row:active { transform: scale(0.98); background: var(--panel-3); }
     .status-thumb-circle {
       width: 46px;
       height: 46px;
@@ -305,7 +338,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
       font-size: 11px;
       font-weight: 700;
       text-align: center;
@@ -320,7 +352,6 @@
       text-align: center;
       font-size: 20px;
       font-weight: 700;
-      color: #ffffff;
       min-height: 150px;
       width: 100%;
       display: flex;
@@ -341,20 +372,88 @@
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
+      transition: transform 0.12s ease;
     }
-    .color-swatch.selected { border-color: #ffffff; transform: scale(1.08); }
+    .color-swatch.selected { border-color: #ffffff; transform: scale(1.1); }
+    .custom-color-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--panel-2);
+      border: 1px solid var(--panel-3);
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12.5px;
+    }
+    .custom-color-box input[type="color"] {
+      width: 36px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
 
-    /* Settings */
-    .settings-scroll { padding: 12px; display: flex; flex-direction: column; gap: 11px; overflow-y: auto; }
-    .setting-card {
+    /* WhatsApp-style Settings Layout */
+    .settings-scroll { padding: 14px 12px 24px 12px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+    .profile-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 10px 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-bubble {
+      background: var(--panel-2);
+      border: 1px solid var(--panel-3);
+      border-radius: 14px;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      color: var(--text);
+      max-width: 260px;
+      text-align: center;
+    }
+    .hero-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-bright);
+      background: var(--panel-2);
+      cursor: pointer;
+    }
+    .hero-name { font-size: 18px; font-weight: 700; }
+    .hero-sub { font-size: 12px; color: var(--muted); }
+
+    .wa-cat-list { display: flex; flex-direction: column; gap: 6px; }
+    .wa-cat-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: background 0.12s ease, transform 0.12s ease;
+    }
+    .wa-cat-row:active { background: var(--panel-3); transform: scale(0.99); }
+    .wa-cat-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .wa-cat-title { font-size: 14.5px; font-weight: 600; }
+    .wa-cat-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .setting-panel-detail {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
       background: var(--panel-2);
       border: 1px solid var(--panel-3);
       border-radius: 12px;
       padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
+    .setting-panel-detail.open { display: flex; }
     .setting-card label { font-size: 13px; font-weight: 600; }
     .setting-card small { font-size: 11.5px; color: var(--muted); }
     .setting-card input[type="text"], .setting-card select {
@@ -428,7 +527,7 @@
       font-size: 13px;
     }
     .msg {
-      max-width: 80%;
+      max-width: 82%;
       padding: 8px 11px 6px 11px;
       border-radius: 10px;
       word-wrap: break-word;
@@ -440,6 +539,25 @@
     .msg.sent { align-self: flex-end; background: var(--sent); border-top-right-radius: 2px; }
     .msg.recv { align-self: flex-start; background: var(--recv); border-top-left-radius: 2px; }
     .msg.deleted-msg { font-style: italic; color: rgba(233, 237, 239, 0.72); }
+
+    .reply-quote {
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid var(--accent-bright);
+      padding: 4px 7px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 4px;
+    }
+    .reaction-badge {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.35);
+      font-size: 12px;
+    }
+
     .msg img.chat-photo, .msg video {
       max-width: 230px;
       max-height: 250px;
@@ -460,7 +578,6 @@
     }
     .msg-meta time { font-size: 10.5px; color: rgba(255,255,255,0.72); }
 
-    /* Bold WhatsApp Ticks */
     .tick-svg {
       width: 18px;
       height: 12px;
@@ -476,6 +593,19 @@
       stroke-linejoin: round;
     }
     .tick-svg.seen path { stroke: var(--seen-blue); }
+
+    .reply-preview-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--panel-2);
+      border-top: 1px solid var(--border);
+      padding: 6px 10px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .reply-preview-bar.active { display: flex; }
 
     .blocked-banner {
       background: rgba(17, 27, 33, 0.95);
@@ -523,7 +653,7 @@
       background: var(--panel-2);
       border: 1px solid var(--panel-3);
       border-radius: 10px;
-      min-width: 180px;
+      min-width: 185px;
       z-index: 50;
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       overflow: hidden;
@@ -560,7 +690,7 @@
       border: 1px solid var(--panel-3);
       border-radius: 14px;
       width: 100%;
-      max-width: 370px;
+      max-width: 375px;
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -589,6 +719,21 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
       font-size: 13px;
     }
+    .reaction-bar {
+      display: flex;
+      justify-content: space-around;
+      background: var(--panel-2);
+      padding: 8px;
+      border-radius: 10px;
+    }
+    .reaction-bar button {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+    .reaction-bar button:active { transform: scale(1.25); }
 
     /* Fullscreen Photo Viewer */
     .photo-viewer-modal {
@@ -644,9 +789,9 @@
       overflow-y: auto;
       padding: 12px 0;
     }
-    .status-viewer-body img.full-st-img {
+    .status-viewer-body img.full-st-img, .status-viewer-body video.full-st-vid {
       max-width: 100%;
-      max-height: 62vh;
+      max-height: 60vh;
       border-radius: 10px;
       object-fit: contain;
     }
@@ -710,6 +855,7 @@
       <button class="dropdown-item" id="menuWallpaperBtn">Wallpaper</button>
       <button class="dropdown-item" id="menuFontSizeBtn">Font size</button>
       <button class="dropdown-item" id="menuLockChatBtn">Lock chat</button>
+      <button class="dropdown-item" id="menuClearChatBtn">Clear chat</button>
       <button class="dropdown-item danger" id="menuBlockBtn">Block</button>
     </div>
 
@@ -737,61 +883,92 @@
           <div class="scroll-list status-pad" id="statusFeedList" style="padding-top:0;"></div>
         </div>
 
-        <!-- Settings -->
+        <!-- WhatsApp-Style Settings -->
         <div class="tab-pane" id="settingsTab">
           <div class="settings-scroll">
-            <div class="setting-card">
-              <label>Notifications & Tone</label>
-              <small id="notifPermStatus">Status: Checking...</small>
-              <button class="btn small full" id="enableNotifBtn">Request notification permission</button>
-              <select id="soundSelect">
-                <option value="chime">Tone: Chime</option>
-                <option value="pop">Tone: Pop</option>
-                <option value="mute">Tone: Mute</option>
-              </select>
-              <button class="btn secondary small full" id="testSoundBtn">Test tone</button>
-            </div>
-
-            <div class="setting-card">
-              <label>Profile photo</label>
+            <div class="profile-hero">
+              <div class="note-bubble" id="heroNoteBubble">Hey there! I am using WhatsApp</div>
+              <img id="heroAvatar" class="hero-avatar" src="" alt="" />
+              <div class="hero-name" id="heroName">User</div>
+              <div class="hero-sub" id="heroEmail"></div>
               <input type="file" id="dpFileInput" accept="image/*" style="display:none;" />
-              <button class="btn small full" id="chooseDpBtn">Change profile photo</button>
+              <button class="btn small" id="chooseDpBtn">Change profile photo</button>
             </div>
 
-            <div class="setting-card">
-              <label>About</label>
+            <div class="wa-cat-list">
+              <div class="wa-cat-row" data-panel="panelAccount">
+                <div class="wa-cat-icon">🔑</div>
+                <div>
+                  <div class="wa-cat-title">Account</div>
+                  <div class="wa-cat-desc">About / Note, log out</div>
+                </div>
+              </div>
+
+              <div class="wa-cat-row" data-panel="panelPrivacy">
+                <div class="wa-cat-icon">🔒</div>
+                <div>
+                  <div class="wa-cat-title">Privacy</div>
+                  <div class="wa-cat-desc">Last seen, profile photo, status</div>
+                </div>
+              </div>
+
+              <div class="wa-cat-row" data-panel="panelLists">
+                <div class="wa-cat-icon">⭐</div>
+                <div>
+                  <div class="wa-cat-title">Lists & Starred</div>
+                  <div class="wa-cat-desc">Starred messages & contacts</div>
+                </div>
+              </div>
+
+              <div class="wa-cat-row" data-panel="panelChats">
+                <div class="wa-cat-icon">💬</div>
+                <div>
+                  <div class="wa-cat-title">Chats</div>
+                  <div class="wa-cat-desc">Chat wallpaper, font size</div>
+                </div>
+              </div>
+
+              <div class="wa-cat-row" data-panel="panelAppearance">
+                <div class="wa-cat-icon">🎨</div>
+                <div>
+                  <div class="wa-cat-title">Appearance</div>
+                  <div class="wa-cat-desc">Blue accent theme & touch motion</div>
+                </div>
+              </div>
+
+              <div class="wa-cat-row" data-panel="panelNotifications">
+                <div class="wa-cat-icon">🔔</div>
+                <div>
+                  <div class="wa-cat-title">Notifications</div>
+                  <div class="wa-cat-desc">Permissions & message tones</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Detail -->
+            <div class="setting-panel-detail setting-card" id="panelAccount">
+              <label>About / Note</label>
               <input type="text" id="aboutInput" placeholder="About" maxlength="140" />
               <button class="btn small full" id="saveAboutBtn">Save about</button>
+              <button class="btn danger small full" id="settingsLogoutBtn">Log out</button>
             </div>
 
-            <div class="setting-card">
-              <label>Font size</label>
-              <select id="fontSizeSelect">
-                <option value="13px">Small</option>
-                <option value="14.5px" selected>Medium</option>
-                <option value="17px">Large</option>
-              </select>
-            </div>
-
-            <div class="setting-card">
+            <!-- Privacy Detail -->
+            <div class="setting-panel-detail setting-card" id="panelPrivacy">
               <label>Last seen and online</label>
               <select id="privacyLastSeenSelect">
                 <option value="everyone">Everyone</option>
                 <option value="contacts">My contacts</option>
                 <option value="nobody">Nobody</option>
               </select>
-            </div>
 
-            <div class="setting-card">
               <label>Profile photo privacy</label>
               <select id="privacyDpSelect">
                 <option value="everyone">Everyone</option>
                 <option value="contacts">My contacts</option>
                 <option value="nobody">Nobody</option>
               </select>
-            </div>
 
-            <div class="setting-card">
               <label>Status privacy</label>
               <select id="privacyStatusSelect">
                 <option value="everyone">Everyone</option>
@@ -802,11 +979,44 @@
               <div class="custom-pick-list" id="statusSelectedUsersBox"></div>
             </div>
 
-            <div class="setting-card">
+            <!-- Lists & Starred Detail -->
+            <div class="setting-panel-detail setting-card" id="panelLists">
+              <label>Starred messages</label>
+              <div id="starredMessagesBox" style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:var(--muted);">No starred messages</div>
+            </div>
+
+            <!-- Chats Detail -->
+            <div class="setting-panel-detail setting-card" id="panelChats">
+              <label>Font size</label>
+              <select id="fontSizeSelect">
+                <option value="13px">Small</option>
+                <option value="14.5px" selected>Medium</option>
+                <option value="17px">Large</option>
+              </select>
+
               <label>Chat wallpaper</label>
               <input type="file" id="wallpaperFileInput" accept="image/*" style="display:none;" />
-              <button class="btn secondary small full" id="chooseWallpaperBtn">Set chat wallpaper</button>
+              <button class="btn small full" id="chooseWallpaperBtn">Set chat wallpaper</button>
               <button class="btn secondary small full" id="clearWallpaperBtn">Remove wallpaper</button>
+            </div>
+
+            <!-- Appearance Detail -->
+            <div class="setting-panel-detail setting-card" id="panelAppearance">
+              <label>Accent theme</label>
+              <small>Active: Blue Ocean (#1e88e5) with animated touch feedback</small>
+            </div>
+
+            <!-- Notifications Detail -->
+            <div class="setting-panel-detail setting-card" id="panelNotifications">
+              <label>Notifications</label>
+              <small id="notifPermStatus">Status: Checking...</small>
+              <button class="btn small full" id="enableNotifBtn">Request notification permission</button>
+              <select id="soundSelect">
+                <option value="chime">Tone: Chime</option>
+                <option value="pop">Tone: Pop</option>
+                <option value="mute">Tone: Mute</option>
+              </select>
+              <button class="btn secondary small full" id="testSoundBtn">Test tone</button>
             </div>
           </div>
         </div>
@@ -817,6 +1027,14 @@
         <div class="chat-overlay">
           <div class="messages" id="messagesContainer">
             <div class="empty-chat">Select a chat to start messaging</div>
+          </div>
+
+          <div class="reply-preview-bar" id="replyPreviewBar">
+            <div style="min-width:0; flex:1;">
+              <strong style="color:var(--accent-bright);">Replying:</strong>
+              <span id="replyPreviewText"></span>
+            </div>
+            <button type="button" class="icon-btn" id="cancelReplyBtn" style="width:26px; height:26px; font-size:14px;">✕</button>
           </div>
 
           <div class="blocked-banner" id="blockedBanner">
@@ -918,11 +1136,21 @@
     </div>
   </div>
 
-  <!-- Message Long-Press Action Modal -->
+  <!-- Message Action Modal -->
   <div class="modal" id="msgActionModal">
     <div class="sheet">
       <h3>Message</h3>
       <p id="msgSeenInfoText"></p>
+      <div class="reaction-bar" id="msgReactionBar">
+        <button type="button" data-react="👍">👍</button>
+        <button type="button" data-react="❤️">❤️</button>
+        <button type="button" data-react="😂">😂</button>
+        <button type="button" data-react="😮">😮</button>
+        <button type="button" data-react="😢">😢</button>
+        <button type="button" data-react="🙏">🙏</button>
+      </div>
+      <button class="btn secondary full" id="msgReplyBtn">Reply</button>
+      <button class="btn secondary full" id="msgStarBtn">Star message</button>
       <button class="btn secondary full" id="msgEditBtn">Edit</button>
       <button class="btn secondary full" id="msgDeleteMeBtn">Delete for me</button>
       <button class="btn danger full" id="msgDeleteEveryoneBtn">Delete for everyone</button>
@@ -940,25 +1168,38 @@
     </div>
   </div>
 
-  <!-- Add Status Modal -->
+  <!-- Add Status Modal (Custom Color + Text Color + Photo + <=60s Video) -->
   <div class="modal" id="addStatusModal">
     <div class="sheet">
       <h3>New status</h3>
-      <div class="status-text-banner" id="statusPreviewBanner" style="background:#1b5e20;">
+      <div class="status-text-banner" id="statusPreviewBanner" style="background:#0d47a1; color:#ffffff;">
         <span id="statusPreviewText">Type status text</span>
       </div>
+
       <div class="color-palette" id="statusColorPalette">
-        <button type="button" class="color-swatch selected" data-color="#1b5e20" style="background:#1b5e20;"></button>
-        <button type="button" class="color-swatch" data-color="#0d47a1" style="background:#0d47a1;"></button>
+        <button type="button" class="color-swatch selected" data-color="#0d47a1" style="background:#0d47a1;"></button>
+        <button type="button" class="color-swatch" data-color="#1565c0" style="background:#1565c0;"></button>
+        <button type="button" class="color-swatch" data-color="#00695c" style="background:#00695c;"></button>
         <button type="button" class="color-swatch" data-color="#4a148c" style="background:#4a148c;"></button>
         <button type="button" class="color-swatch" data-color="#880e4f" style="background:#880e4f;"></button>
-        <button type="button" class="color-swatch" data-color="#bf360c" style="background:#bf360c;"></button>
-        <button type="button" class="color-swatch" data-color="#263238" style="background:#263238;"></button>
+        <button type="button" class="color-swatch" data-color="#1c252c" style="background:#1c252c;"></button>
       </div>
+
+      <div class="custom-color-box">
+        <span>Custom background color</span>
+        <input type="color" id="customStatusColorPicker" value="#0d47a1" />
+      </div>
+
+      <select id="statusTextColorSelect">
+        <option value="#ffffff">Text: White</option>
+        <option value="#000000">Text: Black</option>
+        <option value="#fff176">Text: Yellow</option>
+      </select>
+
       <textarea id="statusTextInput" placeholder="Type a status..."></textarea>
-      <input type="file" id="statusImageInput" accept="image/*" style="display:none;" />
-      <button class="btn secondary full" id="pickStatusImgBtn">Choose photo</button>
-      <small id="statusImgName" style="color:var(--muted);"></small>
+      <input type="file" id="statusMediaInput" accept="image/*,video/*" style="display:none;" />
+      <button class="btn secondary full" id="pickStatusMediaBtn">Choose photo or video (max 1 min)</button>
+      <small id="statusMediaName" style="color:var(--muted);"></small>
       <button class="btn full" id="publishStatusBtn">Post</button>
       <button class="btn secondary full" id="closeAddStatusBtn">Cancel</button>
     </div>
@@ -1009,9 +1250,12 @@
     let isInitialLoad = true;
     let audioCtx = null;
     let activeMsgTarget = null;
+    let replyToMsg = null;
     let activeStatusId = null;
     let pendingStatusPhoto = "";
-    let selectedStatusBg = "#1b5e20";
+    let pendingStatusVideo = "";
+    let selectedStatusBg = "#0d47a1";
+    let selectedStatusTextColor = "#ffffff";
     let lockModalMode = null;
     let pendingLockPeer = null;
 
@@ -1045,12 +1289,20 @@
     const menuWallpaperBtn = document.getElementById("menuWallpaperBtn");
     const menuFontSizeBtn = document.getElementById("menuFontSizeBtn");
     const menuLockChatBtn = document.getElementById("menuLockChatBtn");
+    const menuClearChatBtn = document.getElementById("menuClearChatBtn");
     const menuBlockBtn = document.getElementById("menuBlockBtn");
 
     const mainGrid = document.getElementById("mainGrid");
     const usersList = document.getElementById("usersList");
     const searchUsersInput = document.getElementById("searchUsersInput");
     const statusFeedList = document.getElementById("statusFeedList");
+
+    const heroNoteBubble = document.getElementById("heroNoteBubble");
+    const heroAvatar = document.getElementById("heroAvatar");
+    const heroName = document.getElementById("heroName");
+    const heroEmail = document.getElementById("heroEmail");
+    const settingsLogoutBtn = document.getElementById("settingsLogoutBtn");
+    const starredMessagesBox = document.getElementById("starredMessagesBox");
 
     const notifPermStatus = document.getElementById("notifPermStatus");
     const enableNotifBtn = document.getElementById("enableNotifBtn");
@@ -1071,6 +1323,9 @@
     const testSoundBtn = document.getElementById("testSoundBtn");
 
     const messagesContainer = document.getElementById("messagesContainer");
+    const replyPreviewBar = document.getElementById("replyPreviewBar");
+    const replyPreviewText = document.getElementById("replyPreviewText");
+    const cancelReplyBtn = document.getElementById("cancelReplyBtn");
     const blockedBanner = document.getElementById("blockedBanner");
     const blockedBannerText = document.getElementById("blockedBannerText");
     const unblockFromBannerBtn = document.getElementById("unblockFromBannerBtn");
@@ -1116,6 +1371,9 @@
 
     const msgActionModal = document.getElementById("msgActionModal");
     const msgSeenInfoText = document.getElementById("msgSeenInfoText");
+    const msgReactionBar = document.getElementById("msgReactionBar");
+    const msgReplyBtn = document.getElementById("msgReplyBtn");
+    const msgStarBtn = document.getElementById("msgStarBtn");
     const msgEditBtn = document.getElementById("msgEditBtn");
     const msgDeleteMeBtn = document.getElementById("msgDeleteMeBtn");
     const msgDeleteEveryoneBtn = document.getElementById("msgDeleteEveryoneBtn");
@@ -1131,14 +1389,68 @@
     const statusPreviewBanner = document.getElementById("statusPreviewBanner");
     const statusPreviewText = document.getElementById("statusPreviewText");
     const statusColorPalette = document.getElementById("statusColorPalette");
+    const customStatusColorPicker = document.getElementById("customStatusColorPicker");
+    const statusTextColorSelect = document.getElementById("statusTextColorSelect");
     const statusTextInput = document.getElementById("statusTextInput");
-    const statusImageInput = document.getElementById("statusImageInput");
-    const pickStatusImgBtn = document.getElementById("pickStatusImgBtn");
-    const statusImgName = document.getElementById("statusImgName");
+    const statusMediaInput = document.getElementById("statusMediaInput");
+    const pickStatusMediaBtn = document.getElementById("pickStatusMediaBtn");
+    const statusMediaName = document.getElementById("statusMediaName");
     const publishStatusBtn = document.getElementById("publishStatusBtn");
     const closeAddStatusBtn = document.getElementById("closeAddStatusBtn");
 
-    // Back button handling so app does not exit abruptly
+    // Settings category accordion
+    document.querySelectorAll(".wa-cat-row").forEach((row) => {
+      row.addEventListener("click", () => {
+        const targetId = row.dataset.panel;
+        const panel = document.getElementById(targetId);
+        const alreadyOpen = panel && panel.classList.contains("open");
+        document.querySelectorAll(".setting-panel-detail").forEach((p) => p.classList.remove("open"));
+        if (panel && !alreadyOpen) {
+          panel.classList.add("open");
+          if (targetId === "panelPrivacy") renderSelectedStatusUsersPicker();
+          if (targetId === "panelNotifications") refreshNotifStatusLabel();
+          if (targetId === "panelLists") renderStarredMessagesList();
+        }
+      });
+    });
+
+    function getStarredList() {
+      if (!currentUser) return [];
+      try {
+        return JSON.parse(localStorage.getItem(`starred_${currentUser.uid}`) || "[]");
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function toggleStarMessage(msg) {
+      if (!currentUser || !msg) return;
+      const list = getStarredList();
+      const idx = list.findIndex((x) => x.text === msg.text && x.timestamp === msg.timestamp);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+      } else {
+        list.unshift({ text: msg.text || "[Media]", timestamp: msg.timestamp || Date.now(), peerName: selectedPeer?.name || "" });
+      }
+      localStorage.setItem(`starred_${currentUser.uid}`, JSON.stringify(list.slice(0, 40)));
+      renderStarredMessagesList();
+    }
+
+    function renderStarredMessagesList() {
+      const list = getStarredList();
+      if (!list.length) {
+        starredMessagesBox.textContent = "No starred messages";
+        return;
+      }
+      starredMessagesBox.innerHTML = list.map((item) =>
+        `<div style="background:var(--panel); padding:8px 10px; border-radius:8px; border:1px solid var(--panel-3);">
+          <div style="color:var(--text);">${escapeHtml(item.text)}</div>
+          <small>${escapeHtml(item.peerName)} • ${formatClock(item.timestamp)}</small>
+        </div>`
+      ).join("");
+    }
+
+    // Back button navigation
     window.history.replaceState({ appRoot: true }, "");
     function pushNavState() {
       window.history.pushState({ nav: Date.now() }, "");
@@ -1201,6 +1513,7 @@
 
     closePhotoViewerBtn.addEventListener("click", () => photoViewerModal.classList.remove("active"));
     infoAvatar.addEventListener("click", () => openFullPhoto(infoAvatar.src));
+    heroAvatar.addEventListener("click", () => openFullPhoto(heroAvatar.src));
 
     function readOriginalDataUrl(file) {
       return new Promise((resolve, reject) => {
@@ -1208,6 +1521,24 @@
         reader.onerror = reject;
         reader.onload = () => resolve(reader.result);
         reader.readAsDataURL(file);
+      });
+    }
+
+    function getVideoDurationSeconds(file) {
+      return new Promise((resolve) => {
+        const url = URL.createObjectURL(file);
+        const vid = document.createElement("video");
+        vid.preload = "metadata";
+        vid.onloadedmetadata = () => {
+          const dur = vid.duration || 0;
+          URL.revokeObjectURL(url);
+          resolve(dur);
+        };
+        vid.onerror = () => {
+          URL.revokeObjectURL(url);
+          resolve(0);
+        };
+        vid.src = url;
       });
     }
 
@@ -1261,8 +1592,8 @@
       document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tabId));
       document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.id === tabId));
       if (tabId === "settingsTab") {
-        renderSelectedStatusUsersPicker();
-        refreshNotifStatusLabel();
+        syncSettingsFromUser();
+        renderStarredMessagesList();
       }
     }
 
@@ -1443,6 +1774,7 @@
         chatMoreBtn.style.display = "none";
         chatMoreMenu.classList.remove("open");
         blockedBanner.classList.remove("active");
+        replyPreviewBar.classList.remove("active");
         messageForm.classList.remove("hidden");
       }
     }
@@ -1618,14 +1950,17 @@
       }
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    async function performLogout() {
       localStorage.removeItem("hasActiveSession");
       if (currentUser) {
         await db.ref(`users/${currentUser.uid}`).update({ online: false, lastSeen: Date.now() }).catch(() => {});
       }
       if (messagesRef) messagesRef.off();
       auth.signOut();
-    });
+    }
+
+    logoutBtn.addEventListener("click", performLogout);
+    settingsLogoutBtn.addEventListener("click", performLogout);
 
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -1639,6 +1974,7 @@
         fontSizeSelect.value = savedFont;
         document.documentElement.style.setProperty("--msg-font-size", savedFont);
         refreshNotifStatusLabel();
+        renderStarredMessagesList();
 
         setupPresence(user.uid);
 
@@ -1671,6 +2007,10 @@
     function syncSettingsFromUser() {
       if (!currentUser || !allUsers[currentUser.uid]) return;
       const me = allUsers[currentUser.uid];
+      heroAvatar.src = me.dp || DEFAULT_DP;
+      heroName.textContent = me.name || "User";
+      heroEmail.textContent = me.email || currentUser.email || "";
+      heroNoteBubble.textContent = me.about || "Hey there! I am using WhatsApp";
       if (document.activeElement !== aboutInput) aboutInput.value = me.about || "";
       const priv = me.privacy || {};
       privacyLastSeenSelect.value = priv.lastSeen || "everyone";
@@ -1708,16 +2048,12 @@
           </div>
         `;
 
-        // Touching DP opens status if available, otherwise contact info
         const dpWrap = row.querySelector("[data-dp-uid]");
         dpWrap.addEventListener("click", (ev) => {
           ev.stopPropagation();
           const stList = getUserStatuses(u.uid);
-          if (stList.length) {
-            openStatusViewer(stList[0].id);
-          } else {
-            openContactInfoModal(u);
-          }
+          if (stList.length) openStatusViewer(stList[0].id);
+          else openContactInfoModal(u);
         });
 
         row.addEventListener("click", () => handleSelectPeer(u));
@@ -1727,7 +2063,6 @@
 
     searchUsersInput.addEventListener("input", renderUsersList);
 
-    // Header DP -> Status if available, Header Name -> Contact Info
     headerAvatarWrap.addEventListener("click", (ev) => {
       ev.stopPropagation();
       if (!selectedPeer) return;
@@ -1783,6 +2118,8 @@
     function openChatWith(peer) {
       unlockAudio();
       selectedPeer = peer;
+      replyToMsg = null;
+      replyPreviewBar.classList.remove("active");
       mainGrid.classList.add("chat-open");
       if (window.innerWidth <= 768) backToUsersBtn.style.display = "grid";
       pushNavState();
@@ -1829,6 +2166,8 @@
 
     function closeActiveChatToList() {
       selectedPeer = null;
+      replyToMsg = null;
+      replyPreviewBar.classList.remove("active");
       mainGrid.classList.remove("chat-open");
       backToUsersBtn.style.display = "none";
       updateTopHeader();
@@ -1893,6 +2232,14 @@
         chatLockModal.classList.add("active");
         pushNavState();
       }
+    });
+
+    menuClearChatBtn.addEventListener("click", async () => {
+      chatMoreMenu.classList.remove("open");
+      if (!currentUser || !selectedPeer) return;
+      const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      await db.ref(`chats/${chatId}/messages`).remove();
+      messagesContainer.innerHTML = `<div class="empty-chat">Chat cleared</div>`;
     });
 
     menuBlockBtn.addEventListener("click", async () => {
@@ -1993,6 +2340,7 @@
       if (isDeletedEveryone) {
         bodyHtml = `<div>This message was deleted</div>`;
       } else {
+        const quoteHtml = msg.replyTo ? `<div class="reply-quote">${escapeHtml(msg.replyTo)}</div>` : "";
         let mediaHtml = "";
         if (msg.mediaType === "image" && msg.mediaUrl) {
           mediaHtml = `<img class="chat-photo" src="${escapeAttr(msg.mediaUrl)}" alt="" />`;
@@ -2003,7 +2351,8 @@
         }
         const editedHtml = msg.edited ? `<span class="edited-tag">Edited</span>` : "";
         const textHtml = msg.text ? `<div>${escapeHtml(msg.text)}${editedHtml}</div>` : "";
-        bodyHtml = `${textHtml}${mediaHtml}`;
+        const reactHtml = msg.reaction ? `<div class="reaction-badge">${escapeHtml(msg.reaction)}</div>` : "";
+        bodyHtml = `${quoteHtml}${textHtml}${mediaHtml}${reactHtml}`;
       }
 
       const timeStr = formatClock(msg.timestamp);
@@ -2053,6 +2402,38 @@
       msgActionModal.classList.add("active");
       pushNavState();
     }
+
+    msgReactionBar.querySelectorAll("[data-react]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!activeMsgTarget || !selectedPeer) return;
+        const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+        await db.ref(`chats/${chatId}/messages/${activeMsgTarget.msgId}/reaction`).set(btn.dataset.react);
+        msgActionModal.classList.remove("active");
+        activeMsgTarget = null;
+      });
+    });
+
+    msgReplyBtn.addEventListener("click", () => {
+      if (!activeMsgTarget) return;
+      replyToMsg = activeMsgTarget.msg.text || "[Media]";
+      replyPreviewText.textContent = replyToMsg;
+      replyPreviewBar.classList.add("active");
+      msgActionModal.classList.remove("active");
+      activeMsgTarget = null;
+      messageInput.focus();
+    });
+
+    cancelReplyBtn.addEventListener("click", () => {
+      replyToMsg = null;
+      replyPreviewBar.classList.remove("active");
+    });
+
+    msgStarBtn.addEventListener("click", () => {
+      if (!activeMsgTarget) return;
+      toggleStarMessage(activeMsgTarget.msg);
+      msgActionModal.classList.remove("active");
+      activeMsgTarget = null;
+    });
 
     closeMsgModalBtn.addEventListener("click", () => {
       msgActionModal.classList.remove("active");
@@ -2112,12 +2493,17 @@
       const onlineNow = !!navigator.onLine;
       const initialStatus = isActuallyOnline(peerLive) ? "delivered" : "sent";
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
+      const quoteText = replyToMsg || "";
 
       messageInput.value = "";
+      replyToMsg = null;
+      replyPreviewBar.classList.remove("active");
+
       await db.ref(`chats/${chatId}/messages`).push({
         senderId: currentUser.uid,
         receiverId: selectedPeer.uid,
         text,
+        replyTo: quoteText,
         mediaType: null,
         mediaUrl: null,
         sentOnline: onlineNow,
@@ -2131,12 +2517,33 @@
       mediaInput.click();
     });
 
-    // Original photo quality preserved
+    async function uploadMediaFile(file) {
+      if (MEDIA_UPLOAD_URL && MEDIA_UPLOAD_PRESET) {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("upload_preset", MEDIA_UPLOAD_PRESET);
+        const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: fd });
+        const data = await res.json();
+        if (!data.secure_url) throw new Error("Upload failed");
+        return data.secure_url;
+      }
+      return await readOriginalDataUrl(file);
+    }
+
     mediaInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file || !currentUser || !selectedPeer) return;
 
       const isVideo = file.type.startsWith("video/");
+      if (isVideo) {
+        const dur = await getVideoDurationSeconds(file);
+        if (dur > 60) {
+          alert("Video must be 1 minute (60s) or less.");
+          mediaInput.value = "";
+          return;
+        }
+      }
+
       const mediaType = isVideo ? "video" : "image";
       const chatId = getChatId(currentUser.uid, selectedPeer.uid);
       const peerLive = allUsers[selectedPeer.uid] || selectedPeer;
@@ -2144,22 +2551,7 @@
 
       try {
         attachBtn.textContent = "⏳";
-        let finalUrl = "";
-
-        if (MEDIA_UPLOAD_URL && MEDIA_UPLOAD_PRESET) {
-          const fd = new FormData();
-          fd.append("file", file);
-          fd.append("upload_preset", MEDIA_UPLOAD_PRESET);
-          const res = await fetch(MEDIA_UPLOAD_URL, { method: "POST", body: fd });
-          const data = await res.json();
-          if (!data.secure_url) throw new Error("Upload failed");
-          finalUrl = data.secure_url;
-        } else if (!isVideo && file.size <= 1500 * 1024) {
-          finalUrl = await readOriginalDataUrl(file);
-        } else {
-          throw new Error("Large files/videos require upload config.");
-        }
-
+        const finalUrl = await uploadMediaFile(file);
         await db.ref(`chats/${chatId}/messages`).push({
           senderId: currentUser.uid,
           receiverId: selectedPeer.uid,
@@ -2337,13 +2729,22 @@
     soundSelect.addEventListener("change", () => localStorage.setItem("chatSound", soundSelect.value));
     testSoundBtn.addEventListener("click", () => { unlockAudio(); playNotificationSound(); });
 
-    // Status Creation
+    // Status Creation (Custom color + text color + photo + <=60s video)
+    function applyStatusBannerStyle() {
+      statusPreviewBanner.style.background = selectedStatusBg;
+      statusPreviewBanner.style.color = selectedStatusTextColor;
+    }
+
     openAddStatusBtn.addEventListener("click", () => {
       statusTextInput.value = "";
       pendingStatusPhoto = "";
-      statusImgName.textContent = "";
-      selectedStatusBg = "#1b5e20";
-      statusPreviewBanner.style.background = selectedStatusBg;
+      pendingStatusVideo = "";
+      statusMediaName.textContent = "";
+      selectedStatusBg = "#0d47a1";
+      selectedStatusTextColor = "#ffffff";
+      customStatusColorPicker.value = selectedStatusBg;
+      statusTextColorSelect.value = selectedStatusTextColor;
+      applyStatusBannerStyle();
       statusPreviewText.textContent = "Type status text";
       document.querySelectorAll(".color-swatch").forEach((sw, idx) => {
         sw.classList.toggle("selected", idx === 0);
@@ -2357,8 +2758,20 @@
         document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
         sw.classList.add("selected");
         selectedStatusBg = sw.dataset.color;
-        statusPreviewBanner.style.background = selectedStatusBg;
+        customStatusColorPicker.value = selectedStatusBg;
+        applyStatusBannerStyle();
       });
+    });
+
+    customStatusColorPicker.addEventListener("input", () => {
+      document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("selected"));
+      selectedStatusBg = customStatusColorPicker.value;
+      applyStatusBannerStyle();
+    });
+
+    statusTextColorSelect.addEventListener("change", () => {
+      selectedStatusTextColor = statusTextColorSelect.value;
+      applyStatusBannerStyle();
     });
 
     statusTextInput.addEventListener("input", () => {
@@ -2366,22 +2779,41 @@
     });
 
     closeAddStatusBtn.addEventListener("click", () => addStatusModal.classList.remove("active"));
-    pickStatusImgBtn.addEventListener("click", () => statusImageInput.click());
-    statusImageInput.addEventListener("change", async (e) => {
+    pickStatusMediaBtn.addEventListener("click", () => statusMediaInput.click());
+
+    statusMediaInput.addEventListener("change", async (e) => {
       const f = e.target.files[0];
       if (!f) return;
-      statusImgName.textContent = f.name;
+      const isVid = f.type.startsWith("video/");
+      if (isVid) {
+        const dur = await getVideoDurationSeconds(f);
+        if (dur > 60) {
+          alert("Status video must be 1 minute (60s) or less.");
+          statusMediaInput.value = "";
+          return;
+        }
+      }
+      statusMediaName.textContent = f.name;
       try {
-        pendingStatusPhoto = await readOriginalDataUrl(f);
-      } catch (_) {}
-      statusImageInput.value = "";
+        const url = await uploadMediaFile(f);
+        if (isVid) {
+          pendingStatusVideo = url;
+          pendingStatusPhoto = "";
+        } else {
+          pendingStatusPhoto = url;
+          pendingStatusVideo = "";
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+      statusMediaInput.value = "";
     });
 
     publishStatusBtn.addEventListener("click", async () => {
       if (!currentUser) return;
       const txt = statusTextInput.value.trim();
-      if (!txt && !pendingStatusPhoto) {
-        alert("Enter status text or choose a photo.");
+      if (!txt && !pendingStatusPhoto && !pendingStatusVideo) {
+        alert("Enter status text or choose photo/video.");
         return;
       }
       try {
@@ -2391,7 +2823,9 @@
           ownerName: me.name || currentUser.email,
           text: txt,
           bgColor: selectedStatusBg,
+          textColor: selectedStatusTextColor,
           photoUrl: pendingStatusPhoto || "",
+          videoUrl: pendingStatusVideo || "",
           createdAt: Date.now()
         });
         addStatusModal.classList.remove("active");
@@ -2400,7 +2834,6 @@
       }
     });
 
-    // Compact circle list -> Opens Fullscreen Status Viewer
     function renderStatusFeed() {
       if (!currentUser) return;
       statusFeedList.innerHTML = "";
@@ -2418,10 +2851,10 @@
 
       entries.forEach((st) => {
         const isMine = st.ownerUid === currentUser.uid;
-        const owner = allUsers[st.ownerUid] || {};
         const isUnseen = !isMine && !seenMap[st.id];
         const ringClass = isMine ? "" : (isUnseen ? "status-unseen" : "status-seen");
-        const bg = st.bgColor || "#1b5e20";
+        const bg = st.bgColor || "#0d47a1";
+        const fg = st.textColor || "#ffffff";
         const likesCount = st.likes ? Object.keys(st.likes).length : 0;
         const viewsCount = st.views ? Object.keys(st.views).length : 0;
 
@@ -2429,10 +2862,10 @@
         row.className = "status-circle-row";
         row.innerHTML = `
           <div class="avatar-wrap ${ringClass}">
-            <div class="status-thumb-circle" style="background:${escapeAttr(bg)};">
+            <div class="status-thumb-circle" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)};">
               ${st.photoUrl
                 ? `<img src="${escapeAttr(st.photoUrl)}" alt="" />`
-                : `<span>${escapeHtml((st.text || "Status").slice(0, 12))}</span>`
+                : (st.videoUrl ? `<span>▶ Video</span>` : `<span>${escapeHtml((st.text || "Status").slice(0, 12))}</span>`)
               }
             </div>
           </div>
@@ -2473,13 +2906,17 @@
       viewerOwnerName.textContent = st.ownerName || owner.name || "";
       viewerTimeText.textContent = formatClock(st.createdAt);
 
-      const bg = st.bgColor || "#1b5e20";
+      const bg = st.bgColor || "#0d47a1";
+      const fg = st.textColor || "#ffffff";
       let bodyHtml = "";
       if (st.text) {
-        bodyHtml += `<div class="status-text-banner" style="background:${escapeAttr(bg)};">${escapeHtml(st.text)}</div>`;
+        bodyHtml += `<div class="status-text-banner" style="background:${escapeAttr(bg)}; color:${escapeAttr(fg)};">${escapeHtml(st.text)}</div>`;
       }
       if (st.photoUrl) {
         bodyHtml += `<img class="full-st-img" src="${escapeAttr(st.photoUrl)}" alt="" />`;
+      }
+      if (st.videoUrl) {
+        bodyHtml += `<video class="full-st-vid" controls autoplay playsinline src="${escapeAttr(st.videoUrl)}"></video>`;
       }
       statusViewerBody.innerHTML = bodyHtml;
 
